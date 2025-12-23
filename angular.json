@@ -80,6 +80,32 @@
           }
         }
       }
+    },
+    "ngx-exitus-tiptap-editor": {
+      "projectType": "library",
+      "root": "projects/ngx-exitus-tiptap-editor",
+      "sourceRoot": "projects/ngx-exitus-tiptap-editor/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-exitus-tiptap-editor/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-exitus-tiptap-editor/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/ngx-exitus-tiptap-editor/tsconfig.spec.json"
+          }
+        }
+      }
     }
   }
 }
