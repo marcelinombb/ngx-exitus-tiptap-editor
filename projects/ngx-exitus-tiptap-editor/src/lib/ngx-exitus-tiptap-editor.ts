@@ -7,7 +7,6 @@ import StarterKit from '@tiptap/starter-kit';
   imports: [],
   template: `
     <div #editor></div>
-    {{ contentHtml() }}
   `,
   styles: ``,
 })
@@ -54,6 +53,11 @@ export class NgxExitusTiptapEditor {
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
+        const html = editor.getHTML();
+        this.contentHtml.set(html);
+        this.onContentChange.emit(html);
+      },
+      onCreate: ({ editor }) => {
         const html = editor.getHTML();
         this.contentHtml.set(html);
         this.onContentChange.emit(html);
