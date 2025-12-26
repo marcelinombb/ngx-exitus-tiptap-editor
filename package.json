@@ -6,6 +6,9 @@
     "start": "ng serve",
     "watch-lib": "ng build ngx-exitus-tiptap-editor --watch",
     "build": "ng build",
+    "build:lib": "ng build ngx-exitus-tiptap-editor",
+    "watch:lib": "ng build ngx-exitus-tiptap-editor --watch",
+    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/ngx-exitus-tiptap-editor && npm run start\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -47,6 +50,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^20.3.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "concurrently": "^9.2.0",
+    "wait-on": "^8.0.3"
   }
 }
