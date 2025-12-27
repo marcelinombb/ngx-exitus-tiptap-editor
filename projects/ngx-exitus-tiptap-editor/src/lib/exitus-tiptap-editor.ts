@@ -1,20 +1,29 @@
-import { Component, effect, ElementRef, input, output, signal, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
+import { EditorToolbarComponent } from './components/editor-toolbar.component';
 
 @Component({
-  selector: 'lib-ngx-exitus-tiptap-editor',
-  imports: [],
+  selector: 'exitus-tiptap-editor',
+  imports: [EditorToolbarComponent],
   template: `
-    <div #editor></div>
+    <div class="exitus-tiptap-editor">
+      @if(editorInstance) {
+        <editor-toolbar [editor]="editorInstance"></editor-toolbar>
+      }
+      <div class="editor-scroller">
+        <div #editor class="editor-main"></div>
+      </div>
+    </div>
   `,
-  styles: ``,
+  styleUrls: ['./exitus-tiptap-editor.scss'],
+  encapsulation: ViewEncapsulation.None
 })
-export class NgxExitusTiptapEditor {
+export class ExitusTiptapEditor {
 
   private editorElement = viewChild.required<ElementRef>('editor');
   private tiptapEditor = signal<Editor | null>(null);
-  protected contentHtml = signal<string>("");
+  private contentHtml = signal<string>("");
 
   content = input<string>('<p>Hello World!</p>');
 
@@ -24,15 +33,14 @@ export class NgxExitusTiptapEditor {
 
     effect(() => {
       const content = this.content();
-      if(this.tiptapEditor() && content !== this.tiptapEditor()!.getHTML()) {
+      if (this.tiptapEditor() && content !== this.tiptapEditor()!.getHTML()) {
         this.setContent(content);
       }
     });
-
   }
 
   setContent(newContent: string) {
-    if(this.tiptapEditor()) {
+    if (this.tiptapEditor()) {
       this.tiptapEditor()!.commands.setContent(newContent);
     }
   }

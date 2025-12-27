@@ -1,0 +1,35 @@
+@use "./editor-button.component.scss";
+
+.ex-toolbar-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.ex-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    background: #fff;
+    border: 1px solid var(--border-gray);
+    padding: 6px;
+    border-radius: 6px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.ex-btn-caret {
+    margin-left: 6px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid currentColor;
+    transition: transform .15s ease;
+    border-top-color: black;
+}
+
+.ex-btn-caret.open {
+    transform: rotate(180deg);
+}
