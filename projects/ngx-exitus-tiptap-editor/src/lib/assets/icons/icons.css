@@ -130,3 +130,11 @@
   --icon: url("./format-clear.svg");
 }
 
+.btn-indent-decrease {
+  --icon: url("./indent-decrease.svg");
+}
+
+.btn-indent-increase {
+  --icon: url("./indent-increase.svg");
+}
+

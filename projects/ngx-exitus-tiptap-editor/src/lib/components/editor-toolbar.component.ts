@@ -12,28 +12,31 @@ import { Editor } from '@tiptap/core';
             <div class="ex-toolbar-items">
                 <editor-button [icon]="'bold'" [title]="'Negrito'" [active]="isActive('bold')" (onClick)="toggleBold()"></editor-button>
                 <editor-button [icon]="'italic'" [title]="'Itálico'" [active]="isActive('italic')" (onClick)="toggleItalic()"></editor-button>
-                <editor-button [icon]="'underline'" [title]="'Sublinhado'" [active]="isActive('underline')"></editor-button>
-                <editor-button [icon]="'strike'" [title]="'Tachado'" [active]="isActive('strike')"></editor-button>
-                <editor-button [icon]="'subscript'" [title]="'Subscrito'" [active]="isActive('subscript')"></editor-button>
-                <editor-button [icon]="'superscript'" [title]="'Sobrescrito'" [active]="isActive('superscript')"></editor-button>
-                <editor-button [icon]="'format-clear'" [title]="'Limpar formatação'" [active]="isActive('format-clear')"></editor-button>
+                <editor-button [icon]="'underline'" [title]="'Sublinhado'" [active]="isActive('underline')" (onClick)="toggleUnderline()"></editor-button>
+                <editor-button [icon]="'strike'" [title]="'Tachado'" [active]="isActive('strike')" (onClick)="toggleStrike()"></editor-button>
+                <editor-button [icon]="'subscript'" [title]="'Subscrito'" [active]="isActive('subscript')" (onClick)="toggleSubscript()"></editor-button>
+                <editor-button [icon]="'superscript'" [title]="'Sobrescrito'" [active]="isActive('superscript')" (onClick)="toggleSuperscript()"></editor-button>
+                <editor-button [icon]="'format-clear'" [title]="'Limpar formatação'" [active]="isActive('format-clear')" (onClick)="unsetAllMarks()"></editor-button>
                 <span class="ex-toolbar-separator"></span>
                 <editor-button [icon]="'table'" [title]="'Tabela'" [active]="isActive('table')"></editor-button>
                 <editor-dropdown>
-                    <editor-button [icon]="'align-left'" [title]="'Alinhar à esquerda'" [active]="isActive('alignLeft')"></editor-button>
-                    <editor-button [icon]="'align-right'" [title]="'Alinhar à direita'" [active]="isActive('alignRight')"></editor-button>
-                    <editor-button [icon]="'align-center'" [title]="'Alinhar ao centro'" [active]="isActive('alignCenter')"></editor-button>
-                    <editor-button [icon]="'align-justify'" [title]="'Alinhar justificado'" [active]="isActive('alignJustify')"></editor-button>
+                    <editor-button [icon]="'align-left'" [title]="'Alinhar à esquerda'" [active]="isActive('alignLeft')" (onClick)="setTextAlign('left')"></editor-button>
+                    <editor-button [icon]="'align-right'" [title]="'Alinhar à direita'" [active]="isActive('alignRight')" (onClick)="setTextAlign('right')"></editor-button>
+                    <editor-button [icon]="'align-center'" [title]="'Alinhar ao centro'" [active]="isActive('alignCenter')" (onClick)="setTextAlign('center')"></editor-button>
+                    <editor-button [icon]="'align-justify'" [title]="'Alinhar justificado'" [active]="isActive('alignJustify')" (onClick)="setTextAlign('justify')"></editor-button>
                 </editor-dropdown>
                 <editor-button [icon]="'image'" [title]="'Inserir imagem'" [active]="isActive('image')"></editor-button>
-                <editor-button [icon]="'blockquote'" [title]="'Citação'" [active]="isActive('blockquote')"></editor-button>
+                <editor-button [icon]="'blockquote'" [title]="'Citação'" [active]="isActive('blockquote')" (onClick)="toggleBlockquote()"></editor-button>
+                <editor-button [icon]="'undo'" [title]="'Desfazer'" [active]="isActive('undo')" (onClick)="undo()"></editor-button>
+                <editor-button [icon]="'redo'" [title]="'Refazer'" [active]="isActive('redo')" (onClick)="redo()"></editor-button>
+                <editor-button [icon]="'indent-decrease'" [title]="'Diminuir recuo'" [active]="isActive('indent')" (onClick)="decreaseIndent()"></editor-button>
+                <editor-button [icon]="'indent-increase'" [title]="'Aumentar recuo'" [active]="isActive('indent')" (onClick)="increaseIndent()"></editor-button>
 
                 <span class="ex-toolbar-separator"></span>
                 <editor-dropdown>
-                    <editor-button [icon]="'bullet-list'" [title]="'Lista não ordenada'" [active]="isActive('bulletList')"></editor-button>
-                    <editor-button [icon]="'ordered-list'" [title]="'Lista ordenada'" [active]="isActive('orderedList')"></editor-button>
+                    <editor-button [icon]="'bullet-list'" [title]="'Lista não ordenada'" [active]="isActive('bulletList')" (onClick)="toggleBulletList()"></editor-button>
+                    <editor-button [icon]="'ordered-list'" [title]="'Lista ordenada'" [active]="isActive('orderedList')" (onClick)="toggleOrderedList()"></editor-button>
                 </editor-dropdown>
-                <span class="ex-toolbar-separator"></span>
              </div>
         </div>
     `,
@@ -88,6 +91,58 @@ export class EditorToolbarComponent implements OnInit {
 
     toggleItalic() {
         this.editor().chain().focus().toggleItalic().run()
+    }
+
+    toggleStrike() {
+        this.editor().chain().focus().toggleStrike().run()
+    }
+
+    toggleUnderline() {
+        this.editor().chain().focus().toggleUnderline().run()
+    }
+
+    toggleBlockquote() {
+        this.editor().chain().focus().toggleBlockquote().run()
+    }
+
+    toggleBulletList() {
+        this.editor().chain().focus().toggleBulletList().run()
+    }
+
+    toggleOrderedList() {
+        this.editor().chain().focus().toggleOrderedList().run()
+    }
+
+    toggleSubscript() {
+        this.editor().chain().focus().toggleSubscript().run()
+    }
+    
+    toggleSuperscript() {
+        this.editor().chain().focus().toggleSuperscript().run()
+    }
+
+    unsetAllMarks() {
+        this.editor().chain().focus().unsetAllMarks().run()
+    }
+
+    setTextAlign(align: 'left' | 'center' | 'right' | 'justify') {
+        this.editor().chain().focus().setTextAlign(align).run()
+    }
+
+    decreaseIndent() {
+        this.editor().commands.outdent()
+    }
+
+    increaseIndent() {
+        this.editor().commands.indent()
+    }
+
+    undo() {
+        this.editor().chain().focus().undo().run()
+    }
+
+    redo() {
+        this.editor().chain().focus().redo().run()
     }
 
 }

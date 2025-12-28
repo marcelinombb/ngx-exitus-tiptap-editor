@@ -1,7 +1,11 @@
 import { Component, effect, ElementRef, input, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
+import Subscript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
+import TextAlign from '@tiptap/extension-text-align';
 import { EditorToolbarComponent } from './components/editor-toolbar.component';
+import { Indent } from './extensions/indent/indent';
 
 @Component({
   selector: 'exitus-tiptap-editor',
@@ -58,6 +62,12 @@ export class ExitusTiptapEditor {
       element: this.editorElement().nativeElement,
       extensions: [
         StarterKit,
+        Subscript,
+        Superscript,
+        TextAlign.configure({
+          types: ['heading', 'paragraph']
+        }),
+        Indent
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
