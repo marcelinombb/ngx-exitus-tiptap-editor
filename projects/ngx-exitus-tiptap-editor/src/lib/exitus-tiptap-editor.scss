@@ -1,5 +1,7 @@
-.exitus-tiptap-editor {
+@import '../../../../node_modules/katex/dist/katex.min.css';
+@import '../lib/extensions/image/style.css';
 
+.exitus-tiptap-editor {
    --active-blue: hsl(218, 81.8%, 56.9%);
    --border-gray: #ccced1;
    --spacing-sm: calc(0.6em * 0.3);
@@ -65,5 +67,23 @@
       border-top: 0px;
       padding: calc(2 * calc(0.6em * 1.5));
       background: #fafafa;
+   }
+
+   .tiptap-widget:hover {
+      outline-color: #ffc83d;
+   }
+
+   .tiptap-widget {
+      position: relative;
+      outline-color: transparent;
+      outline-style: solid;
+      outline-width: var(--widget-outline-width);
+      user-select: auto;
+      transition: outline-color 200ms ease;
+      cursor: pointer;
+   }
+
+   .ex-selected {
+      outline-color: var(--active-blue) !important;
    }
 }

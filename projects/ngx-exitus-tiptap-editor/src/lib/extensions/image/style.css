@@ -1,0 +1,266 @@
+/* Estilos para redimensionamento de imagem */
+.resizers-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.resizer {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  pointer-events: all;
+  cursor: nw-resize;
+  z-index: 10;
+}
+
+.resizer.top-left {
+  top: -5px;
+  left: -5px;
+  cursor: nw-resize;
+}
+
+.resizer.top-right {
+  top: -5px;
+  right: -5px;
+  cursor: ne-resize;
+}
+
+.resizer.bottom-left {
+  bottom: -5px;
+  left: -5px;
+  cursor: sw-resize;
+}
+
+.resizer.bottom-right {
+  bottom: -5px;
+  right: -5px;
+  cursor: se-resize;
+}
+
+/* Estilos para wrapper de imagem */
+.ex-image-wrapper {
+  position: relative;
+  display: inline-block;
+  margin: 10px 0;
+  max-width: 100%;
+}
+
+.ex-image-wrapper img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ex-image-wrapper:not([style*="width"]) {
+  width: 400px;
+}
+
+.ex-image-wrapper.ex-selected .resizers-container {
+  display: block;
+}
+
+.ex-image-wrapper:not(.ex-selected) .resizers-container {
+  display: none;
+}
+
+/* Estilos para alinhamento */
+.ex-image-block-middle {
+  display: block;
+  margin: 10px auto;
+}
+
+.ex-image-block-align-left {
+  display: block;
+  margin: 10px auto 10px 0;
+}
+
+.ex-image-block-align-right {
+  display: block;
+  margin: 10px 0 10px auto;
+}
+
+.ex-image-float-left {
+  float: left;
+  margin: 0 15px 15px 0;
+}
+
+.ex-image-float-right {
+  float: right;
+  margin: 0 0 15px 15px;
+}
+
+/* Estilos para legenda */
+.ex-image-wrapper figcaption {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}
+
+.ex-image-wrapper figcaption.ex-hidden {
+  display: none;
+}
+
+.ex-image-wrapper figcaption.figcaption-is-empty:before {
+  content: attr(data-placeholder);
+  color: #999;
+}
+
+
+figure, figcaption {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+.ex-image-wrapper {
+  clear: both;
+  display: table;
+  padding: 0.08em;
+  max-width: 100%;
+  text-align: center;
+  position: relative;
+}
+
+.ex-image-wrapper > figcaption {
+    background-color: var(--image-caption-background);
+    caption-side: bottom;
+    color: var(--color-base-text);
+    display: table-caption;
+    font-size: .75em;
+    outline-offset: -1px;
+    padding: .6em;
+    word-break: break-word;
+}
+
+.figcaption-is-empty::before {
+  content: attr(data-placeholder);
+  color: #aaa;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+/* Utilitários */
+.ex-hidden {
+  display: none !important;
+}
+
+.ex-mr-0 {
+  margin-right: 0 !important;
+}
+
+/* Estilos para dropdown de tamanho personalizado */
+.ex-custom-size-dropdown {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.ex-custom-size-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ex-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ex-input-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #555;
+}
+
+.ex-input-group input {
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 13px;
+  transition: border-color 0.2s;
+}
+
+.ex-input-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.2);
+}
+
+.ex-custom-size-buttons {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ex-apply-size {
+  padding: 6px 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ex-apply-size:hover {
+  background: #2563eb;
+}
+
+.ex-custom-size-separator {
+  border-top: 1px solid #e5e7eb;
+  margin: 8px 0;
+}
+
+.ex-saved-size {
+  margin-top: 8px;
+}
+
+.ex-saved-size-button {
+  width: 100%;
+  padding: 6px 8px;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #374151;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ex-saved-size-button:hover {
+  background: #e9ecef;
+  color: #3b82f6;
+}
+
+/* Remover estilos do modal que não são mais necessários */
+.ex-custom-size-modal,
+.ex-custom-size-content,
+.ex-custom-size-title,
+.ex-modal-buttons,
+.ex-modal-button,
+.ex-saved-sizes,
+.ex-saved-size-item,
+.ex-saved-size-label,
+.ex-delete-size {
+  display: none;
+}

@@ -4,12 +4,15 @@
   "peerDependencies": {
     "@angular/common": "^20.3.0",
     "@angular/core": "^20.3.0",
+    "@floating-ui/dom": "^1.7.4",
     "@tiptap/core": "^3.14.0",
     "@tiptap/pm": "^3.14.0",
+    "@tiptap/extension-bubble-menu": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
     "@tiptap/extension-subscript": "^3.14.0",
     "@tiptap/extension-superscript": "^3.14.0",
-    "@tiptap/extension-text-align": "^3.14.0"
+    "@tiptap/extension-text-align": "^3.14.0",
+    "katex": "^0.16.27"
   },
   "dependencies": {
     "tslib": "^2.3.0"

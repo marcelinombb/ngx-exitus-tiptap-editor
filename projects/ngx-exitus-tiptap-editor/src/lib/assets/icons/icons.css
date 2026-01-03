@@ -78,6 +78,10 @@
   --icon: url("./image-add-fill.svg");
 }
 
+.btn-image-size {
+  --icon: url("./image-size.svg");
+}
+
 .btn-undo {
   --icon: url("./arrow-go-back-line.svg");
 }
@@ -138,3 +142,22 @@
   --icon: url("./indent-increase.svg");
 }
 
+.btn-formula {
+  --icon: url("./formula.svg");
+}
+
+.btn-image-caption {
+  --icon: url("./image-caption.svg");
+}
+
+.btn-image-left {
+  --icon: url("./image-left.svg");
+}
+
+.btn-image-middle {
+  --icon: url("./image-middle.svg");
+}
+
+.btn-image-right {
+  --icon: url("./image-right.svg");
+}
