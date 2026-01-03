@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, inject, input, OnInit } from '@angular/co
 import { EditorButtonComponent } from './editor-button.component';
 import { EditorDropdownComponent } from './editor-dropdown.component';
 import { Editor } from '@tiptap/core';
+import { katexMenuControl } from '../extensions/katex/katex-floating-menu.component';
 
 @Component({
     standalone: true,
@@ -29,14 +30,15 @@ import { Editor } from '@tiptap/core';
                 <editor-button [icon]="'blockquote'" [title]="'Citação'" [active]="isActive('blockquote')" (onClick)="toggleBlockquote()"></editor-button>
                 <editor-button [icon]="'undo'" [title]="'Desfazer'" [active]="isActive('undo')" (onClick)="undo()"></editor-button>
                 <editor-button [icon]="'redo'" [title]="'Refazer'" [active]="isActive('redo')" (onClick)="redo()"></editor-button>
-                <editor-button [icon]="'indent-decrease'" [title]="'Diminuir recuo'" [active]="isActive('indent')" (onClick)="decreaseIndent()"></editor-button>
-                <editor-button [icon]="'indent-increase'" [title]="'Aumentar recuo'" [active]="isActive('indent')" (onClick)="increaseIndent()"></editor-button>
-
-                <span class="ex-toolbar-separator"></span>
-                <editor-dropdown>
+                 <editor-dropdown>
                     <editor-button [icon]="'bullet-list'" [title]="'Lista não ordenada'" [active]="isActive('bulletList')" (onClick)="toggleBulletList()"></editor-button>
                     <editor-button [icon]="'ordered-list'" [title]="'Lista ordenada'" [active]="isActive('orderedList')" (onClick)="toggleOrderedList()"></editor-button>
                 </editor-dropdown>
+                <editor-button [icon]="'indent-decrease'" [title]="'Diminuir recuo'" [active]="isActive('indent')" (onClick)="decreaseIndent()"></editor-button>
+                <editor-button [icon]="'indent-increase'" [title]="'Aumentar recuo'" [active]="isActive('indent')" (onClick)="increaseIndent()"></editor-button>
+                <span class="ex-toolbar-separator"></span>
+                <editor-button [icon]="'formula'" [title]="'Inserir fórmula'" [active]="isActive('katex')" (onClick)="insertFormula()"></editor-button>
+               
              </div>
         </div>
     `,
@@ -143,6 +145,11 @@ export class EditorToolbarComponent implements OnInit {
 
     redo() {
         this.editor().chain().focus().redo().run()
+    }
+
+    insertFormula() {
+        katexMenuControl.forceOpen = true
+        this.editor().commands.focus()
     }
 
 }

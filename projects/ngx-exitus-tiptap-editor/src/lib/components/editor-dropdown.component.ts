@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, contentChildren } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, contentChildren, input } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
 
 @Component({
@@ -23,7 +23,7 @@ import { EditorButtonComponent } from './editor-button.component';
     styleUrls: ["editor-dropdown.component.scss", "../assets/icons/icons.css"]
 })
 export class EditorDropdownComponent implements AfterContentInit {
-
+    icon = input<string>();
     open = false;
     currentIcon = '';
     title = '';
@@ -33,17 +33,22 @@ export class EditorDropdownComponent implements AfterContentInit {
 
     ngAfterContentInit(): void {
         const buttons = this.buttons();
-        if (buttons && buttons.length > 0) {
+
+        if(this.icon()) {
+            this.setCurrentButton(this.icon()!, '');
+        } else if (buttons && buttons.length > 0) {
             const first = buttons.at(0)!;
-            this.setCurrentButton(first.icon(), first.title());
+            this.setCurrentButton(first.icon()!, first.title());
         }
 
-        buttons.forEach(btn => {
-            btn.onClick.subscribe(() => {
-                this.setCurrentButton(btn.icon(), btn.title());
-                this.open = false;
+        if(this.icon() === undefined) {
+            buttons.forEach(btn => {
+                btn.onClick.subscribe(() => {
+                    this.setCurrentButton(btn.icon()!, btn.title());
+                    this.open = false;
+                })
             })
-        })
+        }        
     }
 
     private setCurrentButton(icon: string, title: string) {

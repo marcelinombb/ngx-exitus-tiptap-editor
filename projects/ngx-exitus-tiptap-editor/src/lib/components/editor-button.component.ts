@@ -6,8 +6,7 @@ import { Component, input, output } from '@angular/core';
     selector: 'editor-button',
     template: `
         <button 
-        [class] = "['ex-toolbar-button', 'btn', 'btn-' + icon()]"
-        [class.ex-button-active]="active()"
+        [class]="buttonClasses()"
         [title]="title()"
         (click)="onClick.emit($event)"
         >
@@ -18,8 +17,17 @@ import { Component, input, output } from '@angular/core';
 })
 
 export class EditorButtonComponent {
-    icon = input.required<string>();
+    icon = input<string>();
     title = input.required<string>();
     active = input(false);
     onClick = output<Event>();
+
+    buttonClasses() {
+        return {
+            "ex-toolbar-button": true,
+            btn: this.icon(),
+            ['btn-' + this.icon()!]: this.icon(),
+            "ex-button-active": this.active()
+        };
+    }
 }
