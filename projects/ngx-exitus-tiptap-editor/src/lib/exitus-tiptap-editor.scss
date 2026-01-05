@@ -69,6 +69,22 @@
       background: #fafafa;
    }
 
+   .tiptap {
+      font-family: sans-serif, Arial, Verdana, 'Trebuchet MS';
+      color: #333 !important;
+      font-size: 14px;
+      line-height: 1.3em;
+   }
+
+   .tiptap blockquote {
+      border-left: 3px solid rgba(13, 13, 13, 0.1);
+      padding-left: 1rem;
+   }
+
+   .tiptap p {
+      margin: 0 0 9px;
+   }
+
    .tiptap-widget:hover {
       outline-color: #ffc83d;
    }
