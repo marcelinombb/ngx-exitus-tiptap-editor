@@ -11,6 +11,8 @@ import { Katex } from './extensions/katex';
 import { Image } from './extensions/image/image';
 import { KatexFloatingMenuComponent } from './extensions/katex/katex-floating-menu.component';
 import { ImageFloatingMenuComponent } from './extensions/image/image-floating-menu.component';
+import { Figure } from './extensions/image/Figure';
+import { Figcaption } from './extensions/image/Figcaption';
 
 @Component({
   selector: 'exitus-tiptap-editor',
@@ -23,7 +25,7 @@ import { ImageFloatingMenuComponent } from './extensions/image/image-floating-me
         <image-floating-menu [editor]="editorInstance"></image-floating-menu>
       }
       <div class="editor-scroller">
-        <div #editor class="editor-main"></div>
+        <div #editor class="editor-main" spellcheck="false"></div>
       </div>
     </div>
   `,
@@ -80,14 +82,9 @@ export class ExitusTiptapEditor implements OnDestroy{
         Image.configure({
           inline: false,
           allowBase64: true,
-          /* resize: {
-            enabled: true,
-            directions: ['top', 'bottom', 'left', 'right'], // can be any direction or diagonal combination
-            minWidth: 50,
-            minHeight: 50,
-            alwaysPreserveAspectRatio: true,
-          } */
-        })
+        }),
+        Figcaption,
+        Figure,
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {

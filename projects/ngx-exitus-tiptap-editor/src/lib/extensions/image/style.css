@@ -96,16 +96,6 @@
   margin: 0 0 15px 15px;
 }
 
-/* Estilos para legenda */
-.ex-image-wrapper figcaption {
-  display: block;
-  margin-top: 8px;
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  font-style: italic;
-}
-
 .ex-image-wrapper figcaption.ex-hidden {
   display: none;
 }
@@ -134,23 +124,28 @@ figure, figcaption {
   position: relative;
 }
 
-.ex-image-wrapper > figcaption {
-    background-color: var(--image-caption-background);
+.ex-image-wrapper figcaption {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}
+
+.ex-image-wrapper  figcaption {
+    background-color: #f7f7f7;
     caption-side: bottom;
-    color: var(--color-base-text);
+    color: #333;
     display: table-caption;
-    font-size: .75em;
+    font-size: 14px;
     outline-offset: -1px;
     padding: .6em;
     word-break: break-word;
 }
 
-.figcaption-is-empty::before {
+.ex-image-wrapper figcaption.figcaption-is-empty:before {
   content: attr(data-placeholder);
-  color: #aaa;
-  pointer-events: none;
-  position: absolute;
-  transform: translateX(-50%);
+  color: #999;
 }
 
 /* Utilitários */

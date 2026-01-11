@@ -1,5 +1,4 @@
 import { type Editor, Node, nodeInputRule } from '@tiptap/core'
-import { Fragment } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from 'prosemirror-state'
 
 import { ImageView } from './imageView'
@@ -60,7 +59,9 @@ export interface ImageOptions {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     image: {
-      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType
+      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType,
+      setImageAlignment: (target: 'left' | 'middle' | 'right') => ReturnType,
+      setImageWidth: (width: number | null) => ReturnType
     }
   }
 }
@@ -79,19 +80,13 @@ export const Image = Node.create<ImageOptions>({
     }
   },
 
-  inline() {
-    return this.options.inline
-  },
-
-  group() {
-    return 'block'
-  },
+  group: "",
 
   atom: true,
 
-  content: 'inline*',
+  draggable: false,
 
-  draggable: true,
+  isolating: true,
 
   addAttributes() {
     return {
@@ -105,7 +100,7 @@ export const Image = Node.create<ImageOptions>({
         default: null
       },
       classes: {
-        default: 'ex-image-wrapper ex-image-block-middle tiptap-widget'
+        default: ''
       },
       width: {
         default: 300,
@@ -156,16 +151,7 @@ export const Image = Node.create<ImageOptions>({
           return (
             (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage || isBase64Url) && null
           )
-        },
-        getContent: (node, schema) => {
-          const figcaption = (node.parentElement as HTMLElement).querySelector('figcaption')
-          if (!figcaption) return Fragment.empty
-          return Fragment.from(schema.text(figcaption.textContent ?? ''))
         }
-      },
-      {
-        tag: 'figcaption',
-        ignore: true
       }
     ]
   },
@@ -173,13 +159,8 @@ export const Image = Node.create<ImageOptions>({
   renderHTML({ node, HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
 
-    const figcaptionFragment = node.content
+    return ['img', { src, style: 'display: table-cell' }]
 
-    if (figcaptionFragment.size) {
-      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }], ['figcaption', {}, 0]]
-    } else {
-      return ['figure', { style, class: classes }, ['img', { src, style: 'display: table-cell' }]]
-    }
   },
 
   addCommands() {
@@ -191,6 +172,71 @@ export const Image = Node.create<ImageOptions>({
             type: this.name,
             attrs: options
           })
+        },
+        setImageWidth: (width: number | null) => {
+          return ({ tr, state, dispatch, view }) => {
+            const { selection } = state
+            const { $from } = selection
+
+            const node = view.state.doc.nodeAt($from.pos);
+
+            if (!node || (node.type.name !== 'image')) return false;
+
+            tr = tr.setNodeMarkup($from.pos, undefined, {
+              ...node.attrs,
+              width,
+            });
+
+            if (tr.docChanged) {
+              dispatch && dispatch(tr)
+              return true
+            }
+
+            return false
+          }
+        },
+        setImageAlignment: (target: 'left' | 'middle' | 'right') => {
+          return ({ tr, state, dispatch, view }) => {
+            const { selection } = state
+            const { $from } = selection
+
+            const node = view.state.doc.nodeAt($from.pos);
+
+                        
+            if (!node || (node.type.name !== 'image')) return false;
+
+            const ALIGN = {
+              left: 'ex-image-block-align-left',
+              middle: 'ex-image-block-middle',
+              right: 'ex-image-block-align-right',
+            } as const;
+
+            const classes = new Set((node.attrs['classes'] ?? '').split(' ').filter(Boolean));
+
+            const targetClass = ALIGN[target];
+            const isActive = classes.has(targetClass);
+
+            Object.values(ALIGN).forEach((cls) => classes.delete(cls));
+
+            classes.add(isActive ? ALIGN.middle : targetClass);
+
+            const attributes = {
+              classes: [...classes].join(' '),
+            }
+           
+            tr = tr.setNodeMarkup($from.pos, undefined, {
+              ...node.attrs,
+              ...attributes,
+            });
+
+            if (tr.docChanged) {
+              dispatch && dispatch(tr)
+              return true
+            }
+
+            return false
+
+          }
         }
     }
   },
