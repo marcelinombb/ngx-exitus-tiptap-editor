@@ -5,7 +5,6 @@ import { Editor } from '@tiptap/core';
 import { BubbleMenuComponent } from '../../components/bubble-menu.component';
 import { findParentNode } from '@tiptap/core'
 
-
 @Component({
   standalone: true,
   imports: [EditorButtonComponent, EditorDropdownComponent, BubbleMenuComponent],
@@ -63,19 +62,11 @@ import { findParentNode } from '@tiptap/core'
 export class ImageFloatingMenuComponent implements OnInit {
   editor = input.required<Editor>();
 
-  private pos: number | null = null;
-
   activeClasses = signal(new Set<string>());
 
   imageSizeDropdown = viewChild.required<EditorDropdownComponent>('imagesize');
 
-  constructor() {}
-
   ngOnInit() {
-    this.editor().on('selectionUpdate', () => {
-      this.syncImageState();
-    });
-
     this.editor().on('transaction', () => {
       this.syncImageState();
     });
@@ -84,20 +75,20 @@ export class ImageFloatingMenuComponent implements OnInit {
   private syncImageState() {
     const view = this.editor().view;
     const { selection } = view.state;
-    const pos = selection.$anchor.pos;
 
-    if (!this.editor().isActive('image')) {
+    if (!this.editor().isActive('image') || !this.editor().isActive("figure")) {
       this.activeClasses.set(new Set());
       return;
     }
 
-    const node = view.state.doc.nodeAt(pos);
-    if (!node) {
+    const figureNode = findParentNode(node => node.type.name === 'figure')(selection)    
+    
+    if (!figureNode) {
       this.activeClasses.set(new Set());
       return;
     }
 
-    this.activeClasses.set(new Set((node.attrs['classes'] ?? '').split(' ').filter(Boolean)));
+    this.activeClasses.set(new Set((figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)));
   }
 
   isButtonActive(className: string) {
@@ -112,8 +103,8 @@ export class ImageFloatingMenuComponent implements OnInit {
     requestAnimationFrame(()=> this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
   };
 
-  shouldShowImage = (props: any) => {    
-    return this.editor().isActive('image') && this.editor().isFocused;
+  shouldShowImage = (props: any) => {   
+    return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
   };
 
   getReferencedVirtualElement = () => {

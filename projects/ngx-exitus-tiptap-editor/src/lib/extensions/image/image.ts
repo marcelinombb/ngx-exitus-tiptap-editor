@@ -59,9 +59,7 @@ export interface ImageOptions {
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     image: {
-      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType,
-      setImageAlignment: (target: 'left' | 'middle' | 'right') => ReturnType,
-      setImageWidth: (width: number | null) => ReturnType
+      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType
     }
   }
 }
@@ -82,11 +80,7 @@ export const Image = Node.create<ImageOptions>({
 
   group: "",
 
-  atom: true,
-
   draggable: false,
-
-  isolating: true,
 
   addAttributes() {
     return {
@@ -101,40 +95,6 @@ export const Image = Node.create<ImageOptions>({
       },
       classes: {
         default: ''
-      },
-      width: {
-        default: 300,
-        parseHTML: element => {
-          const parent = element!.parentNode as HTMLElement
-          if (
-            ['ex-image-wrapper', 'image', 'image-inline'].some(className => parent.classList.contains(className)) ||
-            parent.tagName.toLocaleLowerCase() == 'figure'
-          ) {
-            const widthString = parent.style.width.replace('px', '')
-            return parseInt(widthString)
-          } else if (element.style.width !== '') {
-            const widthString = element.style.width.replace('px', '')
-            return parseInt(widthString)
-          } else {
-            return null
-          }
-        }
-      },
-      style: {
-        default: '',
-        parseHTML: element => {
-          const parent = element!.parentNode as HTMLElement
-          if (
-            ['ex-image-wrapper', 'image', 'image-inline'].some(className => parent.classList.contains(className)) ||
-            parent.tagName.toLocaleLowerCase() == 'figure'
-          ) {
-            return `width: ${parent.style.width}`
-          } else if (element.style.width !== '') {
-            return `width: ${element.style.width}`
-          } else {
-            return null
-          }
-        }
       }
     }
   },
@@ -159,7 +119,7 @@ export const Image = Node.create<ImageOptions>({
   renderHTML({ node, HTMLAttributes }) {
     const { style, classes, src } = HTMLAttributes
 
-    return ['img', { src, style: 'display: table-cell' }]
+    return ['img', { src, style: 'display: table-cell', draggable: false }]
 
   },
 
@@ -172,71 +132,6 @@ export const Image = Node.create<ImageOptions>({
             type: this.name,
             attrs: options
           })
-        },
-        setImageWidth: (width: number | null) => {
-          return ({ tr, state, dispatch, view }) => {
-            const { selection } = state
-            const { $from } = selection
-
-            const node = view.state.doc.nodeAt($from.pos);
-
-            if (!node || (node.type.name !== 'image')) return false;
-
-            tr = tr.setNodeMarkup($from.pos, undefined, {
-              ...node.attrs,
-              width,
-            });
-
-            if (tr.docChanged) {
-              dispatch && dispatch(tr)
-              return true
-            }
-
-            return false
-          }
-        },
-        setImageAlignment: (target: 'left' | 'middle' | 'right') => {
-          return ({ tr, state, dispatch, view }) => {
-            const { selection } = state
-            const { $from } = selection
-
-            const node = view.state.doc.nodeAt($from.pos);
-
-                        
-            if (!node || (node.type.name !== 'image')) return false;
-
-            const ALIGN = {
-              left: 'ex-image-block-align-left',
-              middle: 'ex-image-block-middle',
-              right: 'ex-image-block-align-right',
-            } as const;
-
-            const classes = new Set((node.attrs['classes'] ?? '').split(' ').filter(Boolean));
-
-            const targetClass = ALIGN[target];
-            const isActive = classes.has(targetClass);
-
-            Object.values(ALIGN).forEach((cls) => classes.delete(cls));
-
-            classes.add(isActive ? ALIGN.middle : targetClass);
-
-            const attributes = {
-              classes: [...classes].join(' '),
-            }
-           
-            tr = tr.setNodeMarkup($from.pos, undefined, {
-              ...node.attrs,
-              ...attributes,
-            });
-
-            if (tr.docChanged) {
-              dispatch && dispatch(tr)
-              return true
-            }
-
-            return false
-
-          }
         }
     }
   },
@@ -282,7 +177,7 @@ export const Image = Node.create<ImageOptions>({
             }
           }
         }
-      })
+      })  
     ]
   }
 })

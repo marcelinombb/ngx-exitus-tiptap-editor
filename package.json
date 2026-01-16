@@ -8,7 +8,7 @@
     "build": "ng build",
     "build:lib": "ng build ngx-exitus-tiptap-editor",
     "watch:lib": "ng build ngx-exitus-tiptap-editor --watch",
-    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/ngx-exitus-tiptap-editor && npm run start\"",
+    "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/ngx-exitus-tiptap-editor/index.d.ts && npm run start\"",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

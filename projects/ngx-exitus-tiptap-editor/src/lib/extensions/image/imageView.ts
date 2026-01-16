@@ -9,8 +9,6 @@ export class ImageView implements NodeView {
   dom: Element
   contentDOM?: HTMLElement | null | undefined
   image: HTMLImageElement
-  //imageWrapper: HTMLElement
-  //figcaption: HTMLElement
   editor: Editor
   getPos: () => number | undefined
   originalSize: number = 300
@@ -27,7 +25,6 @@ export class ImageView implements NodeView {
 
     this.image = document.createElement('img')
     this.setImageAttributes(this.image, node)
-    this.image.contentEditable = 'false'
     this.image.draggable = false
 
     const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
@@ -43,10 +40,6 @@ export class ImageView implements NodeView {
 
     }
 
-    this.image.onload = () => {
-      this.image.style.width = this.node.attrs['width'] + 'px'
-    }
-
     this.dom = this.image
   }
 
@@ -56,20 +49,13 @@ export class ImageView implements NodeView {
     }
 
     this.node = newNode
-    this.image.className = newNode.attrs['classes']
+    //this.image.className = newNode.attrs['classes']
+    this.image.draggable = false
     this.image.style.width = this.node.attrs['width'] + 'px'
 
     return true
   }
 
-  selectNode() {
-    this.image.classList.add('ex-selected')
-  }
-
-  deselectNode() {
-    this.image.classList.remove('ex-selected')
-  }
-  
   urlToBase64(url: string) {
     const image = new Image()
     image.src = `${this.proxyUrl}/${encodeURIComponent(url)}`
@@ -85,13 +71,13 @@ export class ImageView implements NodeView {
     }, { once: true });
 
   }
-
+/* 
   ignoreMutation(mutation: ViewMutationRecord) {
     if (mutation.type === 'attributes') {
       return true
     }
     return false
-  }
+  } */
 
   updateAttributes(attributes: Record<string, any>) {
     if (typeof this.getPos === 'function') {
