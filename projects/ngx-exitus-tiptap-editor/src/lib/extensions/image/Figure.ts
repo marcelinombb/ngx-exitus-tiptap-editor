@@ -15,7 +15,7 @@ declare module '@tiptap/core' {
 const MIN_WIDTH = 300
 const MAX_WIDTH = 700
 
- const parseWidth = (value?: string | null): number | null => {
+const parseWidth = (value?: string | null): number | null => {
   if (!value) return null;
   const width = parseInt(value.replace('px', ''), 10);
   return isNaN(width) ? null : Math.min(Math.max(width, MIN_WIDTH), MAX_WIDTH);
@@ -41,6 +41,8 @@ export function hasFigureAlignment(
   return classes.includes(ALIGN[align]);
 }
 
+import { FigureView } from './figureView';
+
 export const Figure = Node.create({
   name: 'figure',
 
@@ -62,6 +64,12 @@ export const Figure = Node.create({
     }
 
     return ['figure', mergeAttributes(HTMLAttributes, attrs), 0];
+  },
+
+  addNodeView() {
+    return ({ node, editor, getPos }) => {
+      return new FigureView(node, editor, getPos);
+    };
   },
 
   addAttributes() {
@@ -230,44 +238,44 @@ export const Figure = Node.create({
       },
       toggleFigcaption:
         () =>
-        ({ state, dispatch }) => {
-          const { selection, schema } = state;
-          const { $from } = selection;
+          ({ state, dispatch }) => {
+            const { selection, schema } = state;
+            const { $from } = selection;
 
-          for (let d = $from.depth; d > 0; d--) {
-            const node = $from.node(d);
+            for (let d = $from.depth; d > 0; d--) {
+              const node = $from.node(d);
 
-            if (node.type.name === 'figure') {
-              const figurePos = $from.before(d);
-              const figcaptionType = schema.nodes['figcaption'];
+              if (node.type.name === 'figure') {
+                const figurePos = $from.before(d);
+                const figcaptionType = schema.nodes['figcaption'];
 
-              const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
+                const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
 
-              let tr = state.tr;
+                let tr = state.tr;
 
-              if (hasCaption) {
-                const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
+                if (hasCaption) {
+                  const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
 
-                tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
-              } else {
-                const caption = figcaptionType.createAndFill();
-                if (!caption) return false;
+                  tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
+                } else {
+                  const caption = figcaptionType.createAndFill();
+                  if (!caption) return false;
 
-                const insertPos = figurePos + node.nodeSize - 1;
-                tr = tr.insert(insertPos, caption);
+                  const insertPos = figurePos + node.nodeSize - 1;
+                  tr = tr.insert(insertPos, caption);
 
-                // move cursor INTO figcaption
-                const $pos = tr.doc.resolve(insertPos + 1);
-                tr = tr.setSelection(TextSelection.near($pos));
+                  // move cursor INTO figcaption
+                  const $pos = tr.doc.resolve(insertPos + 1);
+                  tr = tr.setSelection(TextSelection.near($pos));
+                }
+
+                dispatch && dispatch(tr.scrollIntoView());
+                return true;
               }
-
-              dispatch && dispatch(tr.scrollIntoView());
-              return true;
             }
-          }
 
-          return false;
-        },
+            return false;
+          },
       setImageWidth: (width: number | null) => {
         return ({ tr, state, dispatch, view }) => {
           const { selection } = state;
