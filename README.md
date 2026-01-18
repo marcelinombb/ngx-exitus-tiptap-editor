@@ -1,59 +1,116 @@
-# MyWorkspace
+# ngx-exitus-tiptap-editor
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.8.
+> A powerful, feature-rich Tiptap-based Rich Text Editor for Angular 18+, specifically designed for educational and technical content.
 
-## Development server
+[![NPM Version](https://img.shields.io/npm/v/ngx-exitus-tiptap-editor?style=flat-square)](https://www.npmjs.com/package/ngx-exitus-tiptap-editor)
+[![Angular Version](https://img.shields.io/badge/angular-%23DD0031.svg?style=flat-square&logo=angular&logoColor=white)](https://angular.dev/)
+[![Tiptap Version](https://img.shields.io/badge/tiptap-%2324292e.svg?style=flat-square&logo=tiptap&logoColor=white)](https://tiptap.dev/)
 
-To start a local development server, run:
+## ✨ Features
 
-```bash
-ng serve
-```
+- 📐 **Scientific Formula Support**: Full [KaTeX](https://katex.org/) and [MathType](https://www.wiris.com/mathtype/) integration.
+- 🖼️ **Advanced Image Handling**: Responsive images with figures, captions, alignment, and resizing handles.
+- 🛠️ **Custom Extensions**: 
+  - **Indent**: Control line indentation.
+  - **Tab**: Custom tab key behavior.
+  - **ColarQuestao**: Specialized tool for pasting educational questions.
+- 🎨 **Modern UI**: Clean toolbar and floating menus for formula and image editing.
+- ⚡ **Angular 18+ Ready**: Built with the latest Angular features (signals, inputs/outputs).
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🚀 Installation
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+To install the library, run:
 
 ```bash
-ng build
+npm install ngx-exitus-tiptap-editor
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Peer Dependencies
+This library depends on several Tiptap packages and KaTeX. Ensure you have them installed in your project:
 
 ```bash
-ng test
+npm install @tiptap/core @tiptap/pm @tiptap/starter-kit @tiptap/extension-subscript @tiptap/extension-superscript @tiptap/extension-text-align @tiptap/extension-bubble-menu katex
 ```
 
-## Running end-to-end tests
+## 📦 Usage
 
-For end-to-end (e2e) testing, run:
+### 1. Import the Component
+In your component file:
 
-```bash
-ng e2e
+```typescript
+import { ExitusTiptapEditor } from 'ngx-exitus-tiptap-editor';
+
+@Component({
+  standalone: true,
+  imports: [ExitusTiptapEditor],
+  // ...
+})
+export class MyAppComponent {
+  editorContent = '<p>Initial content with <b>formatting</b></p>';
+
+  handleContentChange(html: string) {
+    console.log('New content:', html);
+  }
+}
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### 2. Use in Template
 
-## Additional Resources
+```html
+<exitus-tiptap-editor 
+  [content]="editorContent" 
+  (onContentChange)="handleContentChange($event)">
+</exitus-tiptap-editor>
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+## 🛠️ API Reference
+
+### Inputs
+| Input | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `content` | `string` | `""` | The initial HTML content of the editor. |
+
+### Outputs
+| Output | Type | Description |
+| :--- | :--- | :--- |
+| `onContentChange` | `EventEmitter<string>` | Emits the HTML content whenever the editor is updated. |
+
+---
+
+## 🧪 Extensions Detail
+
+### 📐 Math & Science
+- **KaTeX**: Write LaTeX formulas directly. Includes a floating menu for quick editing.
+- **MathType**: Advanced formula editor integration via Wiris.
+
+### 🖼️ Image Management
+The editor uses a custom `Figure` extension that wraps images in a `<figure>` tag with support for:
+- `<figcaption>` for image descriptions.
+- Resizing handles (300px to 700px).
+- Alignment options (left, center, right).
+- Fullscreen/Wide modes.
+
+### 📝 Productivity
+- **Indent/Outdent**: Standard shortcut and toolbar support.
+- **Tab Handling**: Consistent tab behavior within the editor.
+- **Colar Questão**: specialized logic for pasting data into educational templates.
+
+---
+
+## 🛠 Development
+
+### Setup
+Run `npm install` to install dependencies.
+
+### Development Server
+Run `npm run dev` to start a development server for both the library and the test application. This command uses `concurrently` to watch for library changes and serve the app.
+
+### Building
+Run `npm run build:lib` to build the library. The build artifacts will be stored in the `dist/ngx-exitus-tiptap-editor` directory.
+
+---
+
+## 📜 License
+MIT
