@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, inject, input, OnInit } from '@angular/co
 import { EditorButtonComponent } from './editor-button.component';
 import { EditorDropdownComponent } from './editor-dropdown.component';
 import { Editor } from '@tiptap/core';
-import { katexMenuControl } from '../extensions/katex/katex-floating-menu.component';
+import { katexMenuControl } from './floating-menus/katex-floating-menu.component';
 import { parseImagesToBase64 } from '../extensions/image';
 
 @Component({

@@ -1,8 +1,8 @@
 import { Component, input, signal, ElementRef, viewChild } from '@angular/core';
-import { updateLatexDisplay } from './katexView';
+import { updateLatexDisplay } from '../../extensions/katex/katexView';
 import { FormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuComponent } from '../../components/bubble-menu.component';
+import { BubbleMenuComponent } from '../bubble-menu.component';
 
 export const katexMenuControl = {
     forceOpen: false,
