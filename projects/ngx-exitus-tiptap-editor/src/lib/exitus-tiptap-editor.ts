@@ -13,6 +13,8 @@ import { KatexFloatingMenuComponent } from './extensions/katex/katex-floating-me
 import { ImageFloatingMenuComponent } from './extensions/image/image-floating-menu.component';
 import { Figure } from './extensions/image/Figure';
 import { Figcaption } from './extensions/image/Figcaption';
+import { ColarQuestao } from './extensions/colar-questao';
+import { MathType, MathTypePlugin } from './extensions/mathtype';
 
 @Component({
   selector: 'exitus-tiptap-editor',
@@ -32,7 +34,7 @@ import { Figcaption } from './extensions/image/Figcaption';
   styleUrls: ['./exitus-tiptap-editor.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class ExitusTiptapEditor implements OnDestroy{
+export class ExitusTiptapEditor implements OnDestroy {
 
   private editorElement = viewChild.required<ElementRef>('editor');
   private editor = signal<Editor | null>(null);
@@ -85,6 +87,9 @@ export class ExitusTiptapEditor implements OnDestroy{
         }),
         Figcaption,
         Figure,
+        ColarQuestao,
+        MathType,
+        MathTypePlugin
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
@@ -102,7 +107,7 @@ export class ExitusTiptapEditor implements OnDestroy{
     this.editor.set(newEditor);
   }
 
-   ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.editor()?.destroy();
   }
 

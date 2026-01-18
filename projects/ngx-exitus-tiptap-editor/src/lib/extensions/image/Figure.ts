@@ -1,4 +1,5 @@
 import { findParentNode, findParentNodeClosestToPos, mergeAttributes, Node } from '@tiptap/core';
+import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { TextSelection, NodeSelection, Plugin, PluginKey, EditorState } from 'prosemirror-state';
 
 declare module '@tiptap/core' {
@@ -33,7 +34,13 @@ export function hasFigureAlignment(
 ): boolean {
   const { selection } = state;
 
-  const figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+  let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+
+  if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+    figureNode = { node: selection.node, pos: selection.from };
+  } else {
+    figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+  }
 
   if (!figureNode) return false;
 
@@ -202,7 +209,13 @@ export const Figure = Node.create({
         return ({ tr, state, dispatch, view }) => {
           const { selection } = state;
 
-          const figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+          let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+
+          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+            figureNode = { node: selection.node, pos: selection.from };
+          } else {
+            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+          }
 
           if (!figureNode || figureNode.node.type.name !== 'figure') return false;
 
@@ -240,38 +253,53 @@ export const Figure = Node.create({
         () =>
           ({ state, dispatch }) => {
             const { selection, schema } = state;
-            const { $from } = selection;
 
-            for (let d = $from.depth; d > 0; d--) {
-              const node = $from.node(d);
+            let node: ProseMirrorNode | null = null;
+            let figurePos: number | null = null;
+            let from: number = selection.from;
 
-              if (node.type.name === 'figure') {
-                const figurePos = $from.before(d);
-                const figcaptionType = schema.nodes['figcaption'];
+            if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+              node = selection.node;
+              figurePos = selection.from;
+            } else {
+              const { $from } = selection;
+              from = $from.pos; // fallback for later usage if needed, but not strictly used below for `d` loop identically
 
-                const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
-
-                let tr = state.tr;
-
-                if (hasCaption) {
-                  const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
-
-                  tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
-                } else {
-                  const caption = figcaptionType.createAndFill();
-                  if (!caption) return false;
-
-                  const insertPos = figurePos + node.nodeSize - 1;
-                  tr = tr.insert(insertPos, caption);
-
-                  // move cursor INTO figcaption
-                  const $pos = tr.doc.resolve(insertPos + 1);
-                  tr = tr.setSelection(TextSelection.near($pos));
+              for (let d = $from.depth; d > 0; d--) {
+                const currNode = $from.node(d);
+                if (currNode.type.name === 'figure') {
+                  node = currNode;
+                  figurePos = $from.before(d);
+                  break;
                 }
-
-                dispatch && dispatch(tr.scrollIntoView());
-                return true;
               }
+            }
+
+            if (node && figurePos !== null) {
+              const figcaptionType = schema.nodes['figcaption'];
+
+              const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
+
+              let tr = state.tr;
+
+              if (hasCaption) {
+                const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
+
+                tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
+              } else {
+                const caption = figcaptionType.createAndFill();
+                if (!caption) return false;
+
+                const insertPos = figurePos + node.nodeSize - 1;
+                tr = tr.insert(insertPos, caption);
+
+                // move cursor INTO figcaption
+                const $pos = tr.doc.resolve(insertPos + 1);
+                tr = tr.setSelection(TextSelection.near($pos));
+              }
+
+              dispatch && dispatch(tr.scrollIntoView());
+              return true;
             }
 
             return false;
@@ -280,7 +308,13 @@ export const Figure = Node.create({
         return ({ tr, state, dispatch, view }) => {
           const { selection } = state;
 
-          const figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+          let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+
+          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+            figureNode = { node: selection.node, pos: selection.from };
+          } else {
+            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+          }
 
           if (!figureNode || figureNode.node.type.name !== 'figure') return false;
 

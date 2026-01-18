@@ -58,6 +58,14 @@ export class FigureView implements NodeView {
         })
     }
 
+    selectNode() {
+        (this.dom as HTMLElement).classList.add('ex-selected')
+    }
+
+    deselectNode() {
+        (this.dom as HTMLElement).classList.remove('ex-selected')
+    }
+
     ignoreMutation(mutation: ViewMutationRecord) {
         // Ignore style changes (width resizing) to prevent ProseMirror from resetting
         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {

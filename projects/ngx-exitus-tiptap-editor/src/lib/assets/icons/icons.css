@@ -161,3 +161,23 @@
 .btn-image-right {
   --icon: url("./image-right.svg");
 }
+
+.btn-mathtype {
+  --icon: url("./mathtype.svg");
+}
+
+.btn-chemtype {
+  --icon: url("./chemtype.svg");
+}
+
+/* Fix for multi-colored icons (MathType/ChemType) */
+.btn-mathtype::before,
+.btn-chemtype::before {
+  background-color: transparent !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  background-image: var(--icon);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}

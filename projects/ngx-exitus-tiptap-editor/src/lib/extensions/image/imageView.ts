@@ -36,7 +36,6 @@ export class ImageView implements NodeView {
 
       this.image.addEventListener("load", () => {
         this.originalSize = this.image.width;
-        // this.updateAttributes({ style: `width: ${this.originalSize}px` })
       }, { once: true });
 
     }
@@ -50,10 +49,7 @@ export class ImageView implements NodeView {
     }
 
     this.node = newNode
-    //this.image.className = newNode.attrs['classes']
     this.image.draggable = false
-    //width managed by CSS/Figure
-    //this.image.style.width = this.node.attrs['width'] + 'px'
 
     return true
   }
@@ -67,19 +63,11 @@ export class ImageView implements NodeView {
       convertToBase64(image, (base64Url, width) => {
         this.updateAttributes({ src: base64Url })
         this.originalSize = width;
-        // this.updateAttributes({ style: `width: ${width}px` })
       })
 
     }, { once: true });
 
   }
-  /* 
-    ignoreMutation(mutation: ViewMutationRecord) {
-      if (mutation.type === 'attributes') {
-        return true
-      }
-      return false
-    } */
 
   updateAttributes(attributes: Record<string, any>) {
     if (typeof this.getPos === 'function') {

@@ -39,6 +39,7 @@
     "@tiptap/extension-text-align": "^3.14.0",
     "@tiptap/pm": "^3.14.0",
     "@tiptap/starter-kit": "^3.14.0",
+    "@wiris/mathtype-html-integration-devkit": "^1.17.13",
     "katex": "^0.16.27",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

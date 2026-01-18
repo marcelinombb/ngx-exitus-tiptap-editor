@@ -3,7 +3,9 @@ import { EditorButtonComponent } from '../../components/editor-button.component'
 import { EditorDropdownComponent } from '../../components/editor-dropdown.component';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuComponent } from '../../components/bubble-menu.component';
-import { findParentNode } from '@tiptap/core'
+import { findParentNode } from '@tiptap/core';
+import { NodeSelection } from '@tiptap/pm/state';
+import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 @Component({
   standalone: true,
@@ -47,7 +49,7 @@ import { findParentNode } from '@tiptap/core'
             <editor-button (onClick)="setWidth(300)" [title]="'Pequena'"
               >Pequena</editor-button
             >
-            <editor-button (onClick)="setWidth(400)" [title]="'Média'"
+            <editor-button (onClick)="setWidth(500)" [title]="'Média'"
               >Média</editor-button
             >
             <editor-button (onClick)="setWidth(700)" [title]="'Grande'"
@@ -76,13 +78,19 @@ export class ImageFloatingMenuComponent implements OnInit {
     const view = this.editor().view;
     const { selection } = view.state;
 
-    if (!this.editor().isActive('image') || !this.editor().isActive("figure")) {
+    if (!this.editor().isActive('image') && !this.editor().isActive("figure")) {
       this.activeClasses.set(new Set());
       return;
     }
 
-    const figureNode = findParentNode(node => node.type.name === 'figure')(selection)    
-    
+    let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+
+    if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+      figureNode = { node: selection.node, pos: selection.from };
+    } else {
+      figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+    }
+
     if (!figureNode) {
       this.activeClasses.set(new Set());
       return;
@@ -100,10 +108,10 @@ export class ImageFloatingMenuComponent implements OnInit {
   };
 
   onShow = () => {
-    requestAnimationFrame(()=> this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
+    requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
   };
 
-  shouldShowImage = (props: any) => {   
+  shouldShowImage = (props: any) => {
     return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
   };
 
@@ -111,7 +119,13 @@ export class ImageFloatingMenuComponent implements OnInit {
     const { state, view } = this.editor();
     const { selection } = state;
 
-    const figureNode = findParentNode(node => node.type.name === 'figure')(selection)
+    let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+
+    if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+      figureNode = { node: selection.node, pos: selection.from };
+    } else {
+      figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+    }
 
     if (figureNode) {
       const dom = view.nodeDOM(figureNode.pos) as HTMLElement | null;

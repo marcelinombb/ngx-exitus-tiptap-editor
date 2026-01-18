@@ -3,6 +3,7 @@ import { EditorButtonComponent } from './editor-button.component';
 import { EditorDropdownComponent } from './editor-dropdown.component';
 import { Editor } from '@tiptap/core';
 import { katexMenuControl } from '../extensions/katex/katex-floating-menu.component';
+import { parseImagesToBase64 } from '../extensions/image';
 
 @Component({
     standalone: true,
@@ -26,7 +27,7 @@ import { katexMenuControl } from '../extensions/katex/katex-floating-menu.compon
                     <editor-button [icon]="'align-center'" [title]="'Alinhar ao centro'" [active]="isActive('alignCenter')" (onClick)="setTextAlign('center')"></editor-button>
                     <editor-button [icon]="'align-justify'" [title]="'Alinhar justificado'" [active]="isActive('alignJustify')" (onClick)="setTextAlign('justify')"></editor-button>
                 </editor-dropdown>
-                <editor-button [icon]="'image'" [title]="'Inserir imagem'" [active]="isActive('image')"></editor-button>
+                <editor-button [icon]="'image'" [title]="'Inserir imagem'" [active]="isActive('image')" (onClick)="insertImage()"></editor-button>
                 <editor-button [icon]="'blockquote'" [title]="'Citação'" [active]="isActive('blockquote')" (onClick)="toggleBlockquote()"></editor-button>
                 <editor-button [icon]="'undo'" [title]="'Desfazer'" [active]="isActive('undo')" (onClick)="undo()"></editor-button>
                 <editor-button [icon]="'redo'" [title]="'Refazer'" [active]="isActive('redo')" (onClick)="redo()"></editor-button>
@@ -38,7 +39,9 @@ import { katexMenuControl } from '../extensions/katex/katex-floating-menu.compon
                 <editor-button [icon]="'indent-increase'" [title]="'Aumentar recuo'" [active]="isActive('indent')" (onClick)="increaseIndent()"></editor-button>
                 <span class="ex-toolbar-separator"></span>
                 <editor-button [icon]="'formula'" [title]="'Inserir fórmula'" [active]="isActive('katex')" (onClick)="insertFormula()"></editor-button>
-               
+                <editor-button [icon]="'mathtype'" [title]="'MathType'" (onClick)="insertMathType()"></editor-button>
+                <editor-button [icon]="'chemtype'" [title]="'ChemType'" (onClick)="insertChemType()"></editor-button>
+                <editor-button [icon]="'colar-questao'" [title]="'Inserir questão'" [active]="isActive('colarQuestao')" (onClick)="insertColarQuestao()"></editor-button>
              </div>
         </div>
     `,
@@ -118,7 +121,7 @@ export class EditorToolbarComponent implements OnInit {
     toggleSubscript() {
         this.editor().chain().focus().toggleSubscript().run()
     }
-    
+
     toggleSuperscript() {
         this.editor().chain().focus().toggleSuperscript().run()
     }
@@ -150,6 +153,30 @@ export class EditorToolbarComponent implements OnInit {
     insertFormula() {
         katexMenuControl.forceOpen = true
         this.editor().commands.focus()
+    }
+
+    insertColarQuestao() {
+        this.editor().commands.addColarQuestao("teste")
+    }
+
+    insertImage() {
+        const inputElement = document.createElement('input')
+        inputElement.setAttribute('type', 'file')
+        inputElement.className = 'ex-hidden'
+        inputElement.setAttribute('id', 'editorImagePicker')
+        inputElement.setAttribute('accept', 'image/jpeg,image/png,image/gif,image/bmp,image/webp,image/tiff')
+        inputElement.addEventListener('change', () => {
+            parseImagesToBase64(inputElement.files![0], this.editor())
+        }, { once: true })
+        inputElement.click()
+    }
+
+    insertMathType() {
+        (this.editor().commands as any).openMathType()
+    }
+
+    insertChemType() {
+        (this.editor().commands as any).openMathType('chemistry')
     }
 
 }
