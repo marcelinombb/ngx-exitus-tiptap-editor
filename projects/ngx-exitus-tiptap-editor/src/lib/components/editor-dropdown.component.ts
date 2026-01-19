@@ -15,7 +15,7 @@ import { EditorButtonComponent } from './editor-button.component';
             </button>
             @if(open) {
                 <div class="ex-dropdown-menu">
-                    <ng-content select="editor-button"></ng-content>
+                    <ng-content></ng-content>
                 </div>
             }
         </div>
@@ -34,21 +34,21 @@ export class EditorDropdownComponent implements AfterContentInit {
     ngAfterContentInit(): void {
         const buttons = this.buttons();
 
-        if(this.icon()) {
+        if (this.icon()) {
             this.setCurrentButton(this.icon()!, '');
         } else if (buttons && buttons.length > 0) {
             const first = buttons.at(0)!;
             this.setCurrentButton(first.icon()!, first.title());
         }
 
-        if(this.icon() === undefined) {
+        if (this.icon() === undefined) {
             buttons.forEach(btn => {
                 btn.onClick.subscribe(() => {
                     this.setCurrentButton(btn.icon()!, btn.title());
                     this.open = false;
                 })
             })
-        }        
+        }
     }
 
     private setCurrentButton(icon: string, title: string) {

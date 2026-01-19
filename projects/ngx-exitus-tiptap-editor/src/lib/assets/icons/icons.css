@@ -114,6 +114,54 @@
   --icon: url("./table-2.svg");
 }
 
+.btn-table-plus {
+  --icon: url("./table-2.svg");
+}
+
+.btn-table-column-plus-before {
+  --icon: url("./insert-column-left.svg");
+}
+
+.btn-table-column-plus-after {
+  --icon: url("./insert-column-right.svg");
+}
+
+.btn-table-column-remove {
+  --icon: url("./delete-column.svg");
+}
+
+.btn-table-row-plus-before {
+  --icon: url("./insert-row-top.svg");
+}
+
+.btn-table-row-plus-after {
+  --icon: url("./insert-row-bottom.svg");
+}
+
+.btn-table-row-remove {
+  --icon: url("./delete-row.svg");
+}
+
+.btn-table-remove {
+  --icon: url("./delete-row.svg");
+}
+
+.btn-table-merge-cells {
+  --icon: url("./merge-cells-horizontal.svg");
+}
+
+.btn-table-split-cells {
+  --icon: url("./split-cells-horizontal.svg");
+}
+
+.btn-table-header-column {
+  --icon: url("./table-column.svg");
+}
+
+.btn-table-header-row {
+  --icon: url("./table-row.svg");
+}
+
 .btn-subscript {
   --icon: url("./subscript.svg");
 }

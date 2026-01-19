@@ -1,13 +1,14 @@
 import { ChangeDetectorRef, Component, inject, input, OnInit } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
 import { EditorDropdownComponent } from './editor-dropdown.component';
+import { TableGridComponent } from './table-grid.component';
 import { Editor } from '@tiptap/core';
 import { katexMenuControl } from './floating-menus/katex-floating-menu.component';
 import { parseImagesToBase64 } from '../extensions/image';
 
 @Component({
     standalone: true,
-    imports: [EditorButtonComponent, EditorDropdownComponent],
+    imports: [EditorButtonComponent, EditorDropdownComponent, TableGridComponent],
     selector: 'editor-toolbar',
     template: `
         <div class="ex-toolbar-editor">
@@ -20,7 +21,9 @@ import { parseImagesToBase64 } from '../extensions/image';
                 <editor-button [icon]="'superscript'" [title]="'Sobrescrito'" [active]="isActive('superscript')" (onClick)="toggleSuperscript()"></editor-button>
                 <editor-button [icon]="'format-clear'" [title]="'Limpar formatação'" [active]="isActive('format-clear')" (onClick)="unsetAllMarks()"></editor-button>
                 <span class="ex-toolbar-separator"></span>
-                <editor-button [icon]="'table'" [title]="'Tabela'" [active]="isActive('table')"></editor-button>
+                <editor-dropdown icon="table" #tableDropdown>
+                    <table-grid (onSelect)="insertTable($event.rows, $event.cols); tableDropdown.open = false"></table-grid>
+                </editor-dropdown>
                 <editor-dropdown>
                     <editor-button [icon]="'align-left'" [title]="'Alinhar à esquerda'" [active]="isActive('alignLeft')" (onClick)="setTextAlign('left')"></editor-button>
                     <editor-button [icon]="'align-right'" [title]="'Alinhar à direita'" [active]="isActive('alignRight')" (onClick)="setTextAlign('right')"></editor-button>
@@ -177,6 +180,10 @@ export class EditorToolbarComponent implements OnInit {
 
     insertChemType() {
         (this.editor().commands as any).openMathType('chemistry')
+    }
+
+    insertTable(rows: number = 3, cols: number = 3) {
+        this.editor().chain().focus().insertTable({ rows, cols, withHeaderRow: false }).run();
     }
 
 }

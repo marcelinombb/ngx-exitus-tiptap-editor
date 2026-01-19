@@ -11,20 +11,23 @@ import { Katex } from './extensions/katex';
 import { Image } from './extensions/image/image';
 import { KatexFloatingMenuComponent } from './components/floating-menus/katex-floating-menu.component';
 import { ImageFloatingMenuComponent } from './components/floating-menus/image-floating-menu.component';
+import { TableFloatingMenuComponent } from './components/floating-menus/table-floating-menu.component';
 import { Figure } from './extensions/image/Figure';
 import { Figcaption } from './extensions/image/Figcaption';
 import { ColarQuestao } from './extensions/colar-questao';
 import { MathType, MathTypePlugin } from './extensions/mathtype';
+import { TableExtensions } from './extensions/table';
 
 @Component({
   selector: 'exitus-tiptap-editor',
-  imports: [EditorToolbarComponent, KatexFloatingMenuComponent, ImageFloatingMenuComponent],
+  imports: [EditorToolbarComponent, KatexFloatingMenuComponent, ImageFloatingMenuComponent, TableFloatingMenuComponent],
   template: `
     <div class="exitus-tiptap-editor">
       @if(editorInstance) {
         <editor-toolbar [editor]="editorInstance"></editor-toolbar>
         <katex-floating-menu [editor]="editorInstance"></katex-floating-menu>
         <image-floating-menu [editor]="editorInstance"></image-floating-menu>
+        <table-floating-menu [editor]="editorInstance"></table-floating-menu>
       }
       <div class="editor-scroller">
         <div #editor class="editor-main" spellcheck="false"></div>
@@ -89,7 +92,8 @@ export class ExitusTiptapEditor implements OnDestroy {
         Figure,
         ColarQuestao,
         MathType,
-        MathTypePlugin
+        MathTypePlugin,
+        ...TableExtensions
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
