@@ -3,6 +3,7 @@ import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
+import Gapcursor from '@tiptap/extension-gapcursor';
 import TextAlign from '@tiptap/extension-text-align';
 import { EditorToolbarComponent } from './components/editor-toolbar.component';
 import { Indent } from './extensions/indent/indent';
@@ -76,6 +77,7 @@ export class ExitusTiptapEditor implements OnDestroy {
       element: this.editorElement().nativeElement,
       extensions: [
         StarterKit,
+        Gapcursor,
         Subscript,
         Superscript,
         TextAlign.configure({
