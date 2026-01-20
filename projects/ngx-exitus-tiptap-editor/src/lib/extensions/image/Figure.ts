@@ -30,6 +30,12 @@ const ALIGN = {
   inlineRight: 'ex-image-float-right',
 } as const;
 
+const alignClasses = ['ex-image-block-align-left', 'ex-image-block-align-right', 'ex-image-block-middle']
+
+const allowedClasses = ['ex-image-wrapper', ...alignClasses, 'ex-image-grayscale', 'ex-image-float-left', 'ex-image-float-right']
+
+const defaultClasses = ['ex-image-wrapper', 'ex-image-block-middle', 'tiptap-widget']
+
 export function hasFigureAlignment(
   state: EditorState,
   align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight'
@@ -62,7 +68,27 @@ export const Figure = Node.create({
   isolating: true,
 
   parseHTML() {
-    return [{ tag: 'figure' }];
+    return [
+      { 
+        tag: 'figure',
+        getAttrs: element => {
+          if (element.getAttribute('class')) {
+              const classes = element.getAttribute('class')!.split(' ')
+              const filteredClasses = classes.filter(cls => allowedClasses.includes(cls))
+
+              if (filteredClasses.some(cls => alignClasses.includes(cls)) === false) {
+                filteredClasses.push('ex-image-block-middle')
+              }
+
+              return {
+                classes: Array.from(new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses])).join(' ')
+              }
+            } else {
+              return null
+            }
+        }
+      }
+    ];
   },
 
   renderHTML({ HTMLAttributes, node }) {
@@ -84,7 +110,7 @@ export const Figure = Node.create({
   addAttributes() {
     return {
       class: {
-        default: 'ex-image-wrapper ex-image-block-middle tiptap-widget',
+        default: defaultClasses.join(' '),
       },
       width: {
         default: 300,
