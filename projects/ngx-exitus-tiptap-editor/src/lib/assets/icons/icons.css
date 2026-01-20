@@ -237,3 +237,7 @@
 .btn-image-float-right {
   --icon: url("./float-right.svg");
 }
+
+.btn-special-characters {
+  --icon: url("./omega.svg");
+}

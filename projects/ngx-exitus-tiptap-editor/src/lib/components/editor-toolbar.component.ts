@@ -5,10 +5,11 @@ import { TableGridComponent } from './table-grid.component';
 import { Editor } from '@tiptap/core';
 import { katexMenuControl } from './floating-menus/katex-floating-menu.component';
 import { parseImagesToBase64 } from '../extensions/image';
+import { SpecialCharactersComponent } from './special-characters.component';
 
 @Component({
     standalone: true,
-    imports: [EditorButtonComponent, EditorDropdownComponent, TableGridComponent],
+    imports: [EditorButtonComponent, EditorDropdownComponent, TableGridComponent, SpecialCharactersComponent],
     selector: 'editor-toolbar',
     template: `
         <div class="ex-toolbar-editor">
@@ -23,6 +24,9 @@ import { parseImagesToBase64 } from '../extensions/image';
                 <span class="ex-toolbar-separator"></span>
                 <editor-dropdown icon="table" #tableDropdown>
                     <table-grid (onSelect)="insertTable($event.rows, $event.cols); tableDropdown.open = false"></table-grid>
+                </editor-dropdown>
+                <editor-dropdown icon="special-characters" [title]="'Caracteres especiais'" #specialCharsDropdown>
+                    <special-characters [editor]="editor()" (onSelect)="specialCharsDropdown.open = false"></special-characters>
                 </editor-dropdown>
                 <editor-dropdown>
                     <editor-button [icon]="'align-left'" [title]="'Alinhar à esquerda'" [active]="isActive('alignLeft')" (onClick)="setTextAlign('left')"></editor-button>

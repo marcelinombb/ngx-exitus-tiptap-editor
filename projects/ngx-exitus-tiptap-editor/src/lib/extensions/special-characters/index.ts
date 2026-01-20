@@ -1,0 +1,1 @@
+export { SpecialCharactersPlugin } from './SpecialCharactersPlugin'
