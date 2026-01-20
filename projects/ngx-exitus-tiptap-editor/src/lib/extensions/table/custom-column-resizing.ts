@@ -13,7 +13,7 @@ export type ColumnResizingOptions = {
     View?: (new (node: ProsemirrorNode, cellMinWidth: number, view: EditorView) => NodeView) | null;
 };
 
-export type Dragging = { startX: number; startWidth: number };
+export type Dragging = { startX: number; startWidth: number; startTableWidth: number };
 
 export function columnResizing({
     handleWidth = 5,
@@ -140,9 +140,16 @@ function handleMouseDown(view: EditorView, event: MouseEvent, cellMinWidth: numb
 
     const cell = view.state.doc.nodeAt(pluginState.activeHandle)!;
     const width = currentColWidth(view, pluginState.activeHandle, cell.attrs);
+    const $cell = view.state.doc.resolve(pluginState.activeHandle);
+    const start = $cell.start(-1);
+    let dom: Node | null = view.domAtPos(start).node;
+    while (dom && dom.nodeName != 'TABLE') dom = dom.parentNode;
+    const table = dom as HTMLTableElement;
+    const tableWidth = table ? table.getBoundingClientRect().width : 0;
+
     view.dispatch(
         view.state.tr.setMeta(columnResizingPluginKey, {
-            setDragging: { startX: event.clientX, startWidth: width },
+            setDragging: { startX: event.clientX, startWidth: width, startTableWidth: tableWidth },
         }),
     );
 
@@ -225,16 +232,16 @@ function draggedWidthWithLimit(view: EditorView, cellPos: number, dragging: Drag
     const container = (dom as HTMLElement)?.closest('.editor-main');
 
     if (dom && container) {
-        const table = dom as HTMLTableElement;
         const containerRect = container.getBoundingClientRect();
-        const tableRect = table.getBoundingClientRect();
-        const maxWidth = containerRect.width - (38 * 2);
+        // 1cm padding on each side is approx 37.8px * 2 = 75.6px. Rounding to 76.
+        const padding = 38 * 2;
+        const maxWidth = containerRect.width - padding;
 
-        // If growing, check if table would exit boundary
-        if (offset > 0) {
-            const availableSpace = maxWidth - tableRect.width;
-            const maxAllowedWidth = dragging.startWidth + availableSpace;
-            width = Math.min(width, maxAllowedWidth);
+        const otherColumnsWidth = dragging.startTableWidth - dragging.startWidth;
+        const maxAllowedColumnWidth = maxWidth - otherColumnsWidth;
+
+        if (width > maxAllowedColumnWidth) {
+            width = maxAllowedColumnWidth;
         }
     }
 

@@ -16,6 +16,8 @@ export const TableExtensions = [
                         columnResizing({
                             handleWidth: this.options.handleWidth,
                             cellMinWidth: this.options.cellMinWidth,
+                            defaultCellMinWidth: this.options.cellMinWidth,
+                            View: this.options.View,
                             lastColumnResizable: this.options.lastColumnResizable,
                         }),
                     ]
@@ -27,6 +29,7 @@ export const TableExtensions = [
         },
     }).configure({
         resizable: true,
+        cellMinWidth: 32,
     }),
     TableRow,
     TableHeader,
