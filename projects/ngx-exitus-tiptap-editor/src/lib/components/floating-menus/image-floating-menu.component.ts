@@ -8,10 +8,10 @@ import { NodeSelection } from '@tiptap/pm/state';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 @Component({
-    standalone: true,
-    imports: [EditorButtonComponent, EditorDropdownComponent, BubbleMenuComponent],
-    selector: 'image-floating-menu',
-    template: `
+  standalone: true,
+  imports: [EditorButtonComponent, EditorDropdownComponent, BubbleMenuComponent],
+  selector: 'image-floating-menu',
+  template: `
     <bubble-menu
       [editor]="editor()"
       [updateDelay]="0"
@@ -56,98 +56,107 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
               >Grande</editor-button
             >
           </editor-dropdown>
+          <editor-dropdown [title]="'Alinhar imagem ao texto'">
+            <editor-button [icon]="'image-float-left'" (onClick)="setAlignment('inlineLeft')" [title]="'Esquerda'"
+              ></editor-button
+            >
+            <editor-button [icon]="'image-float-right'" (onClick)="setAlignment('inlineRight')" [title]="'Direita'"
+              ></editor-button
+            >
+          </editor-dropdown>
+          
         </div>
       </div>
     </bubble-menu>
   `,
 })
 export class ImageFloatingMenuComponent implements OnInit {
-    editor = input.required<Editor>();
+  editor = input.required<Editor>();
 
-    activeClasses = signal(new Set<string>());
+  activeClasses = signal(new Set<string>());
 
-    imageSizeDropdown = viewChild.required<EditorDropdownComponent>('imagesize');
+  imageSizeDropdown = viewChild.required<EditorDropdownComponent>('imagesize');
 
-    ngOnInit() {
-        this.editor().on('transaction', () => {
-            this.syncImageState();
-        });
+  ngOnInit() {
+    this.editor().on('transaction', () => {
+      this.syncImageState();
+    });
+  }
+
+  private syncImageState() {
+    const view = this.editor().view;
+    const { selection } = view.state;
+
+    if (!this.editor().isActive('image') && !this.editor().isActive("figure")) {
+      this.activeClasses.set(new Set());
+      return;
     }
 
-    private syncImageState() {
-        const view = this.editor().view;
-        const { selection } = view.state;
+    let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
 
-        if (!this.editor().isActive('image') && !this.editor().isActive("figure")) {
-            this.activeClasses.set(new Set());
-            return;
-        }
-
-        let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-        if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-            figureNode = { node: selection.node, pos: selection.from };
-        } else {
-            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-        }
-
-        if (!figureNode) {
-            this.activeClasses.set(new Set());
-            return;
-        }
-
-        this.activeClasses.set(new Set((figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)));
+    if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+      figureNode = { node: selection.node, pos: selection.from };
+    } else {
+      figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
     }
 
-    isButtonActive(className: string) {
-        return this.activeClasses().has(className);
+    if (!figureNode) {
+      this.activeClasses.set(new Set());
+      return;
     }
 
-    onHide = () => {
-        this.imageSizeDropdown().open = false;
-    };
+    this.activeClasses.set(new Set((figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)));
+  }
 
-    onShow = () => {
-        requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
-    };
+  isButtonActive(className: string) {
+    return this.activeClasses().has(className);
+  }
 
-    shouldShowImage = (props: any) => {
-        return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
-    };
+  onHide = () => {
+    this.imageSizeDropdown().open = false;
+  };
 
-    getReferencedVirtualElement = () => {
-        const { state, view } = this.editor();
-        const { selection } = state;
+  onShow = () => {
+    requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
+  };
 
-        let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+  shouldShowImage = (props: any) => {
+    return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
+  };
 
-        if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-            figureNode = { node: selection.node, pos: selection.from };
-        } else {
-            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-        }
+  getReferencedVirtualElement = () => {
+    const { state, view } = this.editor();
+    const { selection } = state;
 
-        if (figureNode) {
-            const dom = view.nodeDOM(figureNode.pos) as HTMLElement | null;
-            if (!dom) return null;
+    let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
 
-            return {
-                getBoundingClientRect: () => dom.getBoundingClientRect(),
-            };
-        }
-
-        return null;
-    };
-
-    toggleCaption() {
-        this.editor().chain().focus().toggleFigcaption().run();
+    if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+      figureNode = { node: selection.node, pos: selection.from };
+    } else {
+      figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
     }
 
-    setAlignment(target: 'left' | 'middle' | 'right') {
-        this.editor().chain().focus().setImageAlignment(target).run();
+    if (figureNode) {
+      const dom = view.nodeDOM(figureNode.pos) as HTMLElement | null;
+      if (!dom) return null;
+
+      return {
+        getBoundingClientRect: () => dom.getBoundingClientRect(),
+      };
     }
 
-    setWidth(width: number | null) {
-        this.editor().chain().focus().setImageWidth(width).run();
-    }
+    return null;
+  };
+
+  toggleCaption() {
+    this.editor().chain().focus().toggleFigcaption().run();
+  }
+
+  setAlignment(target: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') {
+    this.editor().chain().focus().setImageAlignment(target).run();
+  }
+
+  setWidth(width: number | null) {
+    this.editor().chain().focus().setImageWidth(width).run();
+  }
 }

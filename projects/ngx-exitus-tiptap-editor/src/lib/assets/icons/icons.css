@@ -229,3 +229,11 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.btn-image-float-left {
+  --icon: url("./float-left.svg");
+}
+
+.btn-image-float-right {
+  --icon: url("./float-right.svg");
+}

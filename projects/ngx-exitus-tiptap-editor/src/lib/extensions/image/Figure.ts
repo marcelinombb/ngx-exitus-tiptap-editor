@@ -6,8 +6,8 @@ declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     figure: {
       toggleFigcaption: () => ReturnType;
-      setImageAlignment: (align: 'left' | 'middle' | 'right') => ReturnType;
-      hasAlignment: (align: 'left' | 'middle' | 'right') => ReturnType;
+      setImageAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
+      hasAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
       setImageWidth: (width: number | null) => ReturnType;
     };
   }
@@ -26,11 +26,13 @@ const ALIGN = {
   left: 'ex-image-block-align-left',
   middle: 'ex-image-block-middle',
   right: 'ex-image-block-align-right',
+  inlineLeft: 'ex-image-float-left',
+  inlineRight: 'ex-image-float-right',
 } as const;
 
 export function hasFigureAlignment(
   state: EditorState,
-  align: 'left' | 'middle' | 'right'
+  align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight'
 ): boolean {
   const { selection } = state;
 
@@ -200,12 +202,12 @@ export const Figure = Node.create({
   },
   addCommands() {
     return {
-      hasAlignment: (align: 'left' | 'middle' | 'right') => {
+      hasAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => {
         return ({ state }) => {
           return hasFigureAlignment(state, align);
         };
       },
-      setImageAlignment: (align: 'left' | 'middle' | 'right') => {
+      setImageAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => {
         return ({ tr, state, dispatch, view }) => {
           const { selection } = state;
 
