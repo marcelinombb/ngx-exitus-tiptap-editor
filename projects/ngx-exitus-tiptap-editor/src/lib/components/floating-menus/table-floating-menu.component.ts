@@ -36,6 +36,9 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
           <editor-button icon="table-header-row" title="Alternar linha de cabeçalho" (onClick)="toggleHeaderRow()"></editor-button>
           <span class="ex-toolbar-separator"></span>
           <editor-button icon="table-remove" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
+          <span class="ex-toolbar-separator"></span>
+          <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
+          <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
         </div>
       </div>
     </bubble-menu>
@@ -104,6 +107,39 @@ export class TableFloatingMenuComponent {
 
     deleteTable() {
         this.editor().chain().focus().deleteTable().run();
+    }
+
+    toggleOuterBorder() {
+        this.toggleTableAttribute('noOuterBorder');
+    }
+
+    toggleVerticalBorder() {
+        this.toggleTableAttribute('noVerticalBorder');
+    }
+
+    private toggleTableAttribute(attribute: string) {
+        const { state, dispatch } = this.editor().view;
+        const { selection } = state;
+        
+        let tablePos: number | null = null;
+        let tableNode: ProseMirrorNode | null = null;
+
+        if (selection instanceof NodeSelection && selection.node.type.name === 'table') {
+            tablePos = selection.from;
+            tableNode = selection.node;
+        } else {
+             const predicate = (node: ProseMirrorNode) => node.type.name === 'table';
+             const parent = findParentNode(predicate)(selection);
+             if (parent) {
+                 tablePos = parent.pos;
+                 tableNode = parent.node;
+             }
+        }
+
+        if (tablePos !== null && tableNode !== null && dispatch) {
+            const currentState = tableNode.attrs[attribute];
+            dispatch(state.tr.setNodeMarkup(tablePos, undefined, { ...tableNode.attrs, [attribute]: !currentState }));
+        }
     }
 
     mergeCells() {

@@ -4,6 +4,7 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import { TableCell } from '@tiptap/extension-table-cell';
 import { tableEditing } from '@tiptap/pm/tables';
 import { columnResizing } from './custom-column-resizing';
+import { TableView } from './TableView';
 
 export function fixTableEmptyParagraphs(html: string): string {
   const root = document.createElement('div')
@@ -55,6 +56,26 @@ export const TableExtensions = [
         resizable: true,
         cellMinWidth: 32,
         renderWrapper: true,
+        View: TableView,
+    }).extend({
+        addAttributes() {
+            return {
+                noOuterBorder: {
+                    default: false,
+                    parseHTML: element => element.hasAttribute('data-no-outer-border'),
+                    renderHTML: attributes => {
+                        return attributes['noOuterBorder'] ? { 'data-no-outer-border': '' } : {}
+                    },
+                },
+                noVerticalBorder: {
+                    default: false,
+                    parseHTML: element => element.hasAttribute('data-no-vertical-border'),
+                    renderHTML: attributes => {
+                        return attributes['noVerticalBorder'] ? { 'data-no-vertical-border': '' } : {}
+                    },
+                },
+            }
+        },
     }),
     TableRow,
     TableHeader,

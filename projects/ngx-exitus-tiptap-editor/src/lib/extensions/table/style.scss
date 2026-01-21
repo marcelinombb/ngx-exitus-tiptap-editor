@@ -6,6 +6,22 @@
             margin: 0;
             overflow: hidden;
 
+            &[data-no-outer-border] {
+                border-style: hidden;
+
+                // Ensure no double borders mess it up, but hidden on table should suffice for outer edge.
+                // If it fails, fallback to specific cell targeting.
+            }
+
+            &[data-no-vertical-border] {
+
+                td,
+                th {
+                    border-left: hidden;
+                    border-right: hidden;
+                }
+            }
+
             td,
             th {
                 min-width: 2em;
