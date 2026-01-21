@@ -102,16 +102,7 @@ export const Image = Node.create<ImageOptions>({
   parseHTML() {
     return [
       {
-        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])',
-        getAttrs: node => {
-          const parent = node.parentElement as HTMLElement
-          const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
-          const isBase64Url = /^data:image\/(png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(node.getAttribute('src') as string)
-          const isUrlImage = imageUrlRegex.test(node.getAttribute('src') as string)
-          return (
-            (parent.classList.contains('ex-image-wrapper') || parent.tagName.toLocaleLowerCase() == 'figure' || isUrlImage || isBase64Url) && null
-          )
-        }
+        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])',  
       }
     ]
   },

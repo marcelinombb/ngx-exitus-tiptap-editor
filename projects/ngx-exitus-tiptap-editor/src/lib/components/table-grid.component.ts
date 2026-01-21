@@ -1,4 +1,4 @@
-import { Component, output, signal } from '@angular/core';
+import { Component, output } from '@angular/core';
 
 @Component({
     selector: 'table-grid',

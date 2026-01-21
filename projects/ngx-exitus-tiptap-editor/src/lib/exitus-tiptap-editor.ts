@@ -17,7 +17,7 @@ import { Figure } from './extensions/image/Figure';
 import { Figcaption } from './extensions/image/Figcaption';
 import { ColarQuestao } from './extensions/colar-questao';
 import { MathType, MathTypePlugin } from './extensions/mathtype';
-import { TableExtensions } from './extensions/table';
+import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
 
 @Component({
   selector: 'exitus-tiptap-editor',
@@ -101,12 +101,12 @@ export class ExitusTiptapEditor implements OnDestroy {
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
         this.contentHtml.set(html);
-        this.onContentChange.emit(html);
+        this.onContentChange.emit(fixTableEmptyParagraphs(html));
       },
       onCreate: ({ editor }) => {
         const html = editor.getHTML();
         this.contentHtml.set(html);
-        this.onContentChange.emit(html);
+        this.onContentChange.emit(fixTableEmptyParagraphs(html));
       }
     });
 

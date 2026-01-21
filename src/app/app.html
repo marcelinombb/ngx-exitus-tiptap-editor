@@ -1,1 +1,13 @@
-<exitus-tiptap-editor [content]="defaultText" (onContentChange)="onContentChange($event)"></exitus-tiptap-editor>
+<div class="split-container">
+    <div class="editor-column">
+        <exitus-tiptap-editor [content]="defaultText"
+            (onContentChange)="onContentChange($event)"></exitus-tiptap-editor>
+    </div>
+    <div class="preview-column">
+        <div class="exitus-tiptap-editor">
+            <div class="preview-paper">
+                <div class="tiptap ProseMirror" [innerHTML]="htmlContent()"></div>
+            </div>
+        </div>
+    </div>
+</div>

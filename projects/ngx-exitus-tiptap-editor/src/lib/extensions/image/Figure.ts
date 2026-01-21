@@ -66,6 +66,7 @@ export const Figure = Node.create({
   draggable: true,
   atom: false,
   isolating: true,
+  allowGapCursor: false,
 
   parseHTML() {
     return [
