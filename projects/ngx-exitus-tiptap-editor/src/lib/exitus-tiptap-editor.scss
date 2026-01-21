@@ -44,6 +44,10 @@
          0 0;
    }
 
+   .ProseMirror p>br:first-child:has(+ br.ProseMirror-trailingBreak) {
+      display: none !important;
+   }
+
    .editor-main {
       position: relative;
       min-height: 100%;
