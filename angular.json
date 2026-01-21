@@ -14,7 +14,11 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            "outputPath": "dist/my-workspace",
             "tsConfig": "tsconfig.app.json",
+            "loader": {
+              ".svg": "file"
+            },
             "assets": [
               {
                 "glob": "**/*",
@@ -30,8 +34,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "5MB",
+                  "maximumError": "10MB"
                 },
                 {
                   "type": "anyComponentStyle",

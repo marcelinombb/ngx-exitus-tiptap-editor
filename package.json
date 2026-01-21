@@ -7,6 +7,7 @@
     "watch-lib": "ng build ngx-exitus-tiptap-editor --watch",
     "build": "ng build",
     "build:lib": "ng build ngx-exitus-tiptap-editor",
+    "build:pages": "ng build --configuration production --base-href /ngx-exitus-tiptap-editor/",
     "watch:lib": "ng build ngx-exitus-tiptap-editor --watch",
     "dev": "concurrently \"npm run watch:lib\" \"wait-on dist/ngx-exitus-tiptap-editor/index.d.ts && npm run start\"",
     "watch": "ng build --watch --configuration development",
