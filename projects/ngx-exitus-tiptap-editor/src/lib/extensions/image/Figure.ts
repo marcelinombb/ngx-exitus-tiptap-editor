@@ -1,6 +1,7 @@
 import { findParentNode, findParentNodeClosestToPos, mergeAttributes, Node } from '@tiptap/core';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { TextSelection, NodeSelection, Plugin, PluginKey, EditorState } from 'prosemirror-state';
+import { FigureView } from './figureView';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -56,12 +57,27 @@ export function hasFigureAlignment(
   return classes.includes(ALIGN[align]);
 }
 
-import { FigureView } from './figureView';
+export interface ImageOptions {
+  inline: boolean
+}
 
-export const Figure = Node.create({
+export const Figure = Node.create<ImageOptions>({
   name: 'figure',
 
-  group: 'block',
+  addOptions() {
+    return {
+      inline: true,
+    }
+  },
+
+  inline() {
+    return this.options.inline
+  },
+
+  group() {
+    return this.options.inline ? 'inline' : 'block'
+  },
+
   content: 'image figcaption?',
   draggable: true,
   atom: false,
@@ -70,23 +86,23 @@ export const Figure = Node.create({
 
   parseHTML() {
     return [
-      { 
+      {
         tag: 'figure',
         getAttrs: element => {
           if (element.getAttribute('class')) {
-              const classes = element.getAttribute('class')!.split(' ')
-              const filteredClasses = classes.filter(cls => allowedClasses.includes(cls))
+            const classes = element.getAttribute('class')!.split(' ')
+            const filteredClasses = classes.filter(cls => allowedClasses.includes(cls))
 
-              if (filteredClasses.some(cls => alignClasses.includes(cls)) === false) {
-                filteredClasses.push('ex-image-block-middle')
-              }
-
-              return {
-                classes: Array.from(new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses])).join(' ')
-              }
-            } else {
-              return null
+            if (filteredClasses.some(cls => alignClasses.includes(cls)) === false) {
+              filteredClasses.push('ex-image-block-middle')
             }
+
+            return {
+              classes: Array.from(new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses])).join(' ')
+            }
+          } else {
+            return null
+          }
         }
       }
     ];

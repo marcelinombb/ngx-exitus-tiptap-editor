@@ -76,8 +76,14 @@ export class ExitusTiptapEditor implements OnDestroy {
     const newEditor = new Editor({
       element: this.editorElement().nativeElement,
       extensions: [
-        StarterKit,
-        Gapcursor,
+        StarterKit.configure({
+          link: false,
+          trailingNode: false,
+          heading: false,
+          codeBlock: false,
+          code: false,
+          listKeymap: false
+        }),
         Subscript,
         Superscript,
         TextAlign.configure({

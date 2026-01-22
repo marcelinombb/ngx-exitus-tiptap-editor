@@ -102,7 +102,7 @@ export const Image = Node.create<ImageOptions>({
   parseHTML() {
     return [
       {
-        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])',  
+        tag: this.options.allowBase64 ? 'img[src]' : 'img[src]:not([src^="data:"])',
       }
     ]
   },
@@ -118,12 +118,12 @@ export const Image = Node.create<ImageOptions>({
     return {
       setImage:
         options =>
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-            attrs: options
-          })
-        }
+          ({ commands }) => {
+            return commands.insertContent({
+              type: this.name,
+              attrs: options
+            })
+          }
     }
   },
   addInputRules() {
@@ -168,7 +168,7 @@ export const Image = Node.create<ImageOptions>({
             }
           }
         }
-      })  
+      })
     ]
   }
 })

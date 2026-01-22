@@ -21,8 +21,10 @@
 }
 
 /* Show handles only when the node (wrapper) is selected */
-.ex-selected .resize-handle {
-  display: block;
+.ex-selected .resize-handle,
+.ex-selected .insert-paragraph-btn,
+.ex-image-wrapper:hover .insert-paragraph-btn {
+  display: flex;
 }
 
 .resize-handle-tl {
@@ -47,6 +49,10 @@
   bottom: -6px;
   right: -6px;
   cursor: nwse-resize;
+}
+
+.ex-image-wrapper+br.ProseMirror-trailingBreak {
+  display: none;
 }
 
 /* Estilos para wrapper de imagem */
@@ -265,4 +271,44 @@ figcaption {
 .ex-saved-size-label,
 .ex-delete-size {
   display: none;
+}
+
+/* Styles for Insert Paragraph Buttons */
+.insert-paragraph-btn {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background-color: #ffc83d;
+  color: white;
+  border-radius: 50%;
+  display: none;
+  z-index: 30;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s;
+  align-items: center;
+  justify-content: center;
+}
+
+.ex-selected .insert-paragraph-btn {
+  background-color: #3b82f6;
+}
+
+.insert-paragraph-btn:hover {
+  background-color: #3b82f6;
+}
+
+.insert-paragraph-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.insert-paragraph-before {
+  top: -12px;
+  left: 20px;
+}
+
+.insert-paragraph-after {
+  bottom: -12px;
+  right: 20px;
 }
