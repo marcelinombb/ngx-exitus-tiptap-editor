@@ -1,5 +1,18 @@
-import { AfterContentInit, Component, ElementRef, contentChildren, input } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, contentChildren, inject, input } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
+import { Observable, Subject } from 'rxjs';
+
+export class EditorDropdownService {
+    private isOpen = new Subject<boolean>();
+
+    setOpenState(isOpen: boolean) {
+        this.isOpen.next(isOpen);
+    }
+
+    getOpenState(): Observable<boolean> {
+        return this.isOpen.asObservable();
+    }
+}
 
 @Component({
     standalone: true,
@@ -14,25 +27,32 @@ import { EditorButtonComponent } from './editor-button.component';
                 <span class="ex-btn-caret" [class.open]="open"></span>
             </button>
             @if(open) {
-                <div class="ex-dropdown-menu">
+                <div class="ex-dropdown-menu " [class.vertical]="orientation() === 'vertical'" [class.horizontal]="orientation() === 'horizontal'">
                     <ng-content></ng-content>
                 </div>
             }
         </div>
     `,
-    styleUrls: ["editor-dropdown.component.scss", "../assets/icons/icons.css"]
+    styleUrls: ["editor-dropdown.component.scss", "../assets/icons/icons.css"],
 })
 export class EditorDropdownComponent implements AfterContentInit {
     icon = input<string>();
+    orientation = input<'vertical' | 'horizontal'>('vertical');
     open = false;
     currentIcon = '';
     title = '';
+    editorDropdownService = inject(EditorDropdownService);
 
     readonly buttons = contentChildren(EditorButtonComponent, { descendants: true });
     readonly buttonEls = contentChildren(EditorButtonComponent, { read: ElementRef, descendants: true });
 
     ngAfterContentInit(): void {
         const buttons = this.buttons();
+
+        
+        this.editorDropdownService.getOpenState().subscribe(isOpen => {
+            this.open = isOpen;
+        });
 
         if (this.icon()) {
             this.setCurrentButton(this.icon()!, '');
@@ -56,6 +76,12 @@ export class EditorDropdownComponent implements AfterContentInit {
         this.title = title;
     }
 
-    toggle() { this.open = !this.open; }
+    toggle() { 
+        this.editorDropdownService.setOpenState(false);
+        this.open = !this.open; 
+    }
 
 }
+
+
+

@@ -5,6 +5,14 @@
     display: inline-block;
 }
 
+.ex-dropdown-menu.vertical {
+    flex-direction: column;
+}
+
+.ex-dropdown-menu.horizontal {
+    flex-direction: row;
+}
+
 .ex-dropdown-menu {
     position: absolute;
     top: calc(100% + 4px);

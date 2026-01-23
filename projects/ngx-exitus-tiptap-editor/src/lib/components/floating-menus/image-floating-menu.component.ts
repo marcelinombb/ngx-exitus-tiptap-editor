@@ -27,24 +27,26 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
             [title]="'Legenda da Imagem'"
             (onClick)="toggleCaption()"
           ></editor-button>
-          <editor-button
-            [icon]="'image-left'"
-            [title]="'Alinhar à Esquerda'"
-            [active]="activeClasses().has('ex-image-block-align-left')"
-            (onClick)="setAlignment('left')"
-          ></editor-button>
-          <editor-button
-            [icon]="'image-middle'"
-            [title]="'Alinhar ao Centro'"
-            [active]="activeClasses().has('ex-image-block-middle')"
-            (onClick)="setAlignment('middle')"
-          ></editor-button>
-          <editor-button
-            [icon]="'image-right'"
-            [title]="'Alinhar à Direita'"
-            [active]="activeClasses().has('ex-image-block-align-right')"
-            (onClick)="setAlignment('right')"
-          ></editor-button>
+          <editor-dropdown #imagesize [title]="'Tamanho da Imagem'" [icon]="'image-middle'" orientation="horizontal">
+            <editor-button
+              [icon]="'image-left'"
+              [title]="'Alinhar à Esquerda'"
+              [active]="activeClasses().has('ex-image-block-align-left')"
+              (onClick)="setAlignment('left')"
+            ></editor-button>
+            <editor-button
+              [icon]="'image-middle'"
+              [title]="'Alinhar ao Centro'"
+              [active]="activeClasses().has('ex-image-block-middle')"
+              (onClick)="setAlignment('middle')"
+            ></editor-button>
+            <editor-button
+              [icon]="'image-right'"
+              [title]="'Alinhar à Direita'"
+              [active]="activeClasses().has('ex-image-block-align-right')"
+              (onClick)="setAlignment('right')"
+            ></editor-button>
+          </editor-dropdown>
           <editor-dropdown #imagesize [icon]="'image-size'" [title]="'Tamanho da Imagem'">
             <editor-button (onClick)="setWidth(300)" [title]="'Pequena'"
               >Pequena</editor-button
@@ -56,7 +58,7 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
               >Grande</editor-button
             >
           </editor-dropdown>
-          <editor-dropdown [title]="'Alinhar imagem ao texto'">
+          <editor-dropdown [title]="'Alinhar imagem ao texto'" orientation="horizontal">
             <editor-button [icon]="'image-float-left'" (onClick)="setAlignment('inlineLeft')" [title]="'Esquerda'"
               ></editor-button
             >

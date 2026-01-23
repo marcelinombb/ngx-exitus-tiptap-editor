@@ -18,6 +18,7 @@ import { Figcaption } from './extensions/image/Figcaption';
 import { ColarQuestao } from './extensions/colar-questao';
 import { MathType, MathTypePlugin } from './extensions/mathtype';
 import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
+import { EditorDropdownService } from './components/editor-dropdown.component';
 
 @Component({
   selector: 'exitus-tiptap-editor',
@@ -36,7 +37,8 @@ import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
     </div>
   `,
   styleUrls: ['./exitus-tiptap-editor.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  providers: [EditorDropdownService]
 })
 export class ExitusTiptapEditor implements OnDestroy {
 
