@@ -1,5 +1,6 @@
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { NodeView, ViewMutationRecord, EditorView } from '@tiptap/pm/view'
+import { columnResizingPluginKey } from './custom-column-resizing'
 
 export function getColStyleDeclaration(minWidth: number, width: number | undefined): [string, string] {
   if (width) {
@@ -16,8 +17,8 @@ export function updateColumns(
   colgroup: HTMLTableColElement, // <colgroup> has the same prototype as <col>
   table: HTMLTableElement,
   cellMinWidth: number,
-  overrideCol?: number,
-  overrideValue?: number,
+  overrides?: Record<number, number>,
+  isLastColumn?: boolean,
 ) {
   let totalWidth = 0
   let fixedWidth = true
@@ -29,7 +30,7 @@ export function updateColumns(
       const { colspan, colwidth } = row.child(i).attrs
 
       for (let j = 0; j < colspan; j += 1, col += 1) {
-        const hasWidth = overrideCol === col ? overrideValue : ((colwidth && colwidth[j]) as number | undefined)
+        const hasWidth = overrides && overrides[col] !== undefined ? overrides[col] : ((colwidth && colwidth[j]) as number | undefined)
         const cssWidth = hasWidth ? `${hasWidth}px` : ''
 
         totalWidth += hasWidth || cellMinWidth
@@ -50,7 +51,7 @@ export function updateColumns(
           if ((nextDOM as HTMLTableColElement).style.width !== cssWidth) {
             const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth)
 
-            ;(nextDOM as HTMLTableColElement).style.setProperty(propertyKey, propertyValue)
+              ; (nextDOM as HTMLTableColElement).style.setProperty(propertyKey, propertyValue)
           }
 
           nextDOM = nextDOM.nextSibling
@@ -67,14 +68,26 @@ export function updateColumns(
   }
 
   // Check if user has set a width style on the table node
-  const hasUserWidth = node.attrs['style'] && typeof node.attrs['style'] === 'string' && /\bwidth\s*:/i.test(node.attrs['style'])
+  const hasUserWidth = (node.attrs['style'] && typeof node.attrs['style'] === 'string' && /\bwidth\s*:/i.test(node.attrs['style'])) || node.attrs['width']
 
-  if (fixedWidth && !hasUserWidth) {
-    table.style.width = `${totalWidth}px`
-    table.style.minWidth = ''
-  } else {
-    table.style.width = ''
-    table.style.minWidth = `${totalWidth}px`
+  if (isLastColumn) {
+    if (fixedWidth && !hasUserWidth) {
+      table.style.width = `${totalWidth}px`
+      table.style.minWidth = ''
+    } else {
+      table.style.width = ''
+      table.style.minWidth = `${totalWidth}px`
+    }
+  } else if (overrides === undefined) {
+    // On initial load or normal update, if we have a saved width, use it.
+    if (node.attrs['width']) {
+      table.style.width = node.attrs['width']
+      table.style.minWidth = ''
+    } else if (fixedWidth && !hasUserWidth) {
+      // Default behavior for fixed width tables if no explicit width is saved
+      table.style.width = `${totalWidth}px`
+      table.style.minWidth = ''
+    }
   }
 }
 
@@ -91,9 +104,12 @@ export class TableView implements NodeView {
 
   contentDOM: HTMLTableSectionElement
 
+  view: EditorView
+
   constructor(node: ProseMirrorNode, cellMinWidth: number, view: EditorView) {
     this.node = node
     this.cellMinWidth = cellMinWidth
+    this.view = view
     this.dom = document.createElement('div')
     this.dom.className = 'tableWrapper'
     this.table = this.dom.appendChild(document.createElement('table'))
@@ -103,13 +119,13 @@ export class TableView implements NodeView {
       this.table.style.cssText = node.attrs['style']
     }
 
-    if(node.attrs['noOuterBorder']) {
+    if (node.attrs['noOuterBorder']) {
       this.table.setAttribute('data-no-outer-border', '')
     } else {
-        this.table.removeAttribute('data-no-outer-border')
+      this.table.removeAttribute('data-no-outer-border')
     }
 
-    if(node.attrs['noVerticalBorder']) {
+    if (node.attrs['noVerticalBorder']) {
       this.table.setAttribute('data-no-vertical-border', '')
     } else {
       this.table.removeAttribute('data-no-vertical-border')
@@ -127,19 +143,22 @@ export class TableView implements NodeView {
 
     this.node = node
 
-    if(node.attrs['noOuterBorder']) {
+    if (node.attrs['noOuterBorder']) {
       this.table.setAttribute('data-no-outer-border', '')
     } else {
-        this.table.removeAttribute('data-no-outer-border')
+      this.table.removeAttribute('data-no-outer-border')
     }
 
-    if(node.attrs['noVerticalBorder']) {
+    if (node.attrs['noVerticalBorder']) {
       this.table.setAttribute('data-no-vertical-border', '')
     } else {
       this.table.removeAttribute('data-no-vertical-border')
     }
 
-    updateColumns(node, this.colgroup, this.table, this.cellMinWidth)
+    const pluginState = columnResizingPluginKey.getState(this.view.state)
+    const isLastColumn = (pluginState as any)?.lastResizeWasLastColumn
+
+    updateColumns(node, this.colgroup, this.table, this.cellMinWidth, undefined, isLastColumn)
 
     return true
   }

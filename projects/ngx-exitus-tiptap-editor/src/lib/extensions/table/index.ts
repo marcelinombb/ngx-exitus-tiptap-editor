@@ -7,31 +7,31 @@ import { columnResizing } from './custom-column-resizing';
 import { TableView } from './TableView';
 
 export function fixTableEmptyParagraphs(html: string): string {
-  const root = document.createElement('div')
-  root.innerHTML = html
+    const root = document.createElement('div')
+    root.innerHTML = html
 
-  root.querySelectorAll('td p').forEach(p => {
-    const isEmpty =
-      !p.textContent?.trim() &&
-      !Array.from(p.children).some(
-        el =>
-          el.tagName === 'BR' &&
-          !el.classList.contains('ProseMirror-trailingBreak'),
-      )
+    root.querySelectorAll('td p').forEach(p => {
+        const isEmpty =
+            !p.textContent?.trim() &&
+            !Array.from(p.children).some(
+                el =>
+                    el.tagName === 'BR' &&
+                    !el.classList.contains('ProseMirror-trailingBreak'),
+            )
 
-    if (isEmpty) {
-      p.querySelectorAll('br.ProseMirror-trailingBreak').forEach(br =>
-        br.remove(),
-      )
-      p.appendChild(document.createElement('br'))
-    }
-  })
+        if (isEmpty) {
+            p.querySelectorAll('br.ProseMirror-trailingBreak').forEach(br =>
+                br.remove(),
+            )
+            p.appendChild(document.createElement('br'))
+        }
+    })
 
-  return root.innerHTML
+    return root.innerHTML
 }
 
 export const TableExtensions = [
-    Table.extend({    
+    Table.extend({
         addProseMirrorPlugins() {
             const isResizable = this.options.resizable && this.editor.isEditable;
 
@@ -41,7 +41,7 @@ export const TableExtensions = [
                         columnResizing({
                             handleWidth: this.options.handleWidth,
                             cellMinWidth: this.options.cellMinWidth,
-                            defaultCellMinWidth: this.options.cellMinWidth,                           
+                            defaultCellMinWidth: this.options.cellMinWidth,
                             View: this.options.View,
                             lastColumnResizable: this.options.lastColumnResizable,
                         }),
@@ -72,6 +72,14 @@ export const TableExtensions = [
                     parseHTML: element => element.hasAttribute('data-no-vertical-border'),
                     renderHTML: attributes => {
                         return attributes['noVerticalBorder'] ? { 'data-no-vertical-border': '' } : {}
+                    },
+                },
+                width: {
+                    default: null,
+                    parseHTML: element => element.style.width || null,
+                    renderHTML: attributes => {
+                        if (!attributes['width']) return {}
+                        return { style: `width: ${attributes['width']}` }
                     },
                 },
             }
