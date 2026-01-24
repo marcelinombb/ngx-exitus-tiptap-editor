@@ -16,6 +16,7 @@
             "browser": "src/main.ts",
             "outputPath": "dist/my-workspace",
             "tsConfig": "tsconfig.app.json",
+            "preserveSymlinks": true,
             "loader": {
               ".svg": "file"
             },
@@ -26,8 +27,8 @@
               },
               {
                 "glob": "**/*.wasm",
-                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
-                "output": "/"
+                "input": "node_modules/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+                "output": "assets/mathtype/"
               }
             ],
             "styles": [
@@ -60,6 +61,13 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "prebundle": {
+              "exclude": [
+                "ngx-exitus-tiptap-editor"
+              ]
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "my-workspace:build:production"
@@ -84,8 +92,8 @@
               },
               {
                 "glob": "**/*.wasm",
-                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
-                "output": "/"
+                "input": "node_modules/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+                "output": "assets/mathtype/"
               }
             ],
             "styles": [

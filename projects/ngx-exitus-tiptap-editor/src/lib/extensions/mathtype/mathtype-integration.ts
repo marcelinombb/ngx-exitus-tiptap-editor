@@ -68,7 +68,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
                     dry_run: false,
                     api_key: 'eda2ce9b-0e8a-46f2-acdd-c228a615314e'
                 },
-                url: 'telemeter_wasm_bg.wasm' // Explicitly set root URL
+                url: 'assets/mathtype/telemeter_wasm_bg.wasm' // Point to the output path defined in angular.json
             })
         } catch (e) {
             console.error('Failed to pre-init Telemeter', e)

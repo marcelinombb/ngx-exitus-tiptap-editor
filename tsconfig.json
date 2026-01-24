@@ -9,7 +9,7 @@
     "noImplicitReturns": true,
     "paths": {
       "ngx-exitus-tiptap-editor": [
-        "./dist/ngx-exitus-tiptap-editor"
+        "./node_modules/ngx-exitus-tiptap-editor"
       ]
     },
     "noFallthroughCasesInSwitch": true,
