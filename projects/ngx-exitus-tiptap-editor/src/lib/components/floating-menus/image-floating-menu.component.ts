@@ -47,7 +47,7 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
               (onClick)="setAlignment('right')"
             ></editor-button>
           </editor-dropdown>
-          <editor-dropdown #imagesize [icon]="'image-size'" [title]="'Tamanho da Imagem'">
+          <editor-dropdown #imagesize [icon]="'image-size'" [title]="'Tamanho da Imagem'" [updateIcon]="false">
             <editor-button (onClick)="setWidth(300)" [title]="'Pequena'"
               >Pequena</editor-button
             >

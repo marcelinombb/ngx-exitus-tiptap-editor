@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, contentChildren, inject, input } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, contentChildren, inject, input, signal } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
 import { Observable, BehaviorSubject } from 'rxjs';
 
@@ -20,8 +20,8 @@ export class EditorDropdownService {
     template: `
         <div class="ex-toolbar-dropdown">
             <button 
-                [class]="['ex-toolbar-button', 'btn', 'btn-' + currentIcon]"
-                [title]="title"
+                [class]="['ex-toolbar-button', 'btn', 'btn-' + currentIcon()]"
+                [title]="title()"
                 (click)="toggle()"
             >
                 <span class="ex-btn-caret" [class.open]="open"></span>
@@ -39,8 +39,9 @@ export class EditorDropdownComponent implements AfterContentInit {
     icon = input<string>();
     orientation = input<'vertical' | 'horizontal'>('vertical');
     open = false;
-    currentIcon = '';
-    title = '';
+    currentIcon = signal('');
+    title = signal('');
+    updateIcon = input(true);
     editorDropdownService = inject(EditorDropdownService);
 
     readonly buttons = contentChildren(EditorButtonComponent, { descendants: true });
@@ -63,9 +64,10 @@ export class EditorDropdownComponent implements AfterContentInit {
             this.setCurrentButton(first.icon()!, first.title());
         }
 
-        if (this.icon() === undefined) {
+        if ((this.icon() === undefined) || this.updateIcon()) {
             buttons.forEach(btn => {
                 btn.onClick.subscribe(() => {
+                    console.log(btn.icon()!, btn.title());
                     this.setCurrentButton(btn.icon()!, btn.title());
                     this.open = false;
                 })
@@ -74,8 +76,8 @@ export class EditorDropdownComponent implements AfterContentInit {
     }
 
     private setCurrentButton(icon: string, title: string) {
-        this.currentIcon = icon;
-        this.title = title;
+        this.currentIcon.set(icon);
+        this.title.set(title);
     }
 
     toggle() {
