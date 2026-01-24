@@ -27,7 +27,7 @@
               },
               {
                 "glob": "**/*.wasm",
-                "input": "node_modules/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+                "input": "dist/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
                 "output": "assets/mathtype/"
               }
             ],
@@ -92,7 +92,7 @@
               },
               {
                 "glob": "**/*.wasm",
-                "input": "node_modules/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+                "input": "dist/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
                 "output": "assets/mathtype/"
               }
             ],
