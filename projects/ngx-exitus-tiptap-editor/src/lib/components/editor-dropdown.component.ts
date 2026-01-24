@@ -1,6 +1,7 @@
 import { AfterContentInit, Component, ElementRef, contentChildren, inject, input, signal } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { ClickOutsideDirective } from './click-outside.directive';
 
 export class EditorDropdownService {
     private isOpen = new BehaviorSubject<boolean>(false);
@@ -18,7 +19,7 @@ export class EditorDropdownService {
     standalone: true,
     selector: 'editor-dropdown',
     template: `
-        <div class="ex-toolbar-dropdown">
+        <div class="ex-toolbar-dropdown" (clickOutside)="clickOutside()">
             <button 
                 [class]="['ex-toolbar-button', 'btn', 'btn-' + currentIcon()]"
                 [title]="title()"
@@ -34,6 +35,7 @@ export class EditorDropdownService {
         </div>
     `,
     styleUrls: ["editor-dropdown.component.scss", "../assets/icons/icons.css"],
+    imports: [ClickOutsideDirective],
 })
 export class EditorDropdownComponent implements AfterContentInit {
     icon = input<string>();
@@ -78,6 +80,10 @@ export class EditorDropdownComponent implements AfterContentInit {
     private setCurrentButton(icon: string, title: string) {
         this.currentIcon.set(icon);
         this.title.set(title);
+    }
+
+    clickOutside() {
+        this.open = false;
     }
 
     toggle() {
