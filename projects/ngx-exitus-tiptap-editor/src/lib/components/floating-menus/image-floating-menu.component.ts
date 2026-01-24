@@ -71,6 +71,15 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
       </div>
     </bubble-menu>
   `,
+  styles: [
+    `
+    .ex-toolbar-items {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+    `
+  ]
 })
 export class ImageFloatingMenuComponent implements OnInit {
   editor = input.required<Editor>();

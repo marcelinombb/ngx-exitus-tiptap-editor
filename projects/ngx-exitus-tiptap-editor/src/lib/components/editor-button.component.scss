@@ -8,10 +8,9 @@
 .ex-toolbar-button {
     display: flex;
     position: relative;
-    position: relative;
     align-items: center;
     justify-content: center;
-    padding: calc(0.6em * 0.3);
+    padding: calc(0.6em * 0.3) calc(0.6em * 0.5);
     margin-top: calc(0.6em * 0.5);
     margin-bottom: calc(0.6em * 0.5);
     margin-right: calc(0.6em * 0.5);
@@ -21,11 +20,20 @@
         border 0.2s;
     border: 1px solid transparent;
     border-radius: 5px;
+    color: #444 !important;
+    gap: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &::before {
+        flex-shrink: 0;
+    }
 }
 
 .ex-toolbar-button svg {
     width: 20px;
     height: 20px;
+    flex-shrink: 0;
 }
 
 .ex-toolbar-button:not(.ex-bolinha):not(.ex-focus-table):not(.ex-button-disabled):hover {
@@ -33,6 +41,6 @@
 }
 
 .ex-button-active {
-    color: hsl(218, 81.8%, 56.9%)!important;
+    color: hsl(218, 81.8%, 56.9%) !important;
     background-color: #cae1fc !important;
 }

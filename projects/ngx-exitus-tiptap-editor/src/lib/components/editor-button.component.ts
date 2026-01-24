@@ -13,7 +13,7 @@ import { Component, input, output } from '@angular/core';
             <ng-content></ng-content>
         </button>
     `,
-    styleUrls: ["editor-button.component.scss", "../assets/icons/icons.css"]
+    styleUrls: ["../assets/icons/icons.css", "editor-button.component.scss"]
 })
 
 export class EditorButtonComponent {

@@ -4,10 +4,11 @@ import { Editor, findParentNode } from '@tiptap/core';
 import { BubbleMenuComponent } from '../bubble-menu.component';
 import { NodeSelection } from '@tiptap/pm/state';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { EditorDropdownComponent } from "../editor-dropdown.component";
 
 @Component({
     standalone: true,
-    imports: [EditorButtonComponent, BubbleMenuComponent],
+    imports: [EditorButtonComponent, BubbleMenuComponent, EditorDropdownComponent],
     selector: 'table-floating-menu',
     template: `
     <bubble-menu
@@ -21,24 +22,51 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
     >
       <div class="ex-toolbar-editor" style="border: none; padding: 0;">
         <div class="ex-toolbar-items">
-          <editor-button icon="table-column-plus-before" title="Adicionar coluna antes" (onClick)="addColumnBefore()"></editor-button>
-          <editor-button icon="table-column-plus-after" title="Adicionar coluna depois" (onClick)="addColumnAfter()"></editor-button>
-          <editor-button icon="table-column-remove" title="Remover coluna" (onClick)="deleteColumn()"></editor-button>
+            <editor-dropdown icon="table-header-column" title="Colunas" [updateIcon]="false">
+                <editor-button icon="table-header-column" title="Alternar coluna de cabeçalho" (onClick)="toggleHeaderColumn()">
+                    Alternar coluna de cabeçalho
+                </editor-button>
+                <editor-button icon="table-column-plus-before" title="Adicionar coluna antes" (onClick)="addColumnBefore()">
+                    Adicionar coluna antes
+                </editor-button>
+                <editor-button icon="table-column-plus-after" title="Adicionar coluna depois" (onClick)="addColumnAfter()">
+                    Adicionar coluna depois 
+                </editor-button>
+                <editor-button icon="table-column-remove" title="Remover coluna" (onClick)="deleteColumn()">
+                    Remover coluna
+                </editor-button>
+            </editor-dropdown>
           <span class="ex-toolbar-separator"></span>
-          <editor-button icon="table-row-plus-before" title="Adicionar linha antes" (onClick)="addRowBefore()"></editor-button>
-          <editor-button icon="table-row-plus-after" title="Adicionar linha depois" (onClick)="addRowAfter()"></editor-button>
-          <editor-button icon="table-row-remove" title="Remover linha" (onClick)="deleteRow()"></editor-button>
+          <editor-dropdown icon="table-header-row" title="Linhas" [updateIcon]="false">
+            <editor-button icon="table-header-row" title="Alternar linha de cabeçalho" (onClick)="toggleHeaderRow()">
+                Alternar linha de cabeçalho
+            </editor-button>
+            <editor-button icon="table-row-plus-before" title="Adicionar linha antes" (onClick)="addRowBefore()">
+                Adicionar linha antes
+            </editor-button>
+            <editor-button icon="table-row-plus-after" title="Adicionar linha depois" (onClick)="addRowAfter()">
+                Adicionar linha depois
+                </editor-button>
+            <editor-button icon="table-row-remove" title="Remover linha" (onClick)="deleteRow()">
+                Remover linha
+            </editor-button>
+          </editor-dropdown>
           <span class="ex-toolbar-separator"></span>
-          <editor-button icon="table-merge-cells" title="Mesclar células" (onClick)="mergeCells()"></editor-button>
-          <editor-button icon="table-split-cells" title="Dividir célula" (onClick)="splitCell()"></editor-button>
+          <editor-dropdown icon="table-merge-cell" title="Mesclar células" [updateIcon]="false">   
+            <editor-button icon="merge-cells-horizontal" title="Mesclar células" (onClick)="mergeCells()">
+                Mesclar células
+            </editor-button>
+            <editor-button icon="split-cells-horizontal" title="Dividir célula" (onClick)="splitCell()">
+                Dividir células
+            </editor-button>
+          </editor-dropdown>
           <span class="ex-toolbar-separator"></span>
-          <editor-button icon="table-header-column" title="Alternar coluna de cabeçalho" (onClick)="toggleHeaderColumn()"></editor-button>
-          <editor-button icon="table-header-row" title="Alternar linha de cabeçalho" (onClick)="toggleHeaderRow()"></editor-button>
+          <editor-dropdown icon="table-view" title="Bordas" [updateIcon]="false">
+            <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
+            <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
+          </editor-dropdown>
           <span class="ex-toolbar-separator"></span>
           <editor-button icon="table-remove" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
-          <span class="ex-toolbar-separator"></span>
-          <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
-          <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
         </div>
       </div>
     </bubble-menu>
@@ -120,7 +148,7 @@ export class TableFloatingMenuComponent {
     private toggleTableAttribute(attribute: string) {
         const { state, dispatch } = this.editor().view;
         const { selection } = state;
-        
+
         let tablePos: number | null = null;
         let tableNode: ProseMirrorNode | null = null;
 
@@ -128,12 +156,12 @@ export class TableFloatingMenuComponent {
             tablePos = selection.from;
             tableNode = selection.node;
         } else {
-             const predicate = (node: ProseMirrorNode) => node.type.name === 'table';
-             const parent = findParentNode(predicate)(selection);
-             if (parent) {
-                 tablePos = parent.pos;
-                 tableNode = parent.node;
-             }
+            const predicate = (node: ProseMirrorNode) => node.type.name === 'table';
+            const parent = findParentNode(predicate)(selection);
+            if (parent) {
+                tablePos = parent.pos;
+                tableNode = parent.node;
+            }
         }
 
         if (tablePos !== null && tableNode !== null && dispatch) {
