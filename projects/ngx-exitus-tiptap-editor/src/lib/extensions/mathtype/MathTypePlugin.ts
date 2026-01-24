@@ -11,7 +11,6 @@ import MathML from '@wiris/mathtype-html-integration-devkit/src/mathml'
 import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Util from '@wiris/mathtype-html-integration-devkit/src/util'
 
-import { MathType } from './mathtype'
 import { ExitusEditorIntegration } from './mathtype-integration'
 
 // Icons as strings
@@ -67,6 +66,7 @@ declare module '@tiptap/core' {
     }
 }
 
+export const MathTypePluginKey = new PluginKey('mathTypePlugin')
 
 export const MathTypePlugin = Extension.create<MathTypeOptions>({
     name: 'mathTypePlugin',
@@ -127,17 +127,25 @@ export const MathTypePlugin = Extension.create<MathTypeOptions>({
                             }
                         }
                     }
+                },
+                props: {
+                    handleDOMEvents: {
+                        dblclick: (view, event) => {
+                            const pluginState = MathTypePluginKey.getState(view.state)
+                            if (pluginState && pluginState.integration) {
+                                pluginState.integration.doubleClickHandler(event.target as HTMLElement, event)
+                            }
+                            return false
+                        }
+                    }
                 }
             })
         ]
     }
 })
 
-export const MathTypePluginKey = new PluginKey('mathTypePlugin')
-
 class MathTypeIntegrationManager {
-    private integration: ExitusEditorIntegration | undefined
-    private dbClick: any = null
+    integration: ExitusEditorIntegration | undefined
     private editor: any
     private config: any
 
@@ -162,12 +170,32 @@ class MathTypeIntegrationManager {
             }
 
             integration.core.editionProperties.dbclick = false
-            const image = null
-            // Check if there is a selected image imageClassName
-            // Note: In Tiptap we might need to check selection differently if we want to edit existing formula via button
-            // But usually double click handles it.
 
-            if (typeof image !== 'undefined' && image !== null && image.classList.contains(window.WirisPlugin.Configuration.get('imageClassName'))) {
+            // Check for selected formula in Tiptap
+            const { state, view } = this.editor
+            const { selection } = state
+            let image = null
+
+            if (selection.isNodeSelection) {
+                const node = selection.node
+                if (node.type.name === 'mathtype') {
+                    // We need the DOM element for the integration
+                    const domNode = view.nodeDOM(selection.from)
+                    if (domNode) {
+                        // The nodeDOM might be the wrapper span. We need the img.
+                        image = (domNode as HTMLElement).querySelector('img.Wirisformula') || domNode
+                    }
+                }
+            }
+
+            // Also check if the cursor is near/on a formula in DOM (double click handling calls this implicitly sometimes?)
+            // But openEditor is manually called via button.
+            // If selection is text selection but perhaps wrapping the formula?
+
+            // In Wiris logic, 'temporalImage' being set triggers 'openExisting'.
+            // Simple approach: trust selection.
+
+            if (image && (image as HTMLElement).classList.contains('Wirisformula')) {
                 integration.core.editionProperties.temporalImage = image
                 integration.openExistingFormulaEditor()
             } else {
@@ -222,9 +250,6 @@ class MathTypeIntegrationManager {
             integration.init()
             integration.listeners.fire('onTargetReady', {})
             integration.checkElement()
-
-            this.dbClick = integration.doubleClickHandler.bind(integration)
-            this.editor.view.dom.addEventListener('click', this.dbClick)
         }
 
         // @ts-ignore
@@ -232,7 +257,6 @@ class MathTypeIntegrationManager {
     }
 
     destroy(): void {
-        this.dbClick && this.editor.view.dom.removeEventListener('click', this.dbClick)
         this.integration?.destroy()
         this.integration = undefined
     }

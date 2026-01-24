@@ -7,42 +7,97 @@ import MathML from '@wiris/mathtype-html-integration-devkit/src/mathml'
 import Parser from '@wiris/mathtype-html-integration-devkit/src/parser'
 import Telemeter from '@wiris/mathtype-html-integration-devkit/src/telemeter'
 import Util from '@wiris/mathtype-html-integration-devkit/src/util'
+import Latex from '@wiris/mathtype-html-integration-devkit/src/latex'
 
 export class ExitusEditorIntegration extends IntegrationModel {
     integrationFolderName: string
     editor: Editor
+
     constructor(integrationModelProperties: IntegrationModelProperties) {
         const editor = integrationModelProperties.editorObject as Editor
-
         const options = integrationModelProperties.integrationParameters
 
         if (typeof options !== 'undefined') {
             integrationModelProperties.integrationParameters = options
         }
-        /**
-         * ExitusEditor Integration.
-         */
+
         super(integrationModelProperties)
         this.editor = editor
-        /**
-         * Folder name used for the integration inside CKEditor plugins folder.
-         */
         this.integrationFolderName = 'exitus_wiris'
     }
 
-    addEditorListeners() {
-        const editor = this.editorObject
+    // Override init to pre-initialize Telemeter with correct URL
+    init() {
+        // Manually Init Telemeter to avoid 404 on WASM file
+        try {
+            const os = this.getOS()
+            const browser = this.getBrowser()
+            const domain = window.location.hostname
 
-        if (typeof editor.config === 'undefined' || !editor.config.wirislistenersdisabled) {
-            this.checkElement()
+            const hosts = [
+                {
+                    nam: browser.detectedBrowser,
+                    fam: 'browser',
+                    ver: browser.versionBrowser
+                },
+                {
+                    nam: 'exituseditor',
+                    fam: 'html-editor',
+                    ver: '1.0'
+                },
+                {
+                    nam: os.detectedOS,
+                    fam: 'os',
+                    ver: os.versionOS
+                },
+                {
+                    nam: domain,
+                    fam: 'domain'
+                }
+            ]
+
+            Telemeter.init({
+                solution: {
+                    name: 'MathType for ExitusEditor',
+                    version: '1.0.0'
+                },
+                hosts: hosts,
+                config: {
+                    test: false,
+                    debug: false,
+                    dry_run: false,
+                    api_key: 'eda2ce9b-0e8a-46f2-acdd-c228a615314e'
+                },
+                url: 'telemeter_wasm_bg.wasm' // Explicitly set root URL
+            })
+        } catch (e) {
+            console.error('Failed to pre-init Telemeter', e)
         }
+
+        super.init()
+    }
+
+    getLanguage() {
+        // Try to get editorParameters.language, fail silently otherwise
+        try {
+            if (this.editorParameters && this.editorParameters.language) {
+                return this.editorParameters.language
+            }
+        } catch (e) { }
+
+        return super.getLanguage()
+    }
+
+    addEditorListeners() {
+        // In Tiptap we handle listeners via the Plugin system in MathTypePlugin.ts
+        // But we still need to check element readiness if needed
+        this.checkElement()
     }
 
     checkElement() {
-        const editor = this.editorObject as Editor
-        const newElement = editor.view.dom.parentElement
+        const newElement = this.editor.view.dom.parentElement
         // If the element wasn't treated, add the events.
-        if (!newElement.wirisActive) {
+        if (newElement && !newElement.wirisActive) {
             this.setTarget(newElement)
             this.addEvents()
             // Set the element as treated
@@ -50,41 +105,31 @@ export class ExitusEditorIntegration extends IntegrationModel {
         }
     }
 
-    createViewImage(formula: string): string {
-        //output = formula.replaceAll('"<"', '"&lt;"').replaceAll('">"', '"&gt;"').replaceAll('><<', '>&lt;<')
-
-        // Ckeditor retrieves editor data and removes the image information on the formulas
-        // We transform all the retrieved data to images and then we Parse the data.
-        const imageFormula = Parser.initParse(formula, this.getLanguage())
-        return imageFormula
-    }
-
-    //@ts-ignore
-    doubleClickHandler(event: MouseEvent) {
-        if (event.detail != 2) return
-
-        const element = event.target as HTMLElement
-
+    /**
+     * @inheritdoc
+     * @param {HTMLElement} element - HTMLElement target.
+     * @param {MouseEvent} event - event which trigger the handler.
+     */
+    doubleClickHandler(element: HTMLElement, event: MouseEvent) {
         this.core.editionProperties.dbclick = true
 
-        if ((this.editorObject as Editor).isEditable) {
+        if (this.editor.isEditable) {
             if (element.nodeName.toLowerCase() === 'img') {
                 if (Util.containsClass(element, Configuration.get('imageClassName'))) {
-                    // Some plugins (image2, image) open a dialog on Double-click. On formulas
-                    // doubleclick event ends here.
+                    // Stop propagation to prevent other handlers
                     if (typeof event.stopPropagation !== 'undefined') {
-                        // old I.E compatibility.
                         event.stopPropagation()
                     } else {
                         event.returnValue = false
                     }
+
                     this.core.getCustomEditors().disable()
 
                     const customEditorAttr = element.getAttribute(Configuration.get('imageCustomEditorName'))
                     if (customEditorAttr) {
                         this.core.getCustomEditors().enable(customEditorAttr)
                     }
-                    //@ts-ignore
+
                     this.core.editionProperties.temporalImage = element
                     this.openExistingFormulaEditor()
                 }
@@ -94,32 +139,18 @@ export class ExitusEditorIntegration extends IntegrationModel {
 
     openNewFormulaEditor() {
         // Store the editor selection as it will be lost upon opening the modal
-        this.core.editionProperties.selection = this.editor.view.state.selection
-
+        this.core.editionProperties.selection = this.editor.state.selection
         return super.openNewFormulaEditor()
     }
 
-    callbackFunction() {
-        super.callbackFunction()
-        this.addEditorListeners()
-    }
-
-    notifyWindowClosed() {
-        this.editor.commands.focus()
-    }
-
-    getSelection(): Selection {
-        return window.getSelection()
-    }
-
+    /**
+     * Replaces old formula with new MathML or inserts it in caret position if new
+     */
     insertMathml(mathml: string): HTMLElement | null {
-        // This returns the value returned by the callback function (writer => {...})
-        const { view } = this.editor
-        const tr = view.state.tr
-
+        const { state, view } = this.editor
         const core = this.getCore()
-        const selection = view.state.selection
 
+        // We create a simpler return object for now, Tiptap handles the DOM creation
         const modelElementNew = document.createElement('mathml')
         modelElementNew.setAttribute('formula', mathml)
 
@@ -127,52 +158,69 @@ export class ExitusEditorIntegration extends IntegrationModel {
             // Don't bother inserting anything at all if the MathML is empty.
             if (!mathml) return null
 
-            const viewSelection = this.core.editionProperties.selection || selection
-            const pos = viewSelection.$anchor.pos
-            const { from, to } = viewSelection
-            ///const modelPosition = this.editorObject.editing.mapper.toModelPosition(viewSelection.getLastPosition())
+            const selection = this.core.editionProperties.selection || state.selection
+            const from = selection.from
+            const to = selection.to
 
-            //this.editorObject.model.insertObject(modelElementNew, modelPosition)
             const formulaImg = this.createViewImage(mathml)
 
-            this.editor.commands.insertContentAt(pos, formulaImg, {
-                updateSelection: true,
-                parseOptions: {
-                    preserveWhitespace: true
-                }
-            })
+            // Insert the content
+            this.editor.chain()
+                .focus()
+                .insertContentAt({ from, to }, formulaImg)
+                .run()
 
-            // Remove selection
-            if (!(from == to)) {
-                this.editor.view.dispatch(tr.delete(pos, pos + 1))
-            }
         } else {
-            // If the given MathML is empty, don't insert a new formula.
-            if (mathml) {
-                const pos = selection.$anchor.pos
+            // Updating existing element
+            const temporalImage = core.editionProperties.temporalImage
+            if (temporalImage) {
+                // Try to find the position of the node in the document
+                let pos = -1
+                const widgetWrapper = temporalImage.closest('.tiptap-widget')
+                if (widgetWrapper) {
+                    pos = this.editor.view.posAtDOM(widgetWrapper, -1)
+                }
 
-                this.editor.chain()
-                    .deleteSelection()
-                    .insertContentAt(pos, this.createViewImage(mathml), {
-                        updateSelection: true,
-                        parseOptions: {
-                            preserveWhitespace: true
-                        }
-                    })
-                    .run()
+                // If we didn't find the wrapper, try the image itself
+                if (pos === -1) {
+                    pos = this.editor.view.posAtDOM(temporalImage, 0)
+                }
+
+                if (pos > -1) {
+                    const node = this.editor.state.doc.nodeAt(pos)
+                    if (node && node.type.name === 'mathtype') {
+                        const from = pos
+                        const to = pos + node.nodeSize
+
+                        const formulaImg = this.createViewImage(mathml)
+
+                        // Replace the existing node
+                        this.editor.chain()
+                            .focus()
+                            .insertContentAt({ from, to }, formulaImg)
+                            .run()
+                    }
+                }
+            } else if (mathml) {
+                // Fallback if temporalImage is lost but we have mathml? 
+                const formulaImg = this.createViewImage(mathml)
+                this.editor.chain().focus().insertContent(formulaImg).run()
             }
         }
 
-        // eslint-disable-next-line consistent-return
         return modelElementNew
     }
 
     insertFormula(_focusElement: HTMLElement, windowTarget: Window, mathml: string, _wirisProperties: object) {
         const returnObject: any = {}
-
         let mathmlOrigin
+
         if (!mathml) {
             this.insertMathml('')
+        } else if (this.core.editMode === 'latex') {
+            // Handle LaTeX input
+            const latex = Latex.getLatexFromMathML(mathml)
+            this.editor.chain().focus().insertContent(`$$${latex}$$`).run()
         } else {
             mathmlOrigin = this.core.editionProperties.temporalImage?.dataset.mathml
 
@@ -180,23 +228,23 @@ export class ExitusEditorIntegration extends IntegrationModel {
                 returnObject.node = this.insertMathml(mathml)
             } catch (e) {
                 const x = e.toString()
-                if (x.includes("CKEditorError: Cannot read property 'parent' of undefined")) {
+                if (x.includes("Cannot read property 'parent' of undefined")) {
                     this.core.modalDialog.cancelAction()
                 }
+                console.error(e)
             }
         }
 
-        // Build the telemeter payload separated to delete null/undefined entries.
-
+        // Telemetry
         const payload: any = {
             mathml_origin: mathmlOrigin ? MathML.safeXmlDecode(mathmlOrigin) : mathmlOrigin,
             mathml: mathml ? MathML.safeXmlDecode(mathml) : mathml,
             elapsed_time: Date.now() - this.core.editionProperties.editionStartTime,
-            editor_origin: null, // TODO read formula to find out whether it comes from Oxygen Desktop
+            editor_origin: null,
             toolbar: this.core.modalDialog.contentManager.toolbar,
             size: mathml?.length
         }
-        // Remove desired null keys.
+
         Object.keys(payload).forEach(key => {
             if (key === 'mathml_origin' || key === 'editor_origin') !payload[key] ? delete payload[key] : {}
         })
@@ -210,14 +258,22 @@ export class ExitusEditorIntegration extends IntegrationModel {
             console.error(err)
         }
 
-        /* Due to PLUGINS-1329, we add the onChange event to the CK4 insertFormula.
-            We probably should add it here as well, but we should look further into how */
-        // this.editorObject.fire('change');
-
-        // Remove temporal image of inserted formula
         //@ts-ignore
         this.core.editionProperties.temporalImage = null
-
         return returnObject
+    }
+
+    createViewImage(formula: string): string {
+        const imageFormula = Parser.initParse(formula, this.getLanguage())
+        return imageFormula
+    }
+
+    callbackFunction() {
+        super.callbackFunction()
+        this.addEditorListeners()
+    }
+
+    notifyWindowClosed() {
+        this.editor.commands.focus()
     }
 }

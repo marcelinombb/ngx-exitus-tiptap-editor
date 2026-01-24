@@ -1,6 +1,9 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/ngx-exitus-tiptap-editor",
+  "assets": [
+    "../../node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm/**/*"
+  ],
   "lib": {
     "entryFile": "src/public-api.ts"
   }

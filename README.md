@@ -32,6 +32,27 @@ This library depends on several Tiptap packages and KaTeX. Ensure you have them 
 npm install @tiptap/core @tiptap/pm @tiptap/starter-kit @tiptap/extension-subscript @tiptap/extension-superscript @tiptap/extension-text-align @tiptap/extension-bubble-menu katex
 ```
 
+## ⚙️ Configuration
+
+### MathType Setup (Required)
+
+To use the **MathType** integration properly, you **must** configure your Angular application to serve the telemetry WebAssembly file. Update your `angular.json` by adding the following to the `assets` array (in both `build` and `test` targets):
+
+```json
+"assets": [
+  "src/favicon.ico",
+  "src/assets",
+  {
+    "glob": "**/*.wasm",
+    "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
+    "output": "/"
+  }
+]
+```
+
+> [!IMPORTANT]
+> If this configuration is missing, you will encounter a `404 (Not Found)` error for `telemeter_wasm_bg.wasm` when opening the formula editor.
+
 ## 📦 Usage
 
 ### 1. Import the Component

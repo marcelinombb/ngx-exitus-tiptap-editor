@@ -19,5 +19,13 @@ export class App {
 
   protected readonly title = signal('my-workspace');
 
-  defaultText = `<img src="https://images.unsplash.com/photo-1765707886460-3059e2fec28f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gráfico, Diagrama O conteúdo gerado por IA pode estar incorreto." width="441" height="188"><p><img src="https://images.unsplash.com/photo-1765707886460-3059e2fec28f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gráfico, Diagrama O conteúdo gerado por IA pode estar incorreto." width="441" height="188"></p>`
+  // defaultText = `<img src="https://images.unsplash.com/photo-1765707886460-3059e2fec28f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gráfico, Diagrama O conteúdo gerado por IA pode estar incorreto." width="441" height="188"><p><img src="https://images.unsplash.com/photo-1765707886460-3059e2fec28f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Gráfico, Diagrama O conteúdo gerado por IA pode estar incorreto." width="441" height="188"></p>`
+
+  defaultText = `<math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mrow>
+      <mi>a</mi>
+      <mo>+</mo>
+      <mi>b</mi>
+    </mrow>
+  </math>`
 }

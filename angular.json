@@ -23,6 +23,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*.wasm",
+                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
+                "output": "/"
               }
             ],
             "styles": [
@@ -76,6 +81,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*.wasm",
+                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
+                "output": "/"
               }
             ],
             "styles": [
