@@ -1,9 +1,9 @@
 import { AfterContentInit, Component, ElementRef, contentChildren, inject, input } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
-import { Observable, Subject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 export class EditorDropdownService {
-    private isOpen = new Subject<boolean>();
+    private isOpen = new BehaviorSubject<boolean>(false);
 
     setOpenState(isOpen: boolean) {
         this.isOpen.next(isOpen);
@@ -49,9 +49,11 @@ export class EditorDropdownComponent implements AfterContentInit {
     ngAfterContentInit(): void {
         const buttons = this.buttons();
 
-        
+
         this.editorDropdownService.getOpenState().subscribe(isOpen => {
-            this.open = isOpen;
+            if (this.open !== isOpen) {
+                this.open = isOpen;
+            }
         });
 
         if (this.icon()) {
@@ -76,9 +78,12 @@ export class EditorDropdownComponent implements AfterContentInit {
         this.title = title;
     }
 
-    toggle() { 
-        this.editorDropdownService.setOpenState(false);
-        this.open = !this.open; 
+    toggle() {
+        const newState = !this.open;
+        if (newState) {
+            this.editorDropdownService.setOpenState(false);
+        }
+        this.open = newState;
     }
 
 }
