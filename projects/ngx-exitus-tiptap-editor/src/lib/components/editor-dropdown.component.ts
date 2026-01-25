@@ -60,7 +60,7 @@ export class EditorDropdownComponent implements AfterContentInit {
         });
 
         if (this.icon()) {
-            this.setCurrentButton(this.icon()!, '');
+            this.setCurrentButton(this.icon()!, this.title());
         } else if (buttons && buttons.length > 0) {
             const first = buttons.at(0)!;
             this.setCurrentButton(first.icon()!, first.title());

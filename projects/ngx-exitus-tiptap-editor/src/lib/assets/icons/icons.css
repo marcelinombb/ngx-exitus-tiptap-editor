@@ -253,3 +253,11 @@
 .btn-special-characters {
   --icon: url("./omega.svg");
 }
+
+.btn-list-check {
+  --icon: url("./list-check.svg");
+}
+
+.btn-text-block {
+  --icon: url("./text-block.svg");
+}

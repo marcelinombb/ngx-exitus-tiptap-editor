@@ -6,10 +6,11 @@ import { Editor } from '@tiptap/core';
 import { katexMenuControl } from './floating-menus/katex-floating-menu.component';
 import { parseImagesToBase64 } from '../extensions/image';
 import { SpecialCharactersComponent } from './special-characters.component';
+import { AnswerBoxConfigComponent } from './answer-box-config.component';
 
 @Component({
     standalone: true,
-    imports: [EditorButtonComponent, EditorDropdownComponent, TableGridComponent, SpecialCharactersComponent],
+    imports: [EditorButtonComponent, EditorDropdownComponent, TableGridComponent, SpecialCharactersComponent, AnswerBoxConfigComponent],
     selector: 'editor-toolbar',
     template: `
         <div class="ex-toolbar-editor">
@@ -48,7 +49,9 @@ import { SpecialCharactersComponent } from './special-characters.component';
                 <editor-button [icon]="'formula'" [title]="'Inserir fórmula'" [active]="isActive('katex')" (onClick)="insertFormula()"></editor-button>
                 <editor-button [icon]="'mathtype'" [title]="'MathType'" (onClick)="insertMathType()"></editor-button>
                 <editor-button [icon]="'chemtype'" [title]="'ChemType'" (onClick)="insertChemType()"></editor-button>
-                <editor-button [icon]="'colar-questao'" [title]="'Inserir questão'" [active]="isActive('colarQuestao')" (onClick)="insertColarQuestao()"></editor-button>
+                <editor-dropdown icon="text-block" [title]="'Caixa de Resposta'" #answerBoxDropdown>
+                    <answer-box-config [editor]="editor()" (onSelect)="answerBoxDropdown.open = false"></answer-box-config>
+                </editor-dropdown>
              </div>
         </div>
     `,

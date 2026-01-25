@@ -2,6 +2,7 @@
 @import '../lib/extensions/image/style.css';
 @import '../lib/extensions/colar-questao/style.css';
 @import '../lib/extensions/table/style.scss';
+@import '../lib/extensions/answer-box/style.scss';
 
 .exitus-tiptap-editor {
    --active-blue: hsl(218, 81.8%, 56.9%);
@@ -51,7 +52,7 @@
    .editor-main {
       position: relative;
       min-height: 100%;
-      width: 24.8cm;
+      // width: 24.8cm;
       background: #fff;
       border-color: var(--border-gray);
       box-shadow: 0 0 5px hsla(0, 0%, 0%, 0.1);

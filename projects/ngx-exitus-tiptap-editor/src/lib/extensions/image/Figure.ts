@@ -66,7 +66,7 @@ export const Figure = Node.create<ImageOptions>({
 
   addOptions() {
     return {
-      inline: true,
+      inline: false,
     }
   },
 
