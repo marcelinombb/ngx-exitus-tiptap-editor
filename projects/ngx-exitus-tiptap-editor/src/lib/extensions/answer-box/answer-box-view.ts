@@ -54,7 +54,48 @@ export class AnswerBoxView {
             }
         });
 
+        // Insert Paragraph Before button
+        const insertBeforeBtn = document.createElement('div')
+        insertBeforeBtn.classList.add('insert-paragraph-btn', 'insert-paragraph-before')
+        insertBeforeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M11 9l1.42 1.42L8.83 14H18V7h2v9H8.83l3.59 3.58L11 21l-6-6 6-6z"/></svg>'
+        insertBeforeBtn.title = 'Inserir parágrafo antes'
+        insertBeforeBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+            this.insertParagraph('before')
+        })
+        this.dom.appendChild(insertBeforeBtn)
+
+        // Insert Paragraph After button
+        const insertAfterBtn = document.createElement('div')
+        insertAfterBtn.classList.add('insert-paragraph-btn', 'insert-paragraph-after')
+        insertAfterBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M11 9l1.42 1.42L8.83 14H18V7h2v9H8.83l3.59 3.58L11 21l-6-6 6-6z"/></svg>'
+        insertAfterBtn.title = 'Inserir parágrafo após'
+        insertAfterBtn.addEventListener('click', (e) => {
+            e.stopPropagation()
+            this.insertParagraph('after')
+        })
+        this.dom.appendChild(insertAfterBtn)
+
         this.render();
+    }
+
+    insertParagraph(where: 'before' | 'after') {
+        if (typeof this.getPos !== 'function') return
+        const pos = this.getPos()
+        if (pos === undefined) return
+
+        const insertionPos = where === 'before' ? pos : pos + this.node.nodeSize
+        this.editor.commands.insertContentAt(insertionPos, { 
+            type: 'paragraph', 
+            content: [{ type: 'text', text: ' ' }]
+         })
+
+        // Focus the new paragraph
+        if (where === 'before') {
+            this.editor.commands.focus(insertionPos)
+        } else {
+            this.editor.commands.focus(insertionPos + 1)
+        }
     }
 
     update(node: Node) {
