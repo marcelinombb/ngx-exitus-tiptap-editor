@@ -100,11 +100,6 @@ export class AnswerBoxConfigComponent {
     hideBorder = signal<boolean>(false);
 
     insert() {
-        const content = [];
-        if (this.showHeader()) {
-            content.push({ type: 'answerBoxHeader' });
-        }
-
         this.editor().chain().focus().insertContent({
             type: 'answerBox',
             attrs: {
@@ -112,8 +107,7 @@ export class AnswerBoxConfigComponent {
                 lines: this.lineCount(),
                 showHeader: this.showHeader(),
                 hideBorder: this.hideBorder()
-            },
-            content
+            }
         }).run();
         this.onSelect.emit();
     }

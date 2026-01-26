@@ -30,25 +30,28 @@ export class AnswerBoxView {
 
         // Create container for header
         const headerContainer = document.createElement('div');
-        headerContainer.classList.add('ex-answer-box-content-wrapper');
+        headerContainer.classList.add('ex-answer-box-header');
         this.contentDOM = headerContainer;
         this.dom.appendChild(headerContainer);
 
         this.dom.addEventListener('click', (event) => {
             const target = event.target as HTMLElement;
-            // If the click is inside the contentDOM (header), we let ProseMirror handle it (text selection)
-            if (this.contentDOM?.contains(target)) {
+            
+            // 1. If click is inside header (contentDOM), let ProseMirror handle it
+            // ONLY if header is visible
+            if (this.contentDOM?.style.display !== 'none' && this.contentDOM?.contains(target)) {
                 return;
             }
 
-            // Otherwise, we select the node itself
+            // 2. If click is on a button or inside it, don't select node
+            if (target.closest('.insert-paragraph-btn')) {
+                return;
+            }
+
+            // 3. Otherwise, select the node itself to show floating menu
             if (typeof this.getPos === 'function') {
                 const pos = this.getPos();
                 if (pos !== undefined) {
-                    // Prevent default to avoid conflicting selection behavior if any
-                    // But be careful not to stop event propagation if bubbling is needed elsewhere
-                    // event.preventDefault(); 
-
                     this.editor.commands.setNodeSelection(pos);
                 }
             }
@@ -116,13 +119,15 @@ export class AnswerBoxView {
     }
 
     render() {
-        // Reset classes
-        this.dom.className = 'ex-answer-box tiptap-widget';
+        // IMPORTANT: Use classList to preserve Tiptap-managed selection classes (like .ex-selected)
+        this.dom.classList.add('ex-answer-box');
 
         const { style, lines, showHeader, hideBorder } = this.node.attrs;
 
         if (hideBorder) {
             this.dom.classList.add('ex-answer-box-no-border');
+        } else {
+            this.dom.classList.remove('ex-answer-box-no-border');
         }
 
         this.dom.setAttribute('data-style', style);
@@ -133,7 +138,6 @@ export class AnswerBoxView {
         }
 
         // Visuals (Lines / Box)
-        // Remove old visuals
         const oldVisuals = this.dom.querySelector('.ex-answer-box-visuals');
         if (oldVisuals) {
             oldVisuals.remove();
@@ -144,7 +148,8 @@ export class AnswerBoxView {
         visualsContainer.contentEditable = 'false';
 
         if (style === 'lines' || style === 'numbered-lines') {
-            for (let i = 1; i <= lines; i++) {
+            const count = parseInt(lines as any, 10) || 5;
+            for (let i = 1; i <= count; i++) {
                 const lineEl = document.createElement('div');
                 lineEl.classList.add('ex-answer-line');
                 if (style === 'numbered-lines') {
@@ -156,8 +161,7 @@ export class AnswerBoxView {
                 visualsContainer.appendChild(lineEl);
             }
         } else {
-            // 'box' style - just empty space or specific box styling
-            const count = parseInt(lines, 10) || 5;
+            const count = parseInt(lines as any, 10) || 5;
             visualsContainer.style.height = `${count * 30}px`;
         }
 

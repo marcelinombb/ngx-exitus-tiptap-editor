@@ -108,7 +108,6 @@ export class ExitusTiptapEditor implements OnDestroy {
         MathType,
         MathTypePlugin,
         AnswerBox,
-        AnswerBoxHeader,
         ...TableExtensions
       ],
       content: this.content(),

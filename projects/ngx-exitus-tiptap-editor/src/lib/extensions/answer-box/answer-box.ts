@@ -22,9 +22,7 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
     name: 'answerBox',
 
     group: 'block',
-
-    content: 'answerBoxHeader?',
-
+    content: 'inline*',
     draggable: true,
 
     addOptions() {
@@ -78,13 +76,13 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
         return [
             {
                 tag: 'div.ex-answer-box',
-                contentElement: (element) => element.querySelector('.ex-answer-box-content-wrapper') || element,
+                contentElement: (element) => element.querySelector('.ex-answer-box-header') || element,
             },
         ];
     },
 
     renderHTML({ HTMLAttributes, node }) {
-        const { style, lines, hideBorder } = node.attrs;
+        const { style, lines, hideBorder, showHeader } = node.attrs;
         const classes = ['ex-answer-box'];
         if (hideBorder) {
             classes.push('ex-answer-box-no-border');
@@ -109,7 +107,10 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
         return [
             'div',
             mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { class: classes.join(' ') }),
-            ['div', { class: 'ex-answer-box-content-wrapper' }, 0],
+            ['div', { 
+                class: 'ex-answer-box-header',
+                style: showHeader ? 'display: block' : 'display: none'
+            }, 0],
             visuals
         ];
     },
@@ -135,61 +136,18 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
             setAnswerBoxLines: (lines: number) => ({ commands }) => {
                 return commands.updateAttributes(this.name, { lines });
             },
-            toggleAnswerBoxHeader: () => ({ commands, editor, state, dispatch }) => {
+            toggleAnswerBoxHeader: () => ({ commands, state }) => {
                 const { selection } = state;
-                let node: any = null;
-                let pos: number | null = null;
+                const found = findParentNode((n) => n.type.name === 'answerBox')(selection)
+                    || (selection instanceof NodeSelection && selection.node.type.name === 'answerBox'
+                        ? { node: selection.node, pos: selection.from }
+                        : null);
 
-                if (selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
-                    node = selection.node;
-                    pos = selection.from;
-                } else {
-                    const found = findParentNode((n) => n.type.name === 'answerBox')(selection);
-                    if (found) {
-                        node = found.node;
-                        pos = found.pos;
-                    }
-                }
+                if (!found) return false;
 
-                if (!node || pos === null) {
-                    return false;
-                }
-
-                if (dispatch) {
-                    const showHeader = !node.attrs['showHeader'];
-                    let tr = state.tr;
-
-                    // Update attribute
-                    tr = tr.setNodeAttribute(pos, 'showHeader', showHeader);
-
-                    // Update content
-                    // Schema: content: 'answerBoxHeader?'
-                    // If showHeader is true, make sure we have the header node
-                    // If showHeader is false, remove the header node
-
-                    const headerType = state.schema.nodes['answerBoxHeader'];
-                    const hasHeaderNode = node.childCount > 0 && node.firstChild?.type.name === 'answerBoxHeader';
-
-                    if (showHeader && !hasHeaderNode) {
-                        // Insert header at the beginning of the block
-                        const headerNode = headerType.createAndFill();
-                        if (headerNode) {
-                            // Pos + 1 is inside the node
-                            tr = tr.insert(pos + 1, headerNode);
-                            // Set selection inside the newly inserted header
-                            tr = tr.setSelection(TextSelection.create(tr.doc, pos + 2));
-                        }
-                    } else if (!showHeader && hasHeaderNode) {
-                        // Remove header
-                        // The header is at the start (pos + 1)
-                        const headerSize = node.firstChild!.nodeSize;
-                        tr = tr.delete(pos + 1, pos + 1 + headerSize);
-                    }
-
-                    dispatch(tr);
-                }
-
-                return true;
+                const showHeader = !found.node.attrs['showHeader'];
+                
+                return commands.updateAttributes(this.name, { showHeader });
             },
             toggleAnswerBoxBorder: () => ({ commands, state, dispatch }) => {
                 const { selection } = state;
