@@ -23,6 +23,9 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
                 <editor-button [icon]="'superscript'" [title]="'Sobrescrito'" [active]="isActive('superscript')" (onClick)="toggleSuperscript()"></editor-button>
                 <editor-button [icon]="'format-clear'" [title]="'Limpar formatação'" [active]="isActive('format-clear')" (onClick)="unsetAllMarks()"></editor-button>
                 <span class="ex-toolbar-separator"></span>
+                <editor-dropdown icon="text-block" [title]="'Caixa de Resposta'" #answerBoxDropdown>
+                    <answer-box-config [editor]="editor()" (onSelect)="answerBoxDropdown.open = false"></answer-box-config>
+                </editor-dropdown>
                 <editor-dropdown icon="table" #tableDropdown>
                     <table-grid (onSelect)="insertTable($event.rows, $event.cols); tableDropdown.open = false"></table-grid>
                 </editor-dropdown>
@@ -49,9 +52,6 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
                 <editor-button [icon]="'formula'" [title]="'Inserir fórmula'" [active]="isActive('katex')" (onClick)="insertFormula()"></editor-button>
                 <editor-button [icon]="'mathtype'" [title]="'MathType'" (onClick)="insertMathType()"></editor-button>
                 <editor-button [icon]="'chemtype'" [title]="'ChemType'" (onClick)="insertChemType()"></editor-button>
-                <editor-dropdown icon="text-block" [title]="'Caixa de Resposta'" #answerBoxDropdown>
-                    <answer-box-config [editor]="editor()" (onSelect)="answerBoxDropdown.open = false"></answer-box-config>
-                </editor-dropdown>
              </div>
         </div>
     `,

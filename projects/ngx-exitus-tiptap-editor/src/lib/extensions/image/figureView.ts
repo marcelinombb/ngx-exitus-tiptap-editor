@@ -177,7 +177,10 @@ export class FigureView implements NodeView {
         if (pos === undefined) return
 
         const insertionPos = where === 'before' ? pos : pos + this.node.nodeSize
-        this.editor.commands.insertContentAt(insertionPos, { type: 'paragraph' })
+        this.editor.commands.insertContentAt(insertionPos, { 
+            type: 'paragraph', 
+            content: [{ type: 'text', text: ' ' }]
+         })
 
         // Focus the new paragraph
         if (where === 'before') {

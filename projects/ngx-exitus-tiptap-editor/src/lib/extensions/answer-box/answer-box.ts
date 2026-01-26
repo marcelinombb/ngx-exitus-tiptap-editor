@@ -176,6 +176,8 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
                         if (headerNode) {
                             // Pos + 1 is inside the node
                             tr = tr.insert(pos + 1, headerNode);
+                            // Set selection inside the newly inserted header
+                            tr = tr.setSelection(TextSelection.create(tr.doc, pos + 2));
                         }
                     } else if (!showHeader && hasHeaderNode) {
                         // Remove header

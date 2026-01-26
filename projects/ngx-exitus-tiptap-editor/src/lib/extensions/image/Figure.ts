@@ -82,7 +82,7 @@ export const Figure = Node.create<ImageOptions>({
   draggable: true,
   atom: false,
   isolating: true,
-  allowGapCursor: false,
+  allowGapCursor: true,
 
   parseHTML() {
     return [

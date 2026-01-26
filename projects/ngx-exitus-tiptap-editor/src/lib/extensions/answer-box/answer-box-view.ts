@@ -1,6 +1,5 @@
 import { Node } from '@tiptap/pm/model';
 import { Editor } from '@tiptap/core';
-import { NodeView } from '@tiptap/core'; // or appropriate base class/interface
 
 export class AnswerBoxView {
     dom: HTMLElement;
