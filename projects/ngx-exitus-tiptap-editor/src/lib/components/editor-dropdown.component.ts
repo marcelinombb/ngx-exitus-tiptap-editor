@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ElementRef, contentChildren, inject, input, signal } from '@angular/core';
+import { AfterContentInit, Component, ElementRef, contentChildren, inject, input, model, signal } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { ClickOutsideDirective } from './click-outside.directive';
@@ -42,7 +42,7 @@ export class EditorDropdownComponent implements AfterContentInit {
     orientation = input<'vertical' | 'horizontal'>('vertical');
     open = false;
     currentIcon = signal('');
-    title = signal('');
+    title = model<string>('');
     updateIcon = input(true);
     editorDropdownService = inject(EditorDropdownService);
 

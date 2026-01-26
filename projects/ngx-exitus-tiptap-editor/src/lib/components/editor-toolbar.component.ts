@@ -26,7 +26,7 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
                 <editor-dropdown icon="text-block" [title]="'Caixa de Resposta'" #answerBoxDropdown>
                     <answer-box-config [editor]="editor()" (onSelect)="answerBoxDropdown.open = false"></answer-box-config>
                 </editor-dropdown>
-                <editor-dropdown icon="table" #tableDropdown>
+                <editor-dropdown icon="table" [title]="'Tabela'" #tableDropdown>
                     <table-grid (onSelect)="insertTable($event.rows, $event.cols); tableDropdown.open = false"></table-grid>
                 </editor-dropdown>
                 <editor-dropdown icon="special-characters" [title]="'Caracteres especiais'" #specialCharsDropdown>
