@@ -52,6 +52,11 @@
             font-size: 0.9em;
             user-select: none;
         }
+
+    }
+
+    &:not(.ex-answer-box-no-border) .ex-answer-line:last-child {
+        border-bottom: none;
     }
 
     &[data-style="box"] {
