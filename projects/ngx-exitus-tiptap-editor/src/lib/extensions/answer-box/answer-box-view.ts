@@ -87,13 +87,8 @@ export class AnswerBoxView {
         this.dom.setAttribute('data-style', style);
 
         // Handle Header visibility
-        // Note: The Presence of content in 'contentDOM' is managed by Prosemirror.
-        // But we can control visibility of the wrapper or styling.
-        if (!showHeader) {
-            // If we don't show header, we might want to hide the content wrapper 
-            // BUT if there is content inside, hiding it might be confusing.
-            // However, `showHeader` logic should probably correspond to the existence of the child node.
-            // Let's assume `showHeader` attribute is just a visual toggle or synchronized with content.
+        if (this.contentDOM) {
+            this.contentDOM.style.display = showHeader ? 'block' : 'none';
         }
 
         // Visuals (Lines / Box)
@@ -105,6 +100,7 @@ export class AnswerBoxView {
 
         const visualsContainer = document.createElement('div');
         visualsContainer.classList.add('ex-answer-box-visuals');
+        visualsContainer.contentEditable = 'false';
 
         if (style === 'lines' || style === 'numbered-lines') {
             for (let i = 1; i <= lines; i++) {
