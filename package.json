@@ -1,5 +1,5 @@
 {
-  "name": "my-workspace",
+  "name": "ngx-exitus-tiptap-editor",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,7 @@
     "build": "ng build",
     "build:lib": "ng build ngx-exitus-tiptap-editor",
     "prebuild:lib": "mkdir -p projects/ngx-exitus-tiptap-editor/assets/telemeter-wasm && cp node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm/* projects/ngx-exitus-tiptap-editor/assets/telemeter-wasm/",
-    "postbuild:lib": "rm -rf projects/ngx-exitus-tiptap-editor/assets",
+    "postbuild:lib": "rm -rf projects/ngx-exitus-tiptap-editor/assets && sass projects/ngx-exitus-tiptap-editor/src/lib/preview.scss dist/ngx-exitus-tiptap-editor/preview.css",
     "build:pages": "ng build --configuration production --base-href /ngx-exitus-tiptap-editor/",
     "watch:lib": "npm run prebuild:lib && ng build ngx-exitus-tiptap-editor --watch",
     "setup:link": "npm run build:lib && cd dist/ngx-exitus-tiptap-editor && npm link && cd ../.. && npm link ngx-exitus-tiptap-editor",
@@ -66,6 +66,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^20.3.0",
+    "sass": "^1.97.3",
     "typescript": "~5.9.2",
     "wait-on": "^8.0.3"
   }

@@ -1,0 +1,39 @@
+@import '../lib/extensions/image/style.scss';
+@import '../lib/extensions/colar-questao/style.scss';
+@import '../lib/extensions/table/style.scss';
+@import '../lib/extensions/answer-box/style.scss';
+
+:root {
+    --active-blue: hsl(218, 81.8%, 56.9%);
+    --color-success: #008a00;
+    --color-cancel: #db3700;
+    --color-base-text: #333;
+    --image-caption-background: #f7f7f7;
+
+    --ex-font-face: Helvetica, Arial, Tahoma, Verdana, Sans-Serif;
+
+    --ex-font-size-tiny: 0.7em;
+    --ex-font-size-small: 0.75em;
+    --ex-font-size-base: 13px;
+    --ex-font-size-normal: 1em;
+    --ex-font-size-big: 1.4em;
+    --ex-font-size-large: 1.8em;
+
+    --ex-line-height-base: 1.84615;
+}
+
+.tiptap {
+    font-family: sans-serif, Arial, Verdana, 'Trebuchet MS';
+    color: var(--color-base-text) !important;
+    font-size: 14px;
+    line-height: 1.3em;
+
+    blockquote {
+        border-left: 3px solid rgba(13, 13, 13, 0.1);
+        padding-left: 1rem;
+    }
+
+    p {
+        margin: 0 0 9px;
+    }
+}
