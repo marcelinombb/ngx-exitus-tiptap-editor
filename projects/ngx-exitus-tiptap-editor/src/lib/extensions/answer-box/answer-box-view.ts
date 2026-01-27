@@ -16,18 +16,6 @@ export class AnswerBoxView {
         this.dom = document.createElement('div');
         this.dom.classList.add('ex-answer-box', 'tiptap-widget');
 
-        // We need a place for the header content if it exists
-        // The schema says `content: answerBoxHeader?`. 
-        // If showHeader is true (or if content exists), we render a contentDOM.
-        // Actually, Tiptap NodeViews with content MUST have a contentDOM.
-        // If the schema allows content, we should provide a contentDOM.
-
-        // Structure:
-        // <div class="ex-answer-box [styles...]">
-        //    <div class="ex-answer-box-content-wrapper"> (contentDOM) </div>
-        //    <div class="ex-answer-box-visuals"> ... lines ... </div>
-        // </div>
-
         // Create container for header
         const headerContainer = document.createElement('div');
         headerContainer.classList.add('ex-answer-box-header');
@@ -36,7 +24,7 @@ export class AnswerBoxView {
 
         this.dom.addEventListener('click', (event) => {
             const target = event.target as HTMLElement;
-            
+
             // 1. If click is inside header (contentDOM), let ProseMirror handle it
             // ONLY if header is visible
             if (this.contentDOM?.style.display !== 'none' && this.contentDOM?.contains(target)) {
@@ -88,10 +76,10 @@ export class AnswerBoxView {
         if (pos === undefined) return
 
         const insertionPos = where === 'before' ? pos : pos + this.node.nodeSize
-        this.editor.commands.insertContentAt(insertionPos, { 
-            type: 'paragraph', 
+        this.editor.commands.insertContentAt(insertionPos, {
+            type: 'paragraph',
             content: [{ type: 'text', text: ' ' }]
-         })
+        })
 
         // Focus the new paragraph
         if (where === 'before') {
@@ -170,9 +158,5 @@ export class AnswerBoxView {
 
     destroy() {
         // cleanup
-    }
-
-    ignoreMutation() {
-        return true;
     }
 }
