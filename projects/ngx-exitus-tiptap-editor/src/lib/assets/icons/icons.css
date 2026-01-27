@@ -264,3 +264,6 @@
 .btn-image-crop {
   --icon: url("./crop.svg");
 }
+.btn-palette {
+  --icon: url("./palette.svg");
+}

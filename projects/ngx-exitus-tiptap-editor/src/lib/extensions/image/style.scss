@@ -27,6 +27,10 @@
   display: flex;
 }
 
+.ex-image-wrapper.ex-image-grayscale img {
+    filter: grayscale(100%) saturate(300%);
+}
+
 .resize-handle-tl {
   top: -6px;
   left: -6px;

@@ -64,6 +64,11 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
             <editor-button [icon]="'image-float-right'" (onClick)="setAlignment('inlineRight')" [title]="'Direita'"
               ></editor-button>
           </editor-dropdown>
+          <editor-button
+            [icon]="'palette'"
+            [title]="'Preto e Branco'"
+            (onClick)="toggleGreyScale()"
+          ></editor-button>
           @if (editor().isActive('figure')) {
             <editor-button
                 [icon]="'image-crop'"
@@ -177,5 +182,9 @@ export class ImageFloatingMenuComponent implements OnInit {
 
   toggleCropping() {
     this.editor().chain().focus().cropImage().run();
+  }
+
+  toggleGreyScale() {
+    this.editor().chain().focus().toggleGreyScale().run();
   }
 }

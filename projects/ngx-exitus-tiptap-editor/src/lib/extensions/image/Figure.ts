@@ -11,6 +11,7 @@ declare module '@tiptap/core' {
       hasAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
       setImageWidth: (width: number | null) => ReturnType;
       cropImage: () => ReturnType;
+      toggleGreyScale: () => ReturnType;
     };
   }
 }
@@ -400,6 +401,54 @@ export const Figure = TiptapNode.create<ImageOptions>({
           return false;
         };
       },
+
+      toggleGreyScale: () => {
+        return ({ tr, state, dispatch, view }) => {
+          const { selection } = state;
+
+          let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
+
+          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+            figureNode = { node: selection.node, pos: selection.from };
+          } else {
+            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+          }
+
+          if (!figureNode || figureNode.node.type.name !== 'figure') return false;
+
+          const classes = new Set(
+            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)
+          );
+
+          
+          const isActive = classes.has('ex-image-grayscale');
+
+    
+          if(isActive) {
+            classes.delete('ex-image-grayscale');
+          } else {
+            classes.add('ex-image-grayscale');
+          }
+          
+          const attributes = {
+            class: [...classes].join(' '),
+          };
+
+          const pos = figureNode.pos;
+
+          tr = tr.setNodeMarkup(pos, undefined, {
+            ...figureNode.node.attrs,
+            ...attributes,
+          });
+
+          if (tr.docChanged) {
+            dispatch && dispatch(tr);
+            return true;
+          }
+
+          return false;
+        };
+      }
     };
   },
 });
