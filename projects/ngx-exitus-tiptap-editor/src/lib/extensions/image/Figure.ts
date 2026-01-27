@@ -1,4 +1,4 @@
-import { findParentNode, findParentNodeClosestToPos, mergeAttributes, Node } from '@tiptap/core';
+import { findParentNode, findParentNodeClosestToPos, mergeAttributes, Node as TiptapNode } from '@tiptap/core';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { TextSelection, NodeSelection, Plugin, PluginKey, EditorState } from 'prosemirror-state';
 import { FigureView } from './figureView';
@@ -10,6 +10,7 @@ declare module '@tiptap/core' {
       setImageAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
       hasAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
       setImageWidth: (width: number | null) => ReturnType;
+      cropImage: () => ReturnType;
     };
   }
 }
@@ -61,7 +62,7 @@ export interface ImageOptions {
   inline: boolean
 }
 
-export const Figure = Node.create<ImageOptions>({
+export const Figure = TiptapNode.create<ImageOptions>({
   name: 'figure',
 
   addOptions() {
@@ -373,6 +374,29 @@ export const Figure = Node.create<ImageOptions>({
             return true;
           }
 
+          return false;
+        };
+      },
+      cropImage: () => {
+        return ({ editor, view }) => {
+          const { selection } = view.state;
+          let targetPos: number | undefined;
+
+          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+            targetPos = selection.from;
+          } else {
+            const figureResult = findParentNode((node) => node.type.name === 'figure')(selection);
+            targetPos = figureResult?.pos;
+          }
+
+          if (targetPos === undefined) return false;
+
+          const dom = view.nodeDOM(targetPos) as any;
+          if (dom && typeof dom.toggleCropping === 'function') {
+            dom.toggleCropping();
+            return true;
+          }
+          
           return false;
         };
       },

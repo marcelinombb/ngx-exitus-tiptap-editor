@@ -2,6 +2,7 @@ import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
 import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
+import ImageCropper from './ImageCropper'
 
 export class FigureView implements NodeView {
     node: Node
@@ -9,6 +10,7 @@ export class FigureView implements NodeView {
     contentDOM?: HTMLElement | null | undefined
     editor: Editor
     getPos: () => number | undefined
+    cropper: ImageCropper
 
     constructor(
         node: Node,
@@ -22,6 +24,9 @@ export class FigureView implements NodeView {
         // Wrapper div to hold figure + handles
         const wrapper = document.createElement('div')
         this.dom = wrapper
+        // Expose toggleCropping on the DOM element for the command to call
+        ;(wrapper as any).toggleCropping = () => this.toggleCropping()
+
         wrapper.style.position = 'relative'
         // Apply width to the wrapper, which mimics the figure behavior
         wrapper.style.width = `${node.attrs['width']}px`
@@ -78,6 +83,62 @@ export class FigureView implements NodeView {
                 }
             }
         })
+
+        // Instantiate cropper
+        this.cropper = new ImageCropper({
+            image: wrapper.querySelector('img') || document.createElement('img'),
+            imageWrapper: wrapper,
+            figcaption: wrapper.querySelector('figcaption'),
+            updateAttributes: (attrs) => this.handleCropUpdate(attrs)
+        })
+    }
+
+    private handleCropUpdate(attributes: Record<string, any>) {
+        if (typeof this.getPos !== 'function') return
+        const pos = this.getPos()
+        if (pos === undefined) return
+
+        const { view } = this.editor
+        let { tr } = view.state
+
+        // Handle image src update on child node
+        if (attributes['src']) {
+            // Find the image node inside the figure
+            this.node.content.forEach((child, offset) => {
+                if (child.type.name === 'image') {
+                    tr = tr.setNodeMarkup(pos + 1 + offset, undefined, {
+                        ...child.attrs,
+                        src: attributes['src']
+                    })
+                }
+            })
+        }
+
+        // Handle figure attributes (like width)
+        const figureAttrs = { ...this.node.attrs }
+        let figureChanged = false
+        if (attributes['width'] && attributes['width'] !== figureAttrs['width']) {
+            figureAttrs['width'] = attributes['width']
+            figureChanged = true
+        }
+
+        if (figureChanged) {
+            tr = tr.setNodeMarkup(pos, undefined, figureAttrs)
+        }
+
+        if (tr.docChanged) {
+            view.dispatch(tr)
+        }
+    }
+
+    toggleCropping() {
+        const img = this.dom.querySelector('img')
+        const figcaption = this.dom.querySelector('figcaption')
+        if (img) {
+            ;(this.cropper as any).target.image = img
+            ;(this.cropper as any).target.figcaption = figcaption
+            this.cropper.toggle()
+        }
     }
 
     selectNode() {
@@ -89,11 +150,9 @@ export class FigureView implements NodeView {
     }
 
     ignoreMutation(mutation: ViewMutationRecord) {
-        // Ignore style changes (width resizing) to prevent ProseMirror from resetting
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+        if (mutation.type === 'attributes' && (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
             return true
         }
-        // Allow content changes
         return false
     }
 
@@ -113,12 +172,8 @@ export class FigureView implements NodeView {
         const onMouseMove = (moveEvent: MouseEvent) => {
             const currentX = moveEvent.clientX
             const diffX = currentX - startX
-
-            // If dragging from the left, moving left (negative diff) increases width
             const multiplier = (direction === 'tl' || direction === 'bl') ? -1 : 1
-
             const newWidth = Math.max(300, Math.min(700, startWidth + (diffX * multiplier)))
-
             wrapper.style.width = `${newWidth}px`
         }
 
@@ -182,11 +237,14 @@ export class FigureView implements NodeView {
             content: [{ type: 'text', text: ' ' }]
          })
 
-        // Focus the new paragraph
         if (where === 'before') {
             this.editor.commands.focus(insertionPos)
         } else {
             this.editor.commands.focus(insertionPos + 1)
         }
+    }
+
+    destroy() {
+        this.cropper?.destroy()
     }
 }

@@ -261,3 +261,6 @@
 .btn-text-block {
   --icon: url("./text-block.svg");
 }
+.btn-image-crop {
+  --icon: url("./crop.svg");
+}

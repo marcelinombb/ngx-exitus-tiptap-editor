@@ -1,8 +1,10 @@
 import { type Editor } from '@tiptap/core'
 import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
-import { type NodeView, type ViewMutationRecord } from '@tiptap/pm/view'
+import { type NodeView } from '@tiptap/pm/view'
 import { convertToBase64 } from './image'
+
+const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
 
 export class ImageView implements NodeView {
   node: Node
@@ -28,8 +30,6 @@ export class ImageView implements NodeView {
     this.image.draggable = false
     this.image.style.width = '100%' // Image always fills container
 
-    const imageUrlRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|bmp|webp|svg))/i
-
     if (imageUrlRegex.test(node.attrs['src'])) {
       this.urlToBase64(node.attrs['src'])
     } else {
@@ -50,6 +50,8 @@ export class ImageView implements NodeView {
 
     this.node = newNode
     this.image.draggable = false
+
+    this.setImageAttributes(this.image, newNode)
 
     return true
   }

@@ -321,3 +321,130 @@ p:has(> br):has(+ .ex-image-wrapper) {
 .ex-image-wrapper+p:has(> br) {
   display: none;
 } */
+/* Image Cropper Styles */
+.ex-crop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  overflow: hidden;
+  backdrop-filter: blur(2px);
+  transition: opacity 0.3s ease;
+}
+
+.ex-crop-area {
+  position: absolute;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  border: 2px solid #3b82f6;
+  box-sizing: border-box;
+  cursor: move;
+  z-index: 101;
+}
+
+.ex-crop-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #3b82f6;
+  border: 1px solid white;
+  z-index: 102;
+}
+
+.ex-crop-handle-topLeft {
+  top: -5px;
+  left: -5px;
+  cursor: nwse-resize;
+}
+
+.ex-crop-handle-topRight {
+  top: -5px;
+  right: -5px;
+  cursor: nesw-resize;
+}
+
+.ex-crop-handle-bottomLeft {
+  bottom: -5px;
+  left: -5px;
+  cursor: nesw-resize;
+}
+
+.ex-crop-handle-bottomRight {
+  bottom: -5px;
+  right: -5px;
+  cursor: nwse-resize;
+}
+
+.ex-crop-handle-top {
+  top: -5px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: ns-resize;
+}
+
+.ex-crop-handle-bottom {
+  bottom: -5px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: ns-resize;
+}
+
+.ex-crop-handle-left {
+  left: -5px;
+  top: 50%;
+  margin-top: -5px;
+  cursor: ew-resize;
+}
+
+.ex-crop-handle-right {
+  right: -5px;
+  top: 50%;
+  margin-top: -5px;
+  cursor: ew-resize;
+}
+
+.ex-crop-actions {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 103;
+  padding: 5px;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ex-crop-action {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.ex-crop-apply {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.ex-crop-apply:hover {
+  background-color: #2563eb;
+}
+
+.ex-crop-cancel {
+  background-color: #ef4444;
+  color: white;
+}
+
+.ex-crop-cancel:hover {
+  background-color: #dc2626;
+}
+
+.ex-image-cropping img {
+  filter: brightness(0.7);
+}

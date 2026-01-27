@@ -60,13 +60,17 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
           </editor-dropdown>
           <editor-dropdown [title]="'Alinhar imagem ao texto'" orientation="horizontal">
             <editor-button [icon]="'image-float-left'" (onClick)="setAlignment('inlineLeft')" [title]="'Esquerda'"
-              ></editor-button
-            >
+              ></editor-button>
             <editor-button [icon]="'image-float-right'" (onClick)="setAlignment('inlineRight')" [title]="'Direita'"
-              ></editor-button
-            >
+              ></editor-button>
           </editor-dropdown>
-          
+          @if (editor().isActive('figure')) {
+            <editor-button
+                [icon]="'image-crop'"
+                [title]="'Recortar Imagem'"
+                (onClick)="toggleCropping()"
+            ></editor-button>
+          }
         </div>
       </div>
     </bubble-menu>
@@ -169,5 +173,9 @@ export class ImageFloatingMenuComponent implements OnInit {
 
   setWidth(width: number | null) {
     this.editor().chain().focus().setImageWidth(width).run();
+  }
+
+  toggleCropping() {
+    this.editor().chain().focus().cropImage().run();
   }
 }
