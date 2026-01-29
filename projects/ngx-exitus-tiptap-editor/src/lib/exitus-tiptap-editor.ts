@@ -22,6 +22,13 @@ import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
 import { EditorDropdownService } from './components/editor-dropdown.component';
 import { AnswerBox } from './extensions/answer-box/answer-box';
 import { AnswerBoxHeader } from './extensions/answer-box/answer-box-header';
+import { SpellCheckerExtension } from './extensions/spell-checker';
+
+import { SpellCheckerConfig } from './extensions/spell-checker/spell-checker';
+
+export interface EditorExtensionsConfig {
+  spellChecker?: SpellCheckerConfig;
+}
 
 @Component({
   selector: 'exitus-tiptap-editor',
@@ -51,6 +58,7 @@ export class ExitusTiptapEditor implements OnDestroy {
   private contentHtml = signal<string>("");
 
   content = input<string>(`$$\\frac{a}{b} + c$$`);
+  extensionsConfig = input<EditorExtensionsConfig>();
 
   onContentChange = output<string>();
 
@@ -108,7 +116,8 @@ export class ExitusTiptapEditor implements OnDestroy {
         MathType,
         MathTypePlugin,
         AnswerBox,
-        ...TableExtensions
+        ...TableExtensions,
+        SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker)
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {

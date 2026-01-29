@@ -12,6 +12,12 @@ export class App implements OnInit {
   private sanitizer = inject(DomSanitizer);
   htmlContent = signal<SafeHtml>('');
 
+  extensionsConfig = {
+    spellChecker: {
+      apiUrl: 'https://spell-checker-function-15207959809.us-east4.run.app/check'
+    }
+  };
+
   onContentChange($event: string) {
     //console.log($event);
     localStorage.setItem('defaultText', $event);

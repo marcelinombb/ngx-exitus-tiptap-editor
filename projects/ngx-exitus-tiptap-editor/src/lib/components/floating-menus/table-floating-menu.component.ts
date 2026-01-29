@@ -64,6 +64,7 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
           <editor-dropdown icon="table-view" title="Bordas" [updateIcon]="false">
             <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
             <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
+            <editor-button icon="table-row" title="Sem bordas" (onClick)="toggleBorders()"></editor-button>
           </editor-dropdown>
           <span class="ex-toolbar-separator"></span>
           <editor-button icon="table-remove" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
@@ -143,6 +144,10 @@ export class TableFloatingMenuComponent {
 
     toggleVerticalBorder() {
         this.toggleTableAttribute('noVerticalBorder');
+    }
+
+    toggleBorders() {
+        this.toggleTableAttribute('noBorders');
     }
 
     private toggleTableAttribute(attribute: string) {

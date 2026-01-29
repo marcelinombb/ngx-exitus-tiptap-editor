@@ -22,6 +22,28 @@
                 }
             }
 
+            &[data-no-borders] {
+                border-style: hidden;
+
+                td,
+                th {
+                    border: hidden;
+                }
+            }
+
+            &[data-no-borders]:hover {
+                border-style: dotted;
+                border-color: #bfbfbf;
+                border-width: 1px;
+
+                td,
+                th {
+                    border: dotted;
+                    border-color: #bfbfbf;
+                    border-width: 1px;
+                }
+            }
+
             td,
             th {
                 min-width: 2em;

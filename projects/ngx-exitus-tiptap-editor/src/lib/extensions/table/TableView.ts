@@ -111,7 +111,7 @@ export class TableView implements NodeView {
     this.cellMinWidth = cellMinWidth
     this.view = view
     this.dom = document.createElement('div')
-    this.dom.className = 'tableWrapper'
+    this.dom.className = 'tableWrapper tiptap-widget'
     this.table = this.dom.appendChild(document.createElement('table'))
 
     // Apply user styles to the table element
@@ -127,13 +127,27 @@ export class TableView implements NodeView {
 
     if (node.attrs['noVerticalBorder']) {
       this.table.setAttribute('data-no-vertical-border', '')
-    } else {
+    }
+
+    else if (node.attrs['noBorders']) {
+      this.table.setAttribute('data-no-borders', '')
+    }
+
+    else {
       this.table.removeAttribute('data-no-vertical-border')
     }
 
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
     updateColumns(node, this.colgroup, this.table, cellMinWidth)
     this.contentDOM = this.table.appendChild(document.createElement('tbody'))
+  }
+
+  selectNode() {
+    this.dom.classList.add('ex-selected')
+  }
+
+  deselectNode() {
+    this.dom.classList.remove('ex-selected')
   }
 
   update(node: ProseMirrorNode) {
@@ -147,6 +161,12 @@ export class TableView implements NodeView {
       this.table.setAttribute('data-no-outer-border', '')
     } else {
       this.table.removeAttribute('data-no-outer-border')
+    }
+
+    if (node.attrs['noBorders']) {
+      this.table.setAttribute('data-no-borders', '')
+    } else {
+      this.table.removeAttribute('data-no-borders')
     }
 
     if (node.attrs['noVerticalBorder']) {

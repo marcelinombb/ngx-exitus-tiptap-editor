@@ -1,0 +1,48 @@
+.spelling-error {
+  text-decoration: underline wavy red;
+  cursor: pointer;
+  position: relative;
+}
+
+.spell-checker-suggestions {
+  position: absolute;
+  display: none;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  min-width: 150px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-size: 14px;
+}
+
+.spell-checker-suggestions-title {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+  color: #666;
+  background: #f9f9f9;
+}
+
+.spell-checker-suggestions-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.spell-checker-suggestions-item:hover {
+  background: #f0f0f0;
+}
+
+.spell-checker-suggestions-item:last-child {
+  border-radius: 0 0 4px 4px;
+}
+
+.spell-checker-no-suggestions {
+  padding: 8px 12px;
+  color: #999;
+  font-style: italic;
+}

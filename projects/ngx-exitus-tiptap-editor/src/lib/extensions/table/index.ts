@@ -27,6 +27,23 @@ export function fixTableEmptyParagraphs(html: string): string {
         }
     })
 
+    root.querySelectorAll('th p').forEach(p => {
+        const isEmpty =
+            !p.textContent?.trim() &&
+            !Array.from(p.children).some(
+                el =>
+                    el.tagName === 'BR' &&
+                    !el.classList.contains('ProseMirror-trailingBreak'),
+            )
+
+        if (isEmpty) {
+            p.querySelectorAll('br.ProseMirror-trailingBreak').forEach(br =>
+                br.remove(),
+            )
+            p.appendChild(document.createElement('br'))
+        }
+    })
+
     return root.innerHTML
 }
 
@@ -72,6 +89,13 @@ export const TableExtensions = [
                     parseHTML: element => element.hasAttribute('data-no-vertical-border'),
                     renderHTML: attributes => {
                         return attributes['noVerticalBorder'] ? { 'data-no-vertical-border': '' } : {}
+                    },
+                },
+                noBorders: {
+                    default: false,
+                    parseHTML: element => element.hasAttribute('data-no-borders'),
+                    renderHTML: attributes => {
+                        return attributes['noBorders'] ? { 'data-no-borders': '' } : {}
                     },
                 },
                 width: {
