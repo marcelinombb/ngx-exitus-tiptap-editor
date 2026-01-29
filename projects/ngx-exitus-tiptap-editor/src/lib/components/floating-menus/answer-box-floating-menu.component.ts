@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, OnInit, OnDestroy, signal } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import { BubbleMenuComponent } from '../bubble-menu.component';
 import { EditorButtonComponent } from '../editor-button.component';
@@ -20,35 +20,31 @@ import { findParentNode } from '@tiptap/core';
     >
       <div class="ex-toolbar-editor">
         <div class="ex-toolbar-items">
-             <select (change)="onStyleChange($event)" [value]="getStyle()" class="ex-toolbar-select">
+             <select (change)="onStyleChange($event)" [value]="boxStyle()" class="ex-toolbar-select">
                 <option value="box">Caixa</option>
                 <option value="lines">Linhas</option>
                 <option value="numbered-lines">Linhas numeradas</option>
             </select>
 
-            @if(true) {
-                 <input 
-                    type="number" 
-                    [value]="getLines()" 
-                    (change)="onLinesChange($event)" 
-                    class="ex-toolbar-input" 
-                    min="1" 
-                    max="20"
-                />
-            }
+            <input 
+                type="number" 
+                [value]="boxLines()" 
+                (change)="onLinesChange($event)" 
+                class="ex-toolbar-input" 
+                min="1" 
+                max="20"
+            />
 
              <editor-button
             [icon]="'heading'"
             [title]="'Alternar Cabeçalho'"
-            [active]="hasHeader()"
             (onClick)="toggleHeader()"
           >Cabeçalho</editor-button>
            <editor-button
-            [icon]="'rounded-corner'" 
+            [icon]="!boxBorder() ? 'square-rounded' : 'square-rounded-slash'" 
             [title]="'Alternar Borda'"
-            [active]="!hasBorder()"
             (onClick)="toggleBorder()"
-          >Borda</editor-button>
+          >{{!boxBorder() ? 'Adicionar Borda' : 'Remover Borda'}}</editor-button>
         </div>
       </div>
     </bubble-menu>
@@ -73,8 +69,36 @@ import { findParentNode } from '@tiptap/core';
     }
   `]
 })
-export class AnswerBoxFloatingMenuComponent {
+export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
     editor = input.required<Editor>();
+
+    boxStyle = signal<'box' | 'lines' | 'numbered-lines'>('box');
+    boxLines = signal<number>(5);
+    boxHeader = signal<boolean>(false);
+    boxBorder = signal<boolean>(true);
+
+    ngOnInit() {
+        this.editor().on('transaction', () => this.syncState());
+        this.editor().on('selectionUpdate', () => this.syncState());
+        this.editor().on('focus', () => this.syncState());
+        this.syncState();
+    }
+
+    ngOnDestroy() {
+        this.editor().off('transaction', this.syncState);
+        this.editor().off('selectionUpdate', this.syncState);
+        this.editor().off('focus', this.syncState);
+    }
+
+    private syncState() {
+        const attrs = this.editor().getAttributes('answerBox');
+        if (Object.keys(attrs).length > 0) {
+            this.boxStyle.set(attrs['style'] || 'box');
+            this.boxLines.set(attrs['lines'] || 5);
+            this.boxHeader.set(!!attrs['showHeader']);
+            this.boxBorder.set(!attrs['hideBorder']);
+        }
+    }
 
     shouldShow = ({ editor }: { editor: Editor }) => {
         return editor.isActive('answerBox') && this.editor().isFocused;
@@ -112,23 +136,6 @@ export class AnswerBoxFloatingMenuComponent {
             }
         }
         return null;
-    }
-
-    hasHeader() {
-        // We can check attributes of the active answerBox
-        return this.editor().getAttributes('answerBox')['showHeader'];
-    }
-
-    hasBorder() {
-        return !this.editor().getAttributes('answerBox')['hideBorder'];
-    }
-
-    getStyle() {
-        return this.editor().getAttributes('answerBox')['style'] || 'box';
-    }
-
-    getLines() {
-        return this.editor().getAttributes('answerBox')['lines'] || 5;
     }
 
     toggleHeader() {

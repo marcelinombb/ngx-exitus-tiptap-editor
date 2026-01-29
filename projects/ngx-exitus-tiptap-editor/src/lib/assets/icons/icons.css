@@ -267,3 +267,11 @@
 .btn-palette {
   --icon: url("./palette.svg");
 }
+
+.btn-square-rounded {
+   --icon: url("./square-rounded-corners.svg")
+}
+
+.btn-square-rounded-slash {
+   --icon: url("./square-rounded-slash.svg")
+}

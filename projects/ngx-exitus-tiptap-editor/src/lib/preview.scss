@@ -1,7 +1,7 @@
-@import '../lib/extensions/image/style.scss';
-@import '../lib/extensions/colar-questao/style.scss';
-@import '../lib/extensions/table/style.scss';
-@import '../lib/extensions/answer-box/style.scss';
+@use '../lib/extensions/image/style.scss' as image-style;
+@use '../lib/extensions/colar-questao/style.scss' as colar-questao-style;
+@use '../lib/extensions/table/style.scss' as table-style;
+@use '../lib/extensions/answer-box/style.scss' as answer-box-style;
 
 :root {
     --active-blue: hsl(218, 81.8%, 56.9%);

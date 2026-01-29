@@ -61,11 +61,11 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
             </editor-button>
           </editor-dropdown>
           <span class="ex-toolbar-separator"></span>
-          <editor-dropdown icon="table-view" title="Bordas" [updateIcon]="false">
+          <!-- <editor-dropdown icon="table-view" title="Bordas" [updateIcon]="false">
             <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
             <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
-            <editor-button icon="table-row" title="Sem bordas" (onClick)="toggleBorders()"></editor-button>
-          </editor-dropdown>
+        </editor-dropdown> -->
+          <editor-button icon="square-rounded" title="Sem bordas" (onClick)="toggleBorders()"></editor-button>
           <span class="ex-toolbar-separator"></span>
           <editor-button icon="table-remove" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
         </div>
@@ -216,6 +216,7 @@ export class TableFloatingMenuComponent {
     }
 
     onShow = () => {
+        console.log(this.editor().getAttributes('table'));
         requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
     };
 }
