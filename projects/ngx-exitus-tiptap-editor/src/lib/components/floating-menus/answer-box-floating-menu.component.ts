@@ -35,11 +35,11 @@ import { findParentNode } from '@tiptap/core';
                 max="20"
             />
 
-             <editor-button
-            [icon]="'header-slash'"
+            <editor-button
+            [icon]="!boxHeader() ? 'header-view' : 'header-slash'"
             [title]="'Alternar Cabeçalho'"
             (onClick)="toggleHeader()"
-          >Cabeçalho</editor-button>
+            >{{!boxHeader() ? 'Adicionar Cabeçalho' : 'Remover Cabeçalho'}}</editor-button>
            <editor-button
             [icon]="!boxBorder() ? 'square-rounded' : 'square-rounded-slash'" 
             [title]="'Alternar Borda'"

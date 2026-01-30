@@ -279,3 +279,7 @@
 .btn-header-slash {
    --icon: url("./slash-calendar-view.svg")
 }
+
+.btn-header-view {
+   --icon: url("./header-view.svg")
+}
