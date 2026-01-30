@@ -82,7 +82,6 @@ export const Figure = TiptapNode.create<ImageOptions>({
 
   content: 'image figcaption?',
   draggable: true,
-  atom: false,
   isolating: true,
   allowGapCursor: false,
 

@@ -3,7 +3,6 @@ import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
-import Gapcursor from '@tiptap/extension-gapcursor';
 import TextAlign from '@tiptap/extension-text-align';
 import { EditorToolbarComponent } from './components/editor-toolbar.component';
 import { Indent } from './extensions/indent/indent';
@@ -21,8 +20,8 @@ import { MathType, MathTypePlugin } from './extensions/mathtype';
 import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
 import { EditorDropdownService } from './components/editor-dropdown.component';
 import { AnswerBox } from './extensions/answer-box/answer-box';
-import { AnswerBoxHeader } from './extensions/answer-box/answer-box-header';
 import { SpellCheckerExtension } from './extensions/spell-checker';
+import { Paragraph } from '@tiptap/extension-paragraph';
 
 import { SpellCheckerConfig } from './extensions/spell-checker/spell-checker';
 
@@ -96,12 +95,28 @@ export class ExitusTiptapEditor implements OnDestroy {
           heading: false,
           codeBlock: false,
           code: false,
-          listKeymap: false
+          listKeymap: false,
+          paragraph: false,
+        }),
+        Paragraph.extend({
+          parseHTML() {
+            return [
+              {
+                tag: 'p',
+                getAttrs: (node) => {
+                  if(node.querySelector("img")) {
+                    return false
+                  }
+                  return {};
+                },
+              },
+            ];
+          },
         }),
         Subscript,
         Superscript,
         TextAlign.configure({
-          types: ['heading', 'paragraph']
+          types: ['heading', 'paragraph'],
         }),
         Indent,
         Tab,
@@ -117,7 +132,7 @@ export class ExitusTiptapEditor implements OnDestroy {
         MathTypePlugin,
         AnswerBox,
         ...TableExtensions,
-        SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker)
+        SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker),
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
@@ -129,7 +144,7 @@ export class ExitusTiptapEditor implements OnDestroy {
         const html = editor.getHTML();
         this.contentHtml.set(html);
         this.onContentChange.emit(fixTableEmptyParagraphs(html));
-      }
+      },
     });
 
     this.editor.set(newEditor);

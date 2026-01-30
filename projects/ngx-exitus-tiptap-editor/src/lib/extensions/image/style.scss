@@ -317,10 +317,6 @@ figcaption {
   right: 20px;
 }
 
-p:has(> br):has(+ .ex-image-wrapper) {
-  display: none;
-}
-
 /* 
 .ex-image-wrapper+p:has(> br) {
   display: none;
