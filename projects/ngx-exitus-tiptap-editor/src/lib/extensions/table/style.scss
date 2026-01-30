@@ -86,10 +86,72 @@
     .tableWrapper {
         display: table;
         margin: .9em auto;
+
+                /* Styles for Insert Paragraph Buttons */
+        .insert-paragraph-btn {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background-color: #ffc83d;
+            color: white;
+            border-radius: 50%;
+            display: none;
+            z-index: 30;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.2s;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &.ex-selected .insert-paragraph-btn,
+        &:hover .insert-paragraph-btn {
+            display: flex;
+        }
+
+        .ex-selected .insert-paragraph-btn {
+            background-color: #3b82f6;
+        }
+
+        .insert-paragraph-btn:hover {
+            background-color: #3b82f6;
+        }
+
+        .insert-paragraph-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .insert-paragraph-before {
+            top: -12px;
+            left: 20px;
+        }
+
+        .insert-paragraph-after {
+            bottom: -12px;
+            right: 20px;
+        }
+
     }
 
     .resize-cursor {
         cursor: ew-resize;
         cursor: col-resize;
+    }
+
+
+
+}
+
+.preview-paper {
+    table {
+       &[data-no-borders] {
+                border-style: none!important;
+
+                td,
+                th {
+                    border-style: none!important;
+                }
+            }
     }
 }

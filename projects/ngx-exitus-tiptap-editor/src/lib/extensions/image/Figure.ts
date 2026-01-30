@@ -84,7 +84,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
   draggable: true,
   atom: false,
   isolating: true,
-  allowGapCursor: true,
+  allowGapCursor: false,
 
   parseHTML() {
     return [

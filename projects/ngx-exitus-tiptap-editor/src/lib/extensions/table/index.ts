@@ -5,6 +5,8 @@ import { TableCell } from '@tiptap/extension-table-cell';
 import { tableEditing } from '@tiptap/pm/tables';
 import { columnResizing } from './custom-column-resizing';
 import { TableView } from './TableView';
+import { Node as ProsemirrorNode } from '@tiptap/pm/model';
+import { EditorView, NodeView } from '@tiptap/pm/view';
 
 export function fixTableEmptyParagraphs(html: string): string {
     const root = document.createElement('div')
@@ -47,34 +49,80 @@ export function fixTableEmptyParagraphs(html: string): string {
     return root.innerHTML
 }
 
-export const TableExtensions = [
-    Table.extend({
-        addProseMirrorPlugins() {
-            const isResizable = this.options.resizable && this.editor.isEditable;
+export interface TableOptions {
+  /**
+   * HTML attributes for the table element.
+   * @default {}
+   * @example { class: 'foo' }
+   */
+  HTMLAttributes: Record<string, any>
 
-            return [
-                ...(isResizable
-                    ? [
-                        columnResizing({
-                            handleWidth: this.options.handleWidth,
-                            cellMinWidth: this.options.cellMinWidth,
-                            defaultCellMinWidth: this.options.cellMinWidth,
-                            View: this.options.View,
-                            lastColumnResizable: this.options.lastColumnResizable,
-                        }),
-                    ]
-                    : []),
-                tableEditing({
-                    allowTableNodeSelection: this.options.allowTableNodeSelection,
-                }),
-            ];
+  /**
+   * Enables the resizing of tables.
+   * @default false
+   * @example true
+   */
+  resizable: boolean
+
+  /**
+   * Controls whether the table should be wrapped in a div with class "tableWrapper" when rendered.
+   * In editable mode with resizable tables, this wrapper is always present via TableView.
+   * @default false
+   * @example true
+   */
+  renderWrapper: boolean
+
+  /**
+   * The width of the resize handle.
+   * @default 5
+   * @example 10
+   */
+  handleWidth: number
+
+  /**
+   * The minimum width of a cell.
+   * @default 25
+   * @example 50
+   */
+  cellMinWidth: number
+
+  /**
+   * The node view to render the table.
+   * @default TableView
+   */
+  View: (new (node: ProsemirrorNode, cellMinWidth: number, view: EditorView, getPos: () => number | undefined) => NodeView) | null
+
+  /**
+   * Enables the resizing of the last column.
+   * @default true
+   * @example false
+   */
+  lastColumnResizable: boolean
+
+  /**
+   * Allow table node selection.
+   * @default false
+   * @example true
+   */
+  allowTableNodeSelection: boolean
+}
+
+export const TableExtensions = [
+    Table.extend<TableOptions>({
+        // @ts-ignore
+        addOptions() {
+            return {
+            HTMLAttributes: {},
+            resizable: false,
+            renderWrapper: false,
+            handleWidth: 5,
+            cellMinWidth: 25,
+            // TODO: fix
+            View: TableView,
+            lastColumnResizable: true,
+            allowTableNodeSelection: false,
+            }
         },
-    }).configure({
-        resizable: true,
-        cellMinWidth: 32,
-        renderWrapper: true,
-        View: TableView,
-    }).extend({
         addAttributes() {
             return {
                 noOuterBorder: {
@@ -108,6 +156,31 @@ export const TableExtensions = [
                 },
             }
         },
+        addProseMirrorPlugins() {
+            const isResizable = this.options.resizable && this.editor.isEditable;
+
+            return [
+                ...(isResizable
+                    ? [
+                        columnResizing({
+                            handleWidth: this.options.handleWidth,
+                            cellMinWidth: this.options.cellMinWidth,
+                            defaultCellMinWidth: this.options.cellMinWidth,
+                            View: this.options.View,
+                            lastColumnResizable: this.options.lastColumnResizable,
+                        }, this.editor),
+                    ]
+                    : []),
+                tableEditing({
+                    allowTableNodeSelection: this.options.allowTableNodeSelection,
+                }),
+            ];
+        },
+    }).configure({
+        resizable: true,
+        cellMinWidth: 32,
+        renderWrapper: true,
+        
     }),
     TableRow,
     TableHeader,

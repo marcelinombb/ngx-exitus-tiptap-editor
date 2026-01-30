@@ -3,6 +3,7 @@ import { EditorState, Transaction, Plugin, PluginKey } from '@tiptap/pm/state';
 import { EditorView, NodeView, Decoration, DecorationSet } from '@tiptap/pm/view';
 import { TableMap, TableView, cellAround, pointsAtCell, tableNodeTypes } from '@tiptap/pm/tables';
 import { updateColumns } from './TableView';
+import { Editor } from '@tiptap/core';
 
 export const columnResizingPluginKey = new PluginKey<ResizeState>('tableColumnResizing');
 
@@ -11,7 +12,7 @@ export type ColumnResizingOptions = {
     cellMinWidth?: number;
     defaultCellMinWidth?: number;
     lastColumnResizable?: boolean;
-    View?: (new (node: ProsemirrorNode, cellMinWidth: number, view: EditorView) => NodeView) | null;
+    View?: (new (node: ProsemirrorNode, cellMinWidth: number, view: EditorView, getPos: () => number | undefined, editor: Editor) => NodeView) | null;
 };
 
 export type Dragging = { startX: number; startWidth: number; startTableWidth: number; startWidthNeighbor?: number; nextCellPos?: number };
@@ -22,7 +23,7 @@ export function columnResizing({
     defaultCellMinWidth = 100,
     View = TableView,
     lastColumnResizable = true,
-}: ColumnResizingOptions = {}): Plugin {
+}: ColumnResizingOptions = {}, editor: Editor): Plugin {
     const plugin = new Plugin<ResizeState>({
         key: columnResizingPluginKey,
         state: {
@@ -30,8 +31,8 @@ export function columnResizing({
                 const nodeViews = plugin.spec?.props?.nodeViews;
                 const tableName = tableNodeTypes(state.schema).table.name;
                 if (View && nodeViews) {
-                    nodeViews[tableName] = (node, view) => {
-                        return new View(node, defaultCellMinWidth, view);
+                    nodeViews[tableName] = (node, view, getPos) => {
+                        return new View(node, defaultCellMinWidth, view, getPos, editor);
                     };
                 }
                 return new ResizeState(-1, false);

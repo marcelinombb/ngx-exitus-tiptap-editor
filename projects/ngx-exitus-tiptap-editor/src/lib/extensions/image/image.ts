@@ -82,6 +82,8 @@ export const Image = Node.create<ImageOptions>({
 
   draggable: false,
 
+  allowGapCursor: false,
+
   addAttributes() {
     return {
       src: {

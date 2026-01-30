@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { EditorButtonComponent } from '../editor-button.component';
 import { Editor, findParentNode } from '@tiptap/core';
 import { BubbleMenuComponent } from '../bubble-menu.component';
@@ -65,7 +65,7 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
             <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
             <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
         </editor-dropdown> -->
-          <editor-button icon="square-rounded" title="Sem bordas" (onClick)="toggleBorders()"></editor-button>
+          <editor-button [icon]="!tableBorder() ? 'square-rounded-slash' : 'square-rounded'" [title]="!tableBorder() ? 'Sem bordas' : 'Com bordas'" (onClick)="toggleBorders()"></editor-button>
           <span class="ex-toolbar-separator"></span>
           <editor-button icon="table-remove" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
         </div>
@@ -103,8 +103,30 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
         }
     `
 })
-export class TableFloatingMenuComponent {
+export class TableFloatingMenuComponent implements OnInit, OnDestroy {
     editor = input.required<Editor>();
+
+    tableBorder = signal<boolean>(true);
+
+    ngOnInit() {
+        this.editor().on('transaction', () => this.syncState());
+        this.editor().on('selectionUpdate', () => this.syncState());
+        this.editor().on('focus', () => this.syncState());
+        this.syncState();
+    }
+
+    ngOnDestroy() {
+        this.editor().off('transaction', this.syncState);
+        this.editor().off('selectionUpdate', this.syncState);
+        this.editor().off('focus', this.syncState);
+    }
+
+    private syncState() {
+        const attrs = this.editor().getAttributes('table');
+        if (Object.keys(attrs).length > 0) {
+            this.tableBorder.set(attrs['noBorders']);
+        }
+    }
 
     shouldShowTable = (props: any) => {
         return this.editor().isActive('table') && this.editor().isFocused;
@@ -216,7 +238,6 @@ export class TableFloatingMenuComponent {
     }
 
     onShow = () => {
-        console.log(this.editor().getAttributes('table'));
         requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
     };
 }

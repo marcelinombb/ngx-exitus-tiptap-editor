@@ -1,6 +1,6 @@
 import { type ChainedCommands, type Editor } from '@tiptap/core'
 import { DOMSerializer, type Node, type Schema } from '@tiptap/pm/model'
-import { TextSelection } from '@tiptap/pm/state'
+import { EditorState, TextSelection } from '@tiptap/pm/state'
 import { Fragment } from 'prosemirror-model'
 
 export function createHTMLElement<T = Element>(tagName: string, attributes: Record<string, string>, childrens?: Element[]): T {
@@ -37,8 +37,8 @@ export function insertParagraph(editor: Editor, position: number) {
   editor.commands.setTextSelection(position + 1)
 }
 
-export function findNodePosition(editor: Editor, targetNode: Node) {
-  const { doc } = editor.view.state
+export function findNodePosition(state: EditorState, targetNode: Node) {
+  const { doc } = state
   let position = -1
 
   doc.descendants((node, pos) => {

@@ -275,3 +275,7 @@
 .btn-square-rounded-slash {
    --icon: url("./square-rounded-slash.svg")
 }
+
+.btn-header-slash {
+   --icon: url("./slash-calendar-view.svg")
+}

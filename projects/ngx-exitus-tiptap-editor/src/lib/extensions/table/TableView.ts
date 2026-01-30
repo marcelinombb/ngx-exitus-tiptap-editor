@@ -1,6 +1,8 @@
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { NodeView, ViewMutationRecord, EditorView } from '@tiptap/pm/view'
 import { columnResizingPluginKey } from './custom-column-resizing'
+import { Editor, findParentNode } from '@tiptap/core'
+import { findNodePosition } from '../../utils'
 
 export function getColStyleDeclaration(minWidth: number, width: number | undefined): [string, string] {
   if (width) {
@@ -106,10 +108,16 @@ export class TableView implements NodeView {
 
   view: EditorView
 
-  constructor(node: ProseMirrorNode, cellMinWidth: number, view: EditorView) {
+  editor: Editor
+
+  getPos: () => number | undefined
+
+  constructor(node: ProseMirrorNode, cellMinWidth: number, view: EditorView, getPos: () => number | undefined, editor: Editor) {
     this.node = node
     this.cellMinWidth = cellMinWidth
     this.view = view
+    this.editor = editor
+    this.getPos = getPos
     this.dom = document.createElement('div')
     this.dom.className = 'tableWrapper tiptap-widget'
     this.table = this.dom.appendChild(document.createElement('table'))
@@ -136,6 +144,28 @@ export class TableView implements NodeView {
     else {
       this.table.removeAttribute('data-no-vertical-border')
     }
+
+    // Insert Paragraph Before button
+    const insertBeforeBtn = document.createElement('div')
+    insertBeforeBtn.classList.add('insert-paragraph-btn', 'insert-paragraph-before')
+    insertBeforeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M11 9l1.42 1.42L8.83 14H18V7h2v9H8.83l3.59 3.58L11 21l-6-6 6-6z"/></svg>'
+    insertBeforeBtn.title = 'Inserir parágrafo antes'
+    insertBeforeBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        this.insertParagraph('before')
+    })
+    this.dom.appendChild(insertBeforeBtn)
+
+    // Insert Paragraph After button
+    const insertAfterBtn = document.createElement('div')
+    insertAfterBtn.classList.add('insert-paragraph-btn', 'insert-paragraph-after')
+    insertAfterBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M11 9l1.42 1.42L8.83 14H18V7h2v9H8.83l3.59 3.58L11 21l-6-6 6-6z"/></svg>'
+    insertAfterBtn.title = 'Inserir parágrafo após'
+    insertAfterBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        this.insertParagraph('after')
+    })
+    this.dom.appendChild(insertAfterBtn)
 
     this.colgroup = this.table.appendChild(document.createElement('colgroup'))
     updateColumns(node, this.colgroup, this.table, cellMinWidth)
@@ -196,4 +226,23 @@ export class TableView implements NodeView {
 
     return false
   }
+
+  insertParagraph(where: 'before' | 'after') {
+        if (typeof this.getPos !== 'function') return
+        const pos = this.getPos()
+        if (pos === undefined) return
+
+        const insertionPos = where === 'before' ? pos : pos + this.node.nodeSize
+        this.editor.commands.insertContentAt(insertionPos, { 
+            type: 'paragraph', 
+            content: [{ type: 'text', text: ' ' }]
+         })
+
+        if (where === 'before') {
+            this.editor.commands.focus(insertionPos)
+        } else {
+            this.editor.commands.focus(insertionPos + 1)
+        }
+    }
+
 }

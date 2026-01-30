@@ -36,7 +36,7 @@ import { findParentNode } from '@tiptap/core';
             />
 
              <editor-button
-            [icon]="'heading'"
+            [icon]="'header-slash'"
             [title]="'Alternar Cabeçalho'"
             (onClick)="toggleHeader()"
           >Cabeçalho</editor-button>
