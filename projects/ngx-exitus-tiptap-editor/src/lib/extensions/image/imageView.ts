@@ -12,7 +12,9 @@ let wasmReady: Promise<void> | null = null
 
 function ensureWasm() {
   if (!wasmReady) {
-    wasmReady = init(new String('/assets/image-to-base64-wasm/image_to_base64_wasm_bg.wasm'))
+    wasmReady = init({
+      module_or_path: '/assets/image-to-base64-wasm/image_to_base64_wasm_bg.wasm'
+    })
   }
   return wasmReady
 }
