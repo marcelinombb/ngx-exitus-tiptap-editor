@@ -1,21 +1,42 @@
-import { mergeAttributes, Node } from '@tiptap/core'
-import { Fragment, type Node as PmNode, type Schema, Slice } from '@tiptap/pm/model'
+import { mergeAttributes, Node, type NodeViewRendererProps } from '@tiptap/core';
+import { DOMSerializer, Fragment, type Node as PmNode, type Schema, Slice } from '@tiptap/pm/model';
+import { type EditorView } from '@tiptap/pm/view';
+import { type EditorState } from '@tiptap/pm/state';
 
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {
         colarQuestao: {
-            addColarQuestao: (title: string) => ReturnType
-            removeColarQuestao: (pos: number) => ReturnType
-        }
+            /**
+             * Add a new ColarQuestao node.
+             * If selection is inside an existing node, updates its title.
+             * If valid blocks are selected, wraps them.
+             */
+            addColarQuestao: (title: string) => ReturnType;
+            /**
+             * Remove the ColarQuestao node at the specified position.
+             * Unwrap its content.
+             */
+            removeColarQuestao: (pos: number) => ReturnType;
+            /**
+             * Get the content HTML of a specific ColarQuestao node by title.
+             */
+            getColarQuestaoContent: (title: string) => any;
+        };
     }
 }
 
-export const ColarQuestao = Node.create({
+const CLOSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path></svg>`;
+
+export interface ColarQuestaoOptions {
+    HTMLAttributes: Record<string, any>;
+}
+
+export const ColarQuestao = Node.create<ColarQuestaoOptions>({
     name: 'colarQuestao',
 
     group: 'block',
 
-    content: 'block*',
+    content: 'block+',
 
     selectable: false,
 
@@ -25,184 +46,275 @@ export const ColarQuestao = Node.create({
 
     draggable: true,
 
-    parseHTML() {
-        return [
-            {
-                tag: 'colar-questao',
-            },
-        ]
-    },
-
-    renderHTML({ HTMLAttributes }) {
-        return ['colar-questao', mergeAttributes(HTMLAttributes), 0]
+    addOptions() {
+        return {
+            HTMLAttributes: {},
+        };
     },
 
     addAttributes() {
         return {
             title: {
                 default: null,
+                parseHTML: (element) => element.getAttribute('title'),
+                renderHTML: (attributes) => {
+                    return {
+                        title: attributes["title"],
+                    };
+                },
             },
-        }
+        };
+    },
+
+    parseHTML() {
+        return [
+            {
+                tag: 'colar-questao',
+            },
+        ];
+    },
+
+    renderHTML({ HTMLAttributes }) {
+        return [
+            'colar-questao',
+            mergeAttributes(this.options.HTMLAttributes, HTMLAttributes),
+            0,
+        ];
     },
 
     addCommands() {
         return {
-            addColarQuestao: (title: string) => ({ tr, state, dispatch }) => {
-                const { schema, selection, doc } = state
-                const { $from, $to } = selection
+            addColarQuestao:
+                (title: string) =>
+                    ({ tr, state, dispatch }) => {
+                        const { schema, selection, doc } = state;
 
-                // Check for duplicate titles
-                let exists = false
-                doc.descendants((node) => {
-                    if (node.type.name === this.name && node.attrs['title'] === title) {
-                        exists = true
-                        return false
-                    }
-                    return true
-                })
+                        // 1. Check for duplicate titles (Business Rule)
+                        let titleExists = false;
+                        doc.descendants((node) => {
+                            if (node.type.name === this.name && node.attrs['title'] === title) {
+                                titleExists = true;
+                                return false; // Stop iteration
+                            }
+                            return true;
+                        });
 
-                if (exists) return false
+                        if (titleExists) {
+                            return false;
+                        }
 
-                // Check if selection is already inside a colarQuestao node
-                let existingNodePos = -1
-                let existingNode: PmNode | null = null
+                        // 2. Check if we are inside an existing node (Update Scenario)
+                        const { $from, $to } = selection;
+                        let existingPos = -1;
+                        let existingNode: PmNode | null = null;
 
-                // Walk up from current position to find if we are inside our node
-                for (let d = $from.depth; d > 0; d--) {
-                    const node = $from.node(d)
-                    if (node.type.name === this.name) {
-                        existingNode = node
-                        existingNodePos = $from.before(d)
-                        break
-                    }
-                }
+                        for (let d = $from.depth; d > 0; d--) {
+                            const node = $from.node(d);
+                            if (node.type.name === this.name) {
+                                existingNode = node;
+                                existingPos = $from.before(d);
+                                break;
+                            }
+                        }
 
-                if (existingNode && existingNodePos > -1) {
-                    // If title is the same, do nothing
-                    if (existingNode.attrs['title'] === title) return false
+                        if (existingNode && existingPos > -1) {
+                            // If identical title, no-op
+                            if (existingNode.attrs['title'] === title) {
+                                return false;
+                            }
 
-                    if (dispatch) {
-                        tr.setNodeMarkup(existingNodePos, undefined, { title })
-                        dispatch(tr)
-                    }
-                    return true
-                }
+                            if (dispatch) {
+                                tr.setNodeMarkup(existingPos, undefined, {
+                                    ...existingNode.attrs,
+                                    title,
+                                });
+                            }
+                            return true;
+                        }
 
-                // If not updating, we are inserting/wrapping.
-                // Determine the range to wrap.
-                // We want to wrap the current block(s).
-                // If depth is 0, use full selection.
-                const fromPos = $from.depth > 0 ? $from.before($from.depth) : selection.from
-                const toPos = $to.depth > 0 ? $to.after($to.depth) : selection.to
+                        // 3. Wrap selection (Creation Scenario)
+                        // Determine the range to wrap (expand to full blocks)
+                        const fromPos =
+                            $from.depth > 0 ? $from.before($from.depth) : selection.from;
+                        const toPos = $to.depth > 0 ? $to.after($to.depth) : selection.to;
 
-                const slice = doc.slice(fromPos, toPos)
-                const content = ensureBlockContent(slice, schema)
+                        // Create the slice and ensure it contains blocks
+                        const slice = doc.slice(fromPos, toPos);
+                        const content = ensureBlockContent(slice, schema);
 
-                const node = schema.nodes[this.name].create({ title }, content)
+                        // Create the node
+                        const node = schema.nodes[this.name].create({ title }, content);
 
-                if (dispatch) {
-                    tr.replaceRangeWith(fromPos, toPos, node)
-                    dispatch(tr)
-                }
+                        if (dispatch) {
+                            tr.replaceRangeWith(fromPos, toPos, node);
+                        }
 
-                return true
-            },
+                        return true;
+                    },
 
-            removeColarQuestao: (pos: number) => ({ tr, dispatch }) => {
-                if (dispatch) {
-                    const node = tr.doc.nodeAt(pos)
-                    if (node && node.type.name === this.name) {
-                        // Replace the node with its content (unwrap)
-                        tr.replaceWith(pos, pos + node.nodeSize, node.content)
-                        dispatch(tr)
-                        return true
-                    }
-                }
-                return false
-            },
-        }
+            removeColarQuestao:
+                (pos: number) =>
+                    ({ tr, dispatch }) => {
+                        const node = tr.doc.nodeAt(pos);
+                        if (node && node.type.name === this.name) {
+                            if (dispatch) {
+                                // Unwrap: replace the node with its own content
+                                tr.replaceWith(pos, pos + node.nodeSize, node.content);
+                            }
+                            return true;
+                        }
+                        return false;
+                    },
+
+            getColarQuestaoContent:
+                (title: string) =>
+                    ({ state }: { state: EditorState }) => {
+                        let targetNode: PmNode | null = null;
+                        state.doc.descendants((node) => {
+                            if (node.type.name === this.name && node.attrs['title'] === title) {
+                                targetNode = node;
+                                return false;
+                            }
+                            return true;
+                        });
+
+                        if (targetNode) {
+                            const serializer = DOMSerializer.fromSchema(state.schema);
+                            const fragment = serializer.serializeFragment((targetNode as PmNode).content);
+                            const wrapper = document.createElement('div');
+                            wrapper.appendChild(fragment);
+                            return wrapper.innerHTML;
+                        }
+                        return null;
+                    },
+        };
     },
 
     addNodeView() {
-        return ({ editor, node, getPos }) => {
-            const dom = document.createElement('div')
-            dom.draggable = true
-            dom.classList.add('colar-questao')
-
-            // Stop internal drops
-            const handleDrop = (event: DragEvent) => {
-                const draggedNodeType = event.dataTransfer?.getData('text/html') ?? ''
-                if (/colar-questao/i.test(draggedNodeType)) {
-                    event.preventDefault()
-                }
-            }
-            dom.addEventListener('drop', handleDrop)
-
-            const label = document.createElement('label')
-            label.contentEditable = 'false'
-            label.textContent = node.attrs['title']
-
-            const close = document.createElement('button')
-            close.contentEditable = 'false'
-            close.className = 'close-colar'
-            // Close icon
-            close.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path></svg>`
-
-            const remove = () => {
-                if (typeof getPos === 'function') {
-                    const pos = getPos()
-                    if (typeof pos === 'number') {
-                        editor.commands.removeColarQuestao(pos)
-                    }
-                }
-            }
-            close.addEventListener('click', remove)
-
-            const content = document.createElement('div')
-            content.classList.add('colar-content', 'is-editable')
-
-            dom.append(label, close, content)
-
-            return {
-                dom,
-                contentDOM: content,
-                destroy: () => {
-                    dom.removeEventListener('drop', handleDrop)
-                    close.removeEventListener('click', remove)
-                },
-            }
-        }
+        return (props) => new ColarQuestaoNodeView(props);
     },
-})
+});
 
 /**
- * Helper to ensure we have block content for the wrapper
+ * Custom Node View for ColarQuestao
+ * Handles the DOM structure, events, and updates efficiently.
+ */
+class ColarQuestaoNodeView {
+    dom: HTMLElement;
+    contentDOM: HTMLElement;
+    label: HTMLElement;
+    node: PmNode;
+    getPos: () => number;
+    view: EditorView;
+    editor: any; // Using any for Tiptap editor instance ease, or use generic Editor type
+
+    constructor(props: NodeViewRendererProps) {
+        this.node = props.node;
+        this.view = props.view;
+        this.getPos = props.getPos as () => number; // getPos is guaranteed for node views
+        this.editor = props.editor;
+
+        this.dom = document.createElement('div');
+        this.dom.classList.add('colar-questao');
+        this.dom.draggable = true;
+
+        // Label for the title
+        this.label = document.createElement('label');
+        this.label.contentEditable = 'false';
+        this.label.textContent = this.node.attrs['title'];
+
+        // Close button
+        const closeBtn = document.createElement('button');
+        closeBtn.contentEditable = 'false';
+        closeBtn.className = 'close-colar';
+        closeBtn.innerHTML = CLOSE_ICON;
+        closeBtn.addEventListener('click', this.handleRemove);
+
+        // Content container
+        this.contentDOM = document.createElement('div');
+        this.contentDOM.classList.add('colar-content', 'is-editable');
+
+        this.dom.append(this.label, closeBtn, this.contentDOM);
+
+        // Event listeners
+        this.dom.addEventListener('drop', this.handleDrop);
+    }
+
+    /**
+     * Updates the node view when the node changes.
+     * Returns true if handled, false if the node view should be re-created.
+     */
+    update(node: PmNode) {
+        if (node.type !== this.node.type) {
+            return false;
+        }
+
+        this.node = node;
+        // Update title if changed
+        if (this.label.textContent !== node.attrs['title']) {
+            this.label.textContent = node.attrs['title'];
+        }
+
+        return true;
+    }
+
+    /**
+     * Clean up event listeners
+     */
+    destroy() {
+        this.dom.removeEventListener('drop', this.handleDrop);
+        // Button listeners are removed with the DOM usually, but good practice to be explicit if reference held
+    }
+
+    /**
+     * Prevents nesting ColarQuestao via drag and drop
+     */
+    handleDrop = (event: DragEvent) => {
+        const draggedNodeType = event.dataTransfer?.getData('text/html') ?? '';
+        if (/colar-questao/i.test(draggedNodeType)) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    };
+
+    /**
+     * Trigger the remove command
+     */
+    handleRemove = () => {
+        if (typeof this.getPos === 'function') {
+            this.editor.commands.removeColarQuestao(this.getPos());
+        }
+    };
+}
+
+/**
+ * Helper: Ensures a slice contains only block content wrapped in paragraphs if needed.
  */
 function ensureBlockContent(slice: Slice, schema: Schema): Fragment {
-    const items: PmNode[] = []
-    let inline: PmNode[] = []
+    const items: PmNode[] = [];
+    let inlineBuffer: PmNode[] = [];
 
     slice.content.forEach((node) => {
         if (node.isInline) {
-            inline.push(node)
+            inlineBuffer.push(node);
         } else if (node.isBlock) {
-            if (inline.length) {
-                items.push(schema.nodes['paragraph'].create(null, inline))
-                inline = []
+            if (inlineBuffer.length) {
+                items.push(schema.nodes['paragraph'].create(null, inlineBuffer));
+                inlineBuffer = [];
             }
-            items.push(node)
+            items.push(node);
         }
-    })
+    });
 
-    // Flush remaining inline
-    if (inline.length) {
-        items.push(schema.nodes['paragraph'].create(null, inline))
+    // Flush remaining inline content
+    if (inlineBuffer.length) {
+        items.push(schema.nodes['paragraph'].create(null, inlineBuffer));
     }
 
-    // If empty, provide a default paragraph
+    // If empty, provide a default empty paragraph to ensure valid content
     if (!items.length) {
-        return Fragment.from(schema.nodes['paragraph'].create())
+        return Fragment.from(schema.nodes['paragraph'].create());
     }
 
-    return Fragment.from(items)
+    return Fragment.from(items);
 }

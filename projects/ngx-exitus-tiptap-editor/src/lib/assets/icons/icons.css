@@ -261,25 +261,31 @@
 .btn-text-block {
   --icon: url("./text-block.svg");
 }
+
 .btn-image-crop {
   --icon: url("./crop.svg");
 }
+
 .btn-palette {
   --icon: url("./palette.svg");
 }
 
 .btn-square-rounded {
-   --icon: url("./square-rounded-corners.svg")
+  --icon: url("./square-rounded-corners.svg")
 }
 
 .btn-square-rounded-slash {
-   --icon: url("./square-rounded-slash.svg")
+  --icon: url("./square-rounded-slash.svg")
 }
 
 .btn-header-slash {
-   --icon: url("./slash-calendar-view.svg")
+  --icon: url("./slash-calendar-view.svg")
 }
 
 .btn-header-view {
-   --icon: url("./header-view.svg")
+  --icon: url("./header-view.svg")
+}
+
+.btn-delete-bin {
+  --icon: url("./delete-bin-5-line.svg")
 }

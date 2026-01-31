@@ -51,15 +51,15 @@ export interface EditorExtensionsConfig {
   providers: [EditorDropdownService]
 })
 export class ExitusTiptapEditor implements OnDestroy {
-
   private editorElement = viewChild.required<ElementRef>('editor');
   private editor = signal<Editor | null>(null);
-  private contentHtml = signal<string>("");
 
-  content = input<string>(`$$\\frac{a}{b} + c$$`);
+  editable = input<boolean>(true);
+  content = input<string>(``);
   extensionsConfig = input<EditorExtensionsConfig>();
 
   onContentChange = output<string>();
+  onEditorReady = output<Editor>();
 
   constructor() {
 
@@ -88,6 +88,7 @@ export class ExitusTiptapEditor implements OnDestroy {
   private initializeEditor() {
     const newEditor = new Editor({
       element: this.editorElement().nativeElement,
+      editable: this.editable(),
       extensions: [
         StarterKit.configure({
           link: false,
@@ -104,7 +105,7 @@ export class ExitusTiptapEditor implements OnDestroy {
               {
                 tag: 'p',
                 getAttrs: (node) => {
-                  if(node.querySelector("img")) {
+                  if (node.querySelector("img")) {
                     return false
                   }
                   return {};
@@ -137,12 +138,11 @@ export class ExitusTiptapEditor implements OnDestroy {
       content: this.content(),
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
-        this.contentHtml.set(html);
         this.onContentChange.emit(fixTableEmptyParagraphs(html));
       },
       onCreate: ({ editor }) => {
         const html = editor.getHTML();
-        this.contentHtml.set(html);
+        this.onEditorReady.emit(editor);
         this.onContentChange.emit(fixTableEmptyParagraphs(html));
       },
     });

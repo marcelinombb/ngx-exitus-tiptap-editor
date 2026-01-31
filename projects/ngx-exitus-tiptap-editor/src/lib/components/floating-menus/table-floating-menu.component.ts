@@ -65,9 +65,9 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
             <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
             <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
         </editor-dropdown> -->
-          <editor-button [icon]="!tableBorder() ? 'square-rounded-slash' : 'square-rounded'" [title]="!tableBorder() ? 'Sem bordas' : 'Com bordas'" (onClick)="toggleBorders()"></editor-button>
+          <editor-button [icon]="!tableBorder() ? 'square-rounded-slash' : 'square-rounded'" [title]="!tableBorder() ? 'Remover bordas' : 'Adicionar bordas'" (onClick)="toggleBorders()"></editor-button>
           <span class="ex-toolbar-separator"></span>
-          <editor-button icon="table-remove" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
+          <editor-button icon="delete-bin" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
         </div>
       </div>
     </bubble-menu>
