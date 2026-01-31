@@ -34,9 +34,9 @@ npm install @tiptap/core @tiptap/pm @tiptap/starter-kit @tiptap/extension-subscr
 
 ## ⚙️ Configuration
 
-### MathType Setup (Required)
+### WASM Assets Setup (Required)
 
-To use the **MathType** integration properly, you **must** configure your Angular application to serve the telemetry WebAssembly file. Update your `angular.json` by adding the following to the `assets` array (in both `build` and `test` targets):
+To use the **MathType** and **Advanced Image** features properly, you **must** configure your Angular application to serve the WebAssembly files. Update your `angular.json` by adding the following to the `assets` array (in both `build` and `test` targets):
 
 ```json
 "assets": [
@@ -45,13 +45,18 @@ To use the **MathType** integration properly, you **must** configure your Angula
   {
     "glob": "**/*.wasm",
     "input": "node_modules/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
-    "output": "/assets/mathtype/"
+    "output": "assets/mathtype/"
+  },
+  {
+    "glob": "**/*.wasm",
+    "input": "node_modules/ngx-exitus-tiptap-editor/assets/image-to-base64-wasm",
+    "output": "assets/image-to-base64-wasm/"
   }
 ]
 ```
 
 > [!IMPORTANT]
-> If this configuration is missing, you will encounter a `404 (Not Found)` error for `telemeter_wasm_bg.wasm` when opening the formula editor.
+> If this configuration is missing, you will encounter `404 (Not Found)` errors for the WebAssembly files when using formulas or images.
 
 ## 📦 Usage
 
