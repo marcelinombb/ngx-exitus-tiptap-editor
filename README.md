@@ -131,57 +131,6 @@ Run `npm run dev` to start a development server for both the library and the tes
 ### Building
 Run `npm run build:lib` to build the library. The build artifacts will be stored in the `dist/ngx-exitus-tiptap-editor` directory.
 
-### Linking libraries for local development
-This section explains how to use your package manager's local linking feature (such as `npm link` or `pnpm link`) to test a standalone Angular library with an external application during local development, without relying on the monorepo workspace structure or publishing to the NPM registry.
-
-> [!NOTE]
-> If your library and application are in the same Angular workspace (a monorepo setup), the standard monorepo workflow automatically handles the linking and is generally more efficient. This local linking approach is best when:
-> - You are developing a standalone library and need to test changes with an external, consuming application.
-> - You are testing library changes in a consuming application outside the monorepo workspace.
-
-#### Configuring the consuming application
-To use linked libraries, you need to configure your application's `angular.json` file with the following settings:
-
-```json
-{
-  "projects": {
-    "your-app": {
-      "architect": {
-        "build": {
-          "builder": "@angular/build:application",
-          "options": {
-            "preserveSymlinks": true
-          },
-          "configurations": {
-            "development": {
-              "sourceMap": {
-                "scripts": true,
-                "styles": true,
-                "vendor": true
-              }
-            }
-          }
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "prebundle": {
-              "exclude": ["ngx-exitus-tiptap-editor"]
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-#### Configuration options explained:
-
-- **preserveSymlinks: true**: Instructs the build system to follow the symlinks created by your package manager's linking command instead of resolving to the symlink's original location. This is essential to avoid multiple copies of the dependent node packages.
-- **sourceMap.vendor**: Enabling vendor source maps (especially `vendor: true`) for easier debugging of linked library code.
-- **prebundle.exclude**: By default, the Angular CLI can pre-bundle all node dependencies. Excluding your library ensures that the linked source code is properly watched and rebuilt when changes occur.
-
 ---
 
 ## 📜 License

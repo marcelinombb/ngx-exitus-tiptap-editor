@@ -2,7 +2,12 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/ngx-exitus-tiptap-editor",
   "assets": [
-    "assets/**/*"
+    "assets/**/*",
+    {
+      "glob": "**/*",
+      "input": "src/lib/extensions/image/image_to_base64_wasm/pkg",
+      "output": "assets/image-to-base64-wasm"
+    }
   ],
   "lib": {
     "entryFile": "src/public-api.ts"
