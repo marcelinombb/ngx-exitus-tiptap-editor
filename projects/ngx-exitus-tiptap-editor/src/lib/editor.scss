@@ -16,6 +16,11 @@
     --widget-risize-box-translate-left: calc(-50% - var(--widget-outline-width)/2);
     --widget-risize-box-translate-right: calc(50% + var(--widget-outline-width)/2);
 
+    background: #fafafa;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: 1px solid var(--border-gray);
+
     .ProseMirror {
         flex: 1;
         padding: 1cm 1cm 1cm;
@@ -56,7 +61,7 @@
         overflow-y: auto;
         overflow-x: hidden;
         resize: vertical;
-        border: 1px solid var(--border-gray);
+        /* border: 1px solid var(--border-gray); */
         border-top: 0px;
         padding: calc(2 * calc(0.6em * 1.5));
         background: #fafafa;

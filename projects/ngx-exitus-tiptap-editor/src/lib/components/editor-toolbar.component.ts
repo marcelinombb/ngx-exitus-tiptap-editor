@@ -58,31 +58,33 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
     styles: `
         .ex-toolbar-editor,
         .ex-toolbar-items {
-        display: flex;
-        background-color: #fff;
+            display: flex;
+            background-color: #f8fafc;;
         }
 
         .ex-toolbar-editor {
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
+            border-radius: 10px;
             border: 1px solid var(--border-gray);
             padding: 0 calc(0.6em * 0.5);
+            margin: 6px 7px;
+            background-color: #f8fafc;;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.281);
         }
 
         .ex-toolbar-items {
-        align-items: center;
-        border-radius: 5px;
+            align-items: center;
+            border-radius: 5px;
         }
 
         .ex-toolbar-separator {
-        display: inline-block;
-        align-self: stretch;
-        background: var(--border-gray);
-        margin-bottom: var(--spacing-sm);
-        margin-top: var(--spacing-sm);
-        min-width: 1px;
-        width: 1px;
-        margin-right: var(--spacing-sm);
+            display: inline-block;
+            align-self: stretch;
+            background: var(--border-gray);
+            margin-bottom: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            min-width: 1px;
+            width: 1px;
+            margin-right: var(--spacing-sm);
         }
     `
 })
