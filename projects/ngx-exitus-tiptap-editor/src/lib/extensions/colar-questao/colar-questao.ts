@@ -2,6 +2,9 @@ import { mergeAttributes, Node, type NodeViewRendererProps } from '@tiptap/core'
 import { DOMSerializer, Fragment, type Node as PmNode, type Schema, Slice } from '@tiptap/pm/model';
 import { type EditorView } from '@tiptap/pm/view';
 import { type EditorState } from '@tiptap/pm/state';
+import { AngularNodeViewRenderer } from 'ngx-tiptap';
+import { ColarQuestaoComponent } from './colar-questao.component';
+import { Injector } from '@angular/core';
 
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {
@@ -29,6 +32,7 @@ const CLOSE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
 
 export interface ColarQuestaoOptions {
     HTMLAttributes: Record<string, any>;
+    injector?: Injector;
 }
 
 export const ColarQuestao = Node.create<ColarQuestaoOptions>({
@@ -49,6 +53,7 @@ export const ColarQuestao = Node.create<ColarQuestaoOptions>({
     addOptions() {
         return {
             HTMLAttributes: {},
+            injector: undefined,
         };
     },
 
@@ -191,101 +196,12 @@ export const ColarQuestao = Node.create<ColarQuestaoOptions>({
     },
 
     addNodeView() {
-        return (props) => new ColarQuestaoNodeView(props);
+        if (!this.options.injector) {
+            console.warn('ColarQuestao: Injector not provided. Angular NodeView might fail.');
+        }
+        return AngularNodeViewRenderer(ColarQuestaoComponent, { injector: this.options.injector! });
     },
 });
-
-/**
- * Custom Node View for ColarQuestao
- * Handles the DOM structure, events, and updates efficiently.
- */
-class ColarQuestaoNodeView {
-    dom: HTMLElement;
-    contentDOM: HTMLElement;
-    label: HTMLElement;
-    node: PmNode;
-    getPos: () => number;
-    view: EditorView;
-    editor: any; // Using any for Tiptap editor instance ease, or use generic Editor type
-
-    constructor(props: NodeViewRendererProps) {
-        this.node = props.node;
-        this.view = props.view;
-        this.getPos = props.getPos as () => number; // getPos is guaranteed for node views
-        this.editor = props.editor;
-
-        this.dom = document.createElement('div');
-        this.dom.classList.add('colar-questao');
-        this.dom.draggable = true;
-
-        // Label for the title
-        this.label = document.createElement('label');
-        this.label.contentEditable = 'false';
-        this.label.textContent = this.node.attrs['title'];
-
-        // Close button
-        const closeBtn = document.createElement('button');
-        closeBtn.contentEditable = 'false';
-        closeBtn.className = 'close-colar';
-        closeBtn.innerHTML = CLOSE_ICON;
-        closeBtn.addEventListener('click', this.handleRemove);
-
-        // Content container
-        this.contentDOM = document.createElement('div');
-        this.contentDOM.classList.add('colar-content', 'is-editable');
-
-        this.dom.append(this.label, closeBtn, this.contentDOM);
-
-        // Event listeners
-        this.dom.addEventListener('drop', this.handleDrop);
-    }
-
-    /**
-     * Updates the node view when the node changes.
-     * Returns true if handled, false if the node view should be re-created.
-     */
-    update(node: PmNode) {
-        if (node.type !== this.node.type) {
-            return false;
-        }
-
-        this.node = node;
-        // Update title if changed
-        if (this.label.textContent !== node.attrs['title']) {
-            this.label.textContent = node.attrs['title'];
-        }
-
-        return true;
-    }
-
-    /**
-     * Clean up event listeners
-     */
-    destroy() {
-        this.dom.removeEventListener('drop', this.handleDrop);
-        // Button listeners are removed with the DOM usually, but good practice to be explicit if reference held
-    }
-
-    /**
-     * Prevents nesting ColarQuestao via drag and drop
-     */
-    handleDrop = (event: DragEvent) => {
-        const draggedNodeType = event.dataTransfer?.getData('text/html') ?? '';
-        if (/colar-questao/i.test(draggedNodeType)) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-    };
-
-    /**
-     * Trigger the remove command
-     */
-    handleRemove = () => {
-        if (typeof this.getPos === 'function') {
-            this.editor.commands.removeColarQuestao(this.getPos());
-        }
-    };
-}
 
 /**
  * Helper: Ensures a slice contains only block content wrapped in paragraphs if needed.

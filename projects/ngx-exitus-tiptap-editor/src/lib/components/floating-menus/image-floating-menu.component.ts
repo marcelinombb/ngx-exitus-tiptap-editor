@@ -2,21 +2,21 @@ import { Component, input, OnInit, signal, viewChild } from '@angular/core';
 import { EditorButtonComponent } from '../editor-button.component';
 import { EditorDropdownComponent } from '../editor-dropdown.component';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuComponent } from '../bubble-menu.component';
+import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 import { findParentNode } from '@tiptap/core';
 import { NodeSelection } from '@tiptap/pm/state';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 @Component({
   standalone: true,
-  imports: [EditorButtonComponent, EditorDropdownComponent, BubbleMenuComponent],
+  imports: [EditorButtonComponent, EditorDropdownComponent, TiptapBubbleMenuDirective],
   selector: 'image-floating-menu',
   template: `
-    <bubble-menu
+    <div class="bubble-menu" tiptapBubbleMenu
       [editor]="editor()"
       [updateDelay]="0"
-      [resizeDelay]="0"
       [shouldShow]="shouldShowImage"
+      [pluginKey]="'imageBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
       [options]="{ flip: true, onHide, placement: 'top', onShow }"
     >
@@ -78,10 +78,11 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
           }
         </div>
       </div>
-    </bubble-menu>
+    </div>
   `,
   styles: [
     `
+    .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
     .ex-toolbar-items {
         display: flex;
         align-items: center;
@@ -140,10 +141,6 @@ export class ImageFloatingMenuComponent implements OnInit {
     requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
   };
 
-  shouldShowImage = (props: any) => {
-    return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
-  };
-
   getReferencedVirtualElement = () => {
     const { state, view } = this.editor();
     const { selection } = state;
@@ -166,6 +163,10 @@ export class ImageFloatingMenuComponent implements OnInit {
     }
 
     return null;
+  }
+
+  shouldShowImage = (props: any) => {
+    return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
   };
 
   toggleCaption() {

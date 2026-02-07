@@ -1,9 +1,12 @@
 import { Node, mergeAttributes, findParentNode } from '@tiptap/core';
-import { NodeSelection, TextSelection } from '@tiptap/pm/state';
-import { AnswerBoxView } from './answer-box-view'
+import { NodeSelection } from '@tiptap/pm/state';
+import { AngularNodeViewRenderer } from 'ngx-tiptap';
+import { AnswerBoxComponent } from './answer-box.component';
+import { Injector } from '@angular/core';
 
 export interface AnswerBoxOptions {
     HTMLAttributes: Record<string, any>;
+    injector?: Injector;
 }
 
 declare module '@tiptap/core' {
@@ -28,6 +31,7 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
     addOptions() {
         return {
             HTMLAttributes: {},
+            injector: undefined,
         };
     },
 
@@ -82,6 +86,7 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
     },
 
     renderHTML({ HTMLAttributes, node }) {
+        // Fallback or serialization render
         const { style, lines, hideBorder, showHeader } = node.attrs;
         const classes = ['ex-answer-box'];
         if (hideBorder) {
@@ -107,19 +112,20 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
         return [
             'div',
             mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { class: classes.join(' ') }),
-            ['div', { 
+            ['div', {
                 class: 'ex-answer-box-header',
-                style: showHeader ? 'display: block' : 'display: none'
+                style: showHeader ? 'display: block' : 'display: none',
+                'data-node-view-content': ''
             }, 0],
             visuals
         ];
     },
 
     addNodeView() {
-        return ({ node, editor, getPos }) => {
-            // We pass the extension instance as context if needed, but mainly we need node/editor/getPos
-            return new AnswerBoxView(node, editor, getPos);
-        };
+        if (!this.options.injector) {
+            console.warn('AnswerBoxExtension: Injector not provided. Angular NodeView might fail.');
+        }
+        return AngularNodeViewRenderer(AnswerBoxComponent, { injector: this.options.injector! });
     },
 
     addCommands() {
@@ -146,7 +152,7 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
                 if (!found) return false;
 
                 const showHeader = !found.node.attrs['showHeader'];
-                
+
                 return commands.updateAttributes(this.name, { showHeader });
             },
             toggleAnswerBoxBorder: () => ({ commands, state, dispatch }) => {

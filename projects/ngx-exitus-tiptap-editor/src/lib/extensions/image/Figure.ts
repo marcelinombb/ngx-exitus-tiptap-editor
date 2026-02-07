@@ -1,7 +1,9 @@
 import { findParentNode, findParentNodeClosestToPos, mergeAttributes, Node as TiptapNode } from '@tiptap/core';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { TextSelection, NodeSelection, Plugin, PluginKey, EditorState } from 'prosemirror-state';
-import { FigureView } from './figureView';
+import { Injector } from '@angular/core';
+import { AngularNodeViewRenderer } from 'ngx-tiptap';
+import { FigureComponent } from './figure.component';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -60,7 +62,8 @@ export function hasFigureAlignment(
 }
 
 export interface ImageOptions {
-  inline: boolean
+  inline: boolean;
+  injector?: Injector;
 }
 
 export const Figure = TiptapNode.create<ImageOptions>({
@@ -120,9 +123,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
   },
 
   addNodeView() {
-    return ({ node, editor, getPos }) => {
-      return new FigureView(node, editor, getPos);
-    };
+    return AngularNodeViewRenderer(FigureComponent, { injector: this.options.injector! });
   },
 
   addAttributes() {
@@ -396,7 +397,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
             dom.toggleCropping();
             return true;
           }
-          
+
           return false;
         };
       },
@@ -419,16 +420,16 @@ export const Figure = TiptapNode.create<ImageOptions>({
             (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)
           );
 
-          
+
           const isActive = classes.has('ex-image-grayscale');
 
-    
-          if(isActive) {
+
+          if (isActive) {
             classes.delete('ex-image-grayscale');
           } else {
             classes.add('ex-image-grayscale');
           }
-          
+
           const attributes = {
             class: [...classes].join(' '),
           };

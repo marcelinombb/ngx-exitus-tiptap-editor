@@ -2,7 +2,7 @@ import { Component, input, signal, ElementRef, viewChild } from '@angular/core';
 import { updateLatexDisplay } from '../../extensions/katex/katexView';
 import { FormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuComponent } from '../bubble-menu.component';
+import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 
 export const katexMenuControl = {
     forceOpen: false,
@@ -11,14 +11,20 @@ export const katexMenuControl = {
 @Component({
     selector: 'katex-floating-menu',
     template: `
-    <bubble-menu #bubble [editor]="editor()" [shouldShow]="shouldShowKatex" [options]="{ onUpdate }">
+    <div class="bubble-menu" tiptapBubbleMenu
+      [editor]="editor()"
+      [shouldShow]="shouldShowKatex"
+      [pluginKey]="'katexBubbleMenu'"
+      [options]="{ onUpdate }"
+    >
         <input type="text" [ngModel]="formula()" (ngModelChange)="onFormulaChange($event)"/>
         <button (click)="aplicar()">aplicar</button>
         <div #preview class="katex-preview" style="margin-top:8px;"></div>
-    </bubble-menu>
+    </div>
     `,
     styles: [
         `
+         .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
          input[type="text"]{ width:100%; padding:8px 10px; border-radius:8px; border:1px solid #e6edf3; box-sizing:border-box }
          button{ margin-top:8px; background:#2563eb; color:white; border:none; padding:7px 10px; border-radius:8px; cursor:pointer }
          button:active{ transform:translateY(1px) }
@@ -27,7 +33,7 @@ export const katexMenuControl = {
         `
     ],
     standalone: true,
-    imports: [FormsModule, BubbleMenuComponent],
+    imports: [FormsModule, TiptapBubbleMenuDirective],
 })
 
 export class KatexFloatingMenuComponent {

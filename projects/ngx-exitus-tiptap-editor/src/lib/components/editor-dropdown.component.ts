@@ -1,7 +1,7 @@
 import { AfterContentInit, Component, ElementRef, contentChildren, inject, input, model, signal } from '@angular/core';
 import { EditorButtonComponent } from './editor-button.component';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { ClickOutsideDirective } from './click-outside.directive';
+import { ClickOutsideDirective } from '../directives/click-outside.directive';
 
 export class EditorDropdownService {
     private isOpen = new BehaviorSubject<boolean>(false);

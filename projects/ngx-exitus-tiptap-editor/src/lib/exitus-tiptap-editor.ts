@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, input, OnDestroy, output, signal, viewChild, ViewEncapsulation } from '@angular/core';
+import { Component, effect, ElementRef, input, OnDestroy, output, signal, viewChild, ViewEncapsulation, Injector, inject } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
@@ -53,6 +53,7 @@ export interface EditorExtensionsConfig {
 export class ExitusTiptapEditor implements OnDestroy {
   private editorElement = viewChild.required<ElementRef>('editor');
   private editor = signal<Editor | null>(null);
+  private injector = inject(Injector);
 
   editable = input<boolean>(true);
   content = input<string>(``);
@@ -127,11 +128,17 @@ export class ExitusTiptapEditor implements OnDestroy {
           allowBase64: true,
         }),
         Figcaption,
-        Figure,
-        ColarQuestao,
+        Figure.configure({
+          injector: this.injector
+        }),
+        ColarQuestao.configure({
+          injector: this.injector
+        }),
         MathType,
         MathTypePlugin,
-        AnswerBox,
+        AnswerBox.configure({
+          injector: this.injector
+        }),
         ...TableExtensions,
         SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker),
       ],

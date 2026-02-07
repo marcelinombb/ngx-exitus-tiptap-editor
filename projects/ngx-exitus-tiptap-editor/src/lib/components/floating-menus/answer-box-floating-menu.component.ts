@@ -1,20 +1,21 @@
 import { Component, input, OnInit, OnDestroy, signal } from '@angular/core';
 import { Editor } from '@tiptap/core';
-import { BubbleMenuComponent } from '../bubble-menu.component';
+import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 import { EditorButtonComponent } from '../editor-button.component';
 import { NodeSelection } from '@tiptap/pm/state';
 import { findParentNode } from '@tiptap/core';
+import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 @Component({
     selector: 'answer-box-floating-menu',
     standalone: true,
-    imports: [BubbleMenuComponent, EditorButtonComponent],
+    imports: [TiptapBubbleMenuDirective, EditorButtonComponent],
     template: `
-    <bubble-menu
+    <div class="bubble-menu" tiptapBubbleMenu
       [editor]="editor()"
       [updateDelay]="0"
-      [resizeDelay]="0"
       [shouldShow]="shouldShow"
+      [pluginKey]="'answerBoxBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
       [options]="{ flip: true, placement: 'top', onShow }"
     >
@@ -47,9 +48,10 @@ import { findParentNode } from '@tiptap/core';
           >{{!boxBorder() ? 'Adicionar Borda' : 'Remover Borda'}}</editor-button>
         </div>
       </div>
-    </bubble-menu>
+    </div>
   `,
     styles: [`
+    .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
     .ex-toolbar-items {
         display: flex;
         align-items: center;
@@ -101,40 +103,38 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
     }
 
     shouldShow = ({ editor }: { editor: Editor }) => {
-        return editor.isActive('answerBox') && this.editor().isFocused;
+        const { selection } = editor.state;
+        const isAnswerBox = editor.isActive('answerBox') || (selection instanceof NodeSelection && selection.node?.type.name === 'answerBox');
+        const hasFocus = editor.view.hasFocus() || (document.activeElement && document.activeElement.closest('.ex-toolbar-editor'));
+
+        return !!isAnswerBox && !!hasFocus;
     };
 
     onShow = () => {
-        //requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
+        requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
     };
 
     getReferencedVirtualElement = () => {
         const { state, view } = this.editor();
         const { selection } = state;
 
-        // Try to find the answerBox node
-        let result = findParentNode((n) => n.type.name === 'answerBox')(selection);
+        let answerBoxNode: { node: ProseMirrorNode; pos: number } | undefined;
 
-        // If not found in parents, check if the selection itself is the node
-        if (!result && selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
-            result = {
-                pos: selection.from,
-                start: selection.from + 1,
-                depth: selection.$from.depth,
-                node: selection.node
+        if (selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
+            answerBoxNode = { node: selection.node, pos: selection.from };
+        } else {
+            answerBoxNode = findParentNode((node) => node.type.name === 'answerBox')(selection);
+        }
+
+        if (answerBoxNode) {
+            const dom = view.nodeDOM(answerBoxNode.pos) as HTMLElement | null;
+            if (!dom) return null;
+
+            return {
+                getBoundingClientRect: () => dom.getBoundingClientRect(),
             };
         }
 
-        if (result) {
-            // Get the DOM element for the node
-            const dom = view.nodeDOM(result.pos) as HTMLElement;
-            if (dom) {
-                // Return a virtual element interface that returns the rect
-                return {
-                    getBoundingClientRect: () => dom.getBoundingClientRect()
-                }
-            }
-        }
         return null;
     }
 

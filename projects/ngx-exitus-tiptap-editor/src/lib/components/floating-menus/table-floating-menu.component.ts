@@ -1,23 +1,22 @@
 import { Component, input, OnDestroy, OnInit, signal } from '@angular/core';
 import { EditorButtonComponent } from '../editor-button.component';
 import { Editor, findParentNode } from '@tiptap/core';
-import { BubbleMenuComponent } from '../bubble-menu.component';
+import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 import { NodeSelection } from '@tiptap/pm/state';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { EditorDropdownComponent } from "../editor-dropdown.component";
 
 @Component({
     standalone: true,
-    imports: [EditorButtonComponent, BubbleMenuComponent, EditorDropdownComponent],
+    imports: [EditorButtonComponent, TiptapBubbleMenuDirective, EditorDropdownComponent],
     selector: 'table-floating-menu',
     template: `
-    <bubble-menu
+    <div class="bubble-menu" tiptapBubbleMenu
       [editor]="editor()"
       [updateDelay]="0"
-      [resizeDelay]="0"
       [shouldShow]="shouldShowTable"
-      [getReferencedVirtualElement]="getReferencedVirtualElement"
       [pluginKey]="'tableBubbleMenu'"
+      [getReferencedVirtualElement]="getReferencedVirtualElement"
       [options]="{ flip: true, placement: 'top', onShow }"
     >
       <div class="ex-toolbar-editor" style="border: none; padding: 0;">
@@ -70,9 +69,10 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
           <editor-button icon="delete-bin" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
         </div>
       </div>
-    </bubble-menu>
+    </div>
   `,
     styles: `
+        .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
         .ex-toolbar-editor,
         .ex-toolbar-items {
             display: flex;
