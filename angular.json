@@ -29,11 +29,6 @@
                 "glob": "**/*.wasm",
                 "input": "dist/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
                 "output": "assets/mathtype/"
-              },
-              {
-                "glob": "**/*.wasm",
-                "input": "dist/ngx-exitus-tiptap-editor/assets/image-to-base64-wasm",
-                "output": "assets/image-to-base64-wasm/"
               }
             ],
             "styles": [
@@ -99,11 +94,6 @@
                 "glob": "**/*.wasm",
                 "input": "dist/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
                 "output": "assets/mathtype/"
-              },
-              {
-                "glob": "**/*.wasm",
-                "input": "dist/ngx-exitus-tiptap-editor/assets/image-to-base64-wasm",
-                "output": "assets/image-to-base64-wasm/"
               }
             ],
             "styles": [

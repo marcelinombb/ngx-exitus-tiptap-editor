@@ -27,6 +27,7 @@ import { SpellCheckerConfig } from './extensions/spell-checker/spell-checker';
 
 export interface EditorExtensionsConfig {
   spellChecker?: SpellCheckerConfig;
+  imageProxyUrl?: string;
 }
 
 @Component({
@@ -126,6 +127,7 @@ export class ExitusTiptapEditor implements OnDestroy {
         Image.configure({
           inline: false,
           allowBase64: true,
+          proxyUrl: this.extensionsConfig()?.imageProxyUrl,
         }),
         Figcaption,
         Figure.configure({

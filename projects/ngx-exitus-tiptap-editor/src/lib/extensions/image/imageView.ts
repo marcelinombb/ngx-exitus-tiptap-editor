@@ -3,43 +3,6 @@ import { type Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { type Node } from '@tiptap/pm/model'
 import { type NodeView } from '@tiptap/pm/view'
 
-import init, { bytes_to_base64 } from './image_to_base64_wasm/pkg/image_to_base64_wasm'
-
-// ─────────────────────────────────────────────────────────────
-// WASM INIT (ONCE)
-// ─────────────────────────────────────────────────────────────
-let wasmReady: Promise<void> | null = null
-
-function ensureWasm() {
-  if (!wasmReady) {
-    wasmReady = init({
-      module_or_path: 'assets/image-to-base64-wasm/image_to_base64_wasm_bg.wasm'
-    })
-  }
-  return wasmReady
-}
-
-// ─────────────────────────────────────────────────────────────
-// IMAGE → BASE64
-// ─────────────────────────────────────────────────────────────
-async function imageUrlToBase64(url: string): Promise<string> {
-  const res = await fetch(url)
-
-  if (!res.ok) {
-    throw new Error(`Image fetch failed: ${res.status}`)
-  }
-
-  const contentType =
-    res.headers.get('content-type') ?? 'application/octet-stream'
-
-  const buffer = await res.arrayBuffer()
-  const bytes = new Uint8Array(buffer)
-
-  const base64 = bytes_to_base64(bytes)
-
-  return `data:${contentType};base64,${base64}`
-}
-
 // ─────────────────────────────────────────────────────────────
 // REGEX
 // ─────────────────────────────────────────────────────────────
@@ -108,16 +71,27 @@ export class ImageView implements NodeView {
   // URL → BASE64
   // ───────────────────────────────────────────────────────────
   private async convertUrlToBase64(url: string) {
+    if (!this.proxyUrl) return
+
     try {
-      await ensureWasm()
+      const finalUrl = `${this.proxyUrl}?imgurl=${encodeURIComponent(url)}`
 
-      const finalUrl = this.proxyUrl
-        ? `${this.proxyUrl}/${encodeURIComponent(url)}`
-        : url
+      const res = await fetch(finalUrl)
+      if (!res.ok) throw new Error(`Image fetch failed: ${res.status}`)
 
-      const base64Url = await imageUrlToBase64(url)
+      const blob = await res.blob()
 
-      this.updateAttributes({ src: base64Url })
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        if (reader.result && typeof reader.result === 'string') {
+          this.updateAttributes({ src: reader.result })
+        }
+      }
+      reader.onerror = (err) => {
+        console.error('[ImageView] FileReader error', err)
+      }
+      reader.readAsDataURL(blob)
+
     } catch (err) {
       console.error('[ImageView] base64 conversion failed', err)
     }
