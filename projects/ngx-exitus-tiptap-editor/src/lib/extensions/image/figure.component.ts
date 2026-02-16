@@ -2,31 +2,27 @@ import {
   Component,
   ElementRef,
   OnDestroy,
-  ViewChild,
   computed,
   inject,
   ViewEncapsulation,
-  input,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  viewChild,
+  signal
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Editor } from '@tiptap/core';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { AngularNodeViewComponent } from 'ngx-tiptap';
 import ImageCropper from './ImageCropper';
 
 @Component({
   selector: 'ex-figure',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
       #wrapper
-      class="ex-image-wrapper tiptap-widget"
+      class="ex-image-wrapper tiptap-widget {{ alignmentClass() }}"
       [class.ex-selected]="selected()"
-      [style.width.px]="width()"
-      [ngClass]="alignmentClass()"
+      [style.width.px]="resizeWidth() ?? width()"
       (click)="onFigureClick($event)"
     >
       <!-- contentDOM: Tiptap will render the image and figcaption inside this element -->
@@ -95,13 +91,16 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
   // Inputs as Signals
   // Inherited from AngularNodeViewComponent
 
-  @ViewChild('wrapper', { static: true }) wrapperByRef!: ElementRef<HTMLElement>;
+  readonly wrapperByRef = viewChild.required<ElementRef<HTMLElement>>('wrapper');
 
   private cropper: ImageCropper | null = null;
   private elementRef = inject(ElementRef<HTMLElement>);
 
   // Derived state
   readonly width = computed(() => this.node().attrs['width']);
+
+  // Mutable state for temporary resizing
+  readonly resizeWidth = signal<number | null>(null);
 
   readonly alignmentClass = computed(() => {
     const classes = (this.node().attrs['class'] || '').split(' ');
@@ -126,12 +125,13 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
     (this.elementRef.nativeElement as any).toggleCropping = () => this.toggleCropping();
 
     // Initialize Cropper
-    const img = this.wrapperByRef.nativeElement.querySelector('img') || document.createElement('img');
-    const figcaption = this.wrapperByRef.nativeElement.querySelector('figcaption');
+    const wrapperEl = this.wrapperByRef().nativeElement;
+    const img = wrapperEl.querySelector('img') || document.createElement('img');
+    const figcaption = wrapperEl.querySelector('figcaption');
 
     this.cropper = new ImageCropper({
       image: img as HTMLImageElement,
-      imageWrapper: this.wrapperByRef.nativeElement,
+      imageWrapper: wrapperEl,
       figcaption: figcaption as HTMLElement,
       updateAttributes: (attrs) => this.handleCropUpdate(attrs)
     });
@@ -139,8 +139,9 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
 
   toggleCropping() {
     // Re-query elements as Tiptap might have rendered them by now
-    const img = this.wrapperByRef.nativeElement.querySelector('img');
-    const figcaption = this.wrapperByRef.nativeElement.querySelector('figcaption');
+    const wrapperEl = this.wrapperByRef().nativeElement;
+    const img = wrapperEl.querySelector('img');
+    const figcaption = wrapperEl.querySelector('figcaption');
 
     if (this.cropper && img) {
       // Using type assertion to access private properties if ImageCropper doesn't expose them
@@ -220,7 +221,7 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
   onMouseDown(event: MouseEvent, direction: 'tl' | 'tr' | 'bl' | 'br') {
     event.preventDefault();
     const startX = event.clientX;
-    const wrapper = this.wrapperByRef.nativeElement;
+    const wrapper = this.wrapperByRef().nativeElement;
     const startWidth = wrapper.offsetWidth;
 
     const onMouseMove = (moveEvent: MouseEvent) => {
@@ -229,7 +230,8 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
       const multiplier = (direction === 'tl' || direction === 'bl') ? -1 : 1;
       const newWidth = Math.max(300, Math.min(700, startWidth + (diffX * multiplier)));
 
-      wrapper.style.width = `${newWidth}px`;
+      // Use signal for temporary resize state
+      this.resizeWidth.set(newWidth);
     };
 
     const onMouseUp = (upEvent: MouseEvent) => {
@@ -241,14 +243,16 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
       const multiplier = (direction === 'tl' || direction === 'bl') ? -1 : 1;
       const newWidth = Math.max(300, Math.min(700, startWidth + (diffX * multiplier)));
 
+      // Commit change to Tiptap node
       this.updateAttributes()({ width: newWidth });
+
+      // Reset temporary signal
+      this.resizeWidth.set(null);
     };
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   }
-
-
 
   ngOnDestroy() {
     if (this.cropper) {

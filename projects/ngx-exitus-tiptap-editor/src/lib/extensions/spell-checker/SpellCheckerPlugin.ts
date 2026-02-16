@@ -47,7 +47,7 @@ export const SpellCheckerExtension = Extension.create<SpellCheckerConfig>({
         },
         view: (view) => {
           const spellCheckerView = new SpellCheckerView(view)
-          
+
           // Helper to handle clicks on spelling errors
           const handleClick = (e: MouseEvent) => {
             const target = e.target as HTMLElement
@@ -85,8 +85,7 @@ export const SpellCheckerExtension = Extension.create<SpellCheckerConfig>({
                 let wordMatch: RegExpExecArray | null
 
                 while ((wordMatch = regex.exec(node.text)) !== null) {
-                  console.log(node.text);
-                  
+
                   const word = wordMatch[0].toLowerCase()
                   // Check API results or local cache
                   const result = results.get(word) || spellChecker.checkWord(word)
@@ -121,22 +120,22 @@ export const SpellCheckerExtension = Extension.create<SpellCheckerConfig>({
               // Queue check if document changed
               if (!prevState.doc.eq(view.state.doc)) {
 
-                 view.state.doc.descendants((node, pos) => {
-                    if (node.isText && node.text) {
-                      const regex = /[a-zA-ZÀ-ÿ]+/g
-                      let wordMatch: RegExpExecArray | null
+                view.state.doc.descendants((node, pos) => {
+                  if (node.isText && node.text) {
+                    const regex = /[a-zA-ZÀ-ÿ]+/g
+                    let wordMatch: RegExpExecArray | null
 
-                      while ((wordMatch = regex.exec(node.text)) !== null) {
-                        
-                        const word = wordMatch[0].toLowerCase()
-                       
-                        spellChecker.queueTextCheck(word)
+                    while ((wordMatch = regex.exec(node.text)) !== null) {
 
-                      }
+                      const word = wordMatch[0].toLowerCase()
+
+                      spellChecker.queueTextCheck(word)
+
                     }
+                  }
                   return true
                 })
-                
+
               }
             },
             destroy() {
