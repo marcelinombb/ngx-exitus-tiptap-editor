@@ -77,15 +77,14 @@ import ImageCropper from './ImageCropper';
   styles: [
     `
       :host {
-        display: block;
+        display: block!important;
         width: 100%;
       }
       .ex-image-wrapper {
         position: relative;
       }
     `,
-  ],
-  encapsulation: ViewEncapsulation.None,
+  ]
 })
 export class FigureComponent extends AngularNodeViewComponent implements OnDestroy {
   // Inputs as Signals

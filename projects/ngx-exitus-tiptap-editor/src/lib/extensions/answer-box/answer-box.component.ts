@@ -56,11 +56,10 @@ import { AngularNodeViewComponent } from 'ngx-tiptap';
     /* We expect global styles or styles from editor.scss to apply to .ex-answer-box */
     /* Component host shouldn't block layout */
     :host {
-      display: block; 
-      margin: 1rem 0;
+      display: block!important; 
+      /* margin: 1rem 0; REMOVED to act as wrapper only */
     }
   `],
-  encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: []
 })

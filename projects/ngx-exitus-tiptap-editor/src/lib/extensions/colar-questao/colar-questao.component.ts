@@ -1,8 +1,6 @@
 
-import { Component, computed, input, ViewEncapsulation } from '@angular/core';
+import { Component, computed, ViewEncapsulation } from '@angular/core';
 import { AngularNodeViewComponent } from 'ngx-tiptap';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { Editor } from '@tiptap/core';
 
 @Component({
   selector: 'colar-questao-component',
@@ -28,7 +26,6 @@ import { Editor } from '@tiptap/core';
       margin: 1rem 0;
     }
   `],
-  encapsulation: ViewEncapsulation.None,
   standalone: true
 })
 export class ColarQuestaoComponent extends AngularNodeViewComponent {

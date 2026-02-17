@@ -55,6 +55,7 @@ export class ExitusTiptapEditor implements OnDestroy {
   private editorElement = viewChild.required<ElementRef>('editor');
   private editor = signal<Editor | null>(null);
   private injector = inject(Injector);
+  private lastEmittedContent: string | null = null;
 
   editable = input<boolean>(true);
   content = input<string>(``);
@@ -67,8 +68,16 @@ export class ExitusTiptapEditor implements OnDestroy {
 
     effect(() => {
       const content = this.content();
-      if (this.editor() && content !== this.editor()!.getHTML()) {
-        this.setContent(content);
+      if (this.lastEmittedContent === content) {
+        return;
+      }
+
+      const editor = this.editor();
+      if (editor) {
+        const currentHTML = editor.getHTML();
+        if (content !== currentHTML && content !== fixTableEmptyParagraphs(currentHTML)) {
+          this.setContent(content);
+        }
       }
     });
   }
@@ -146,13 +155,15 @@ export class ExitusTiptapEditor implements OnDestroy {
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
-        this.onContentChange.emit(fixTableEmptyParagraphs(html));
+        const html = fixTableEmptyParagraphs(editor.getHTML());
+        this.lastEmittedContent = html;
+        this.onContentChange.emit(html);
       },
       onCreate: ({ editor }) => {
-        const html = editor.getHTML();
+        const html = fixTableEmptyParagraphs(editor.getHTML());
+        this.lastEmittedContent = html;
         this.onEditorReady.emit(editor);
-        this.onContentChange.emit(fixTableEmptyParagraphs(html));
+        this.onContentChange.emit(html);
       },
     });
 
