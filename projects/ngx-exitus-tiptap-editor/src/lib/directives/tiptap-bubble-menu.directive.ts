@@ -30,6 +30,7 @@ export class TiptapBubbleMenuDirective implements OnInit, OnDestroy {
         const bubbleMenuElement = this.elRef.nativeElement;
         bubbleMenuElement.style.visibility = 'hidden';
         bubbleMenuElement.style.position = 'absolute';
+        bubbleMenuElement.style.opacity = '0';
 
         editor.registerPlugin(BubbleMenuPlugin({
             pluginKey: this.pluginKey(),
