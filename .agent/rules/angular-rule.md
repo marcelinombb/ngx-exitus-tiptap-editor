@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-description: when working with angular
+description: when creating components, directives and services Angular 
 ---
 
 # Quick Guide — AI Agent as Senior Angular Developer
