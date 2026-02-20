@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, input, OnDestroy, output, signal, viewChild, ViewEncapsulation, Injector, inject } from '@angular/core';
+import { Component, ElementRef, input, OnDestroy, output, signal, viewChild, ViewEncapsulation, Injector, inject } from '@angular/core';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
@@ -56,7 +56,6 @@ export class ExitusTiptapEditor implements OnDestroy {
   private editorElement = viewChild.required<ElementRef>('editor');
   private editor = signal<Editor | null>(null);
   private injector = inject(Injector);
-  private lastEmittedContent: string | null = null;
 
   editable = input<boolean>(true);
   content = input<string>(``);
@@ -64,24 +63,6 @@ export class ExitusTiptapEditor implements OnDestroy {
 
   onContentChange = output<string>();
   onEditorReady = output<Editor>();
-
-  constructor() {
-
-    effect(() => {
-      const content = this.content();
-      if (this.lastEmittedContent === content) {
-        return;
-      }
-
-      const editor = this.editor();
-      if (editor) {
-        const currentHTML = editor.getHTML();
-        if (content !== currentHTML && content !== fixTableEmptyParagraphs(currentHTML)) {
-          this.setContent(content);
-        }
-      }
-    });
-  }
 
   setContent(newContent: string) {
     if (this.editor()) {
@@ -156,13 +137,11 @@ export class ExitusTiptapEditor implements OnDestroy {
       ],
       content: this.content(),
       onUpdate: ({ editor }) => {
-        const html = fixTableEmptyParagraphs(editor.getHTML());
-        this.lastEmittedContent = html;
+        const html = editor.getHTML();
         this.onContentChange.emit(html);
       },
       onCreate: ({ editor }) => {
-        const html = fixTableEmptyParagraphs(editor.getHTML());
-        this.lastEmittedContent = html;
+        const html = editor.getHTML();
         this.onEditorReady.emit(editor);
         this.onContentChange.emit(html);
       },

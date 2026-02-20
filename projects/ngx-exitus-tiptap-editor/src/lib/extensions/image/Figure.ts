@@ -91,23 +91,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
   parseHTML() {
     return [
       {
-        tag: 'figure',
-        getAttrs: element => {
-          if (element.getAttribute('class')) {
-            const classes = element.getAttribute('class')!.split(' ')
-            const filteredClasses = classes.filter(cls => allowedClasses.includes(cls))
-
-            if (filteredClasses.some(cls => alignClasses.includes(cls)) === false) {
-              filteredClasses.push('ex-image-block-middle')
-            }
-
-            return {
-              classes: Array.from(new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses])).join(' ')
-            }
-          } else {
-            return null
-          }
-        }
+        tag: 'figure'
       }
     ];
   },
@@ -130,6 +114,20 @@ export const Figure = TiptapNode.create<ImageOptions>({
     return {
       class: {
         default: defaultClasses.join(' '),
+        parseHTML: (element) => {
+          if (element.getAttribute('class')) {
+            const classes = element.getAttribute('class')!.split(' ')
+            const filteredClasses = classes.filter(cls => allowedClasses.includes(cls))
+
+            if (filteredClasses.some(cls => alignClasses.includes(cls)) === false) {
+              filteredClasses.push('ex-image-block-middle')
+            }
+
+            return Array.from(new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses])).join(' ')
+          } else {
+            return null
+          }
+        },
       },
       width: {
         default: 300,

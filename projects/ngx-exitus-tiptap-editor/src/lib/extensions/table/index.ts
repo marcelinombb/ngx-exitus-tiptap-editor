@@ -7,6 +7,7 @@ import { columnResizing } from './custom-column-resizing';
 import { TableView } from './TableView';
 import { Node as ProsemirrorNode } from '@tiptap/pm/model';
 import { EditorView, NodeView } from '@tiptap/pm/view';
+import { Editor } from '@tiptap/core';
 
 export function fixTableEmptyParagraphs(html: string): string {
     const root = document.createElement('div')
@@ -122,6 +123,10 @@ export const TableExtensions = [
             lastColumnResizable: true,
             allowTableNodeSelection: false,
             }
+        },
+        onCreate({ editor }) {
+            const originalGetHTML = editor.getHTML.bind(editor)
+            editor.getHTML = () => fixTableEmptyParagraphs(originalGetHTML())
         },
         addAttributes() {
             return {
