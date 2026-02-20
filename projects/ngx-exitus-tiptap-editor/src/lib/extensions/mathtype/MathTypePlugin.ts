@@ -161,7 +161,10 @@ class MathTypeIntegrationManager {
     openEditor(editorType: string | null = null) {
         try {
             const integration = this.integration
-            if (!integration) return
+            if (!integration) {
+                console.error('No integration instance found!');
+                return
+            }
 
             if (editorType == null) {
                 integration.core.getCustomEditors().disable()

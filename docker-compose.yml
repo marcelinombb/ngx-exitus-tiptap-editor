@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  editor:
+    container_name: editor-container
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    restart: none

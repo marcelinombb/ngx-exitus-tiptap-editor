@@ -24,6 +24,10 @@ export class ExitusEditorIntegration extends IntegrationModel {
         super(integrationModelProperties)
         this.editor = editor
         this.integrationFolderName = 'exitus_wiris'
+        
+        // Manual instance-level overrides to bypass inheritance issues in production build
+        this.openNewFormulaEditor = this.openNewFormulaEditor.bind(this);
+        this.openExistingFormulaEditor = this.openExistingFormulaEditor.bind(this);
     }
 
     // Override init to pre-initialize Telemeter with correct URL
