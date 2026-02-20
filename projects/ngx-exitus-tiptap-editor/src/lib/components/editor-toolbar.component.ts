@@ -3,7 +3,7 @@ import { EditorButtonComponent } from './editor-button.component';
 import { EditorDropdownComponent } from './editor-dropdown.component';
 import { TableGridComponent } from './table-grid.component';
 import { Editor } from '@tiptap/core';
-import { katexMenuControl } from './floating-menus/katex-floating-menu.component';
+import { KatexMenuService } from '../services/katex-menu.service';
 import { parseImagesToBase64 } from '../extensions/image';
 import { SpecialCharactersComponent } from './special-characters.component';
 import { AnswerBoxConfigComponent } from './answer-box-config.component';
@@ -91,6 +91,7 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
 export class EditorToolbarComponent implements OnInit {
 
     private cdr = inject(ChangeDetectorRef);
+    private katexMenuService = inject(KatexMenuService);
 
     editor = input.required<Editor>()
 
@@ -163,7 +164,7 @@ export class EditorToolbarComponent implements OnInit {
     }
 
     insertFormula() {
-        katexMenuControl.forceOpen = true
+        this.katexMenuService.setForceOpen(true);
         this.editor().commands.focus()
     }
 

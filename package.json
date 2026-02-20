@@ -14,6 +14,7 @@
     "setup:link": "npm run build:lib && cd dist/ngx-exitus-tiptap-editor && npm link && cd ../.. && npm link ngx-exitus-tiptap-editor",
     "dev": "rm -rf dist && concurrently \"npm run watch:lib\" \"wait-on dist/ngx-exitus-tiptap-editor/index.d.ts && npm run start\"",
     "watch": "ng build --watch --configuration development",
+    "publish": "npm run build:lib && cd dist/ngx-exitus-tiptap-editor && npm publish",
     "test": "ng test"
   },
   "prettier": {

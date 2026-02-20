@@ -13,7 +13,6 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
     template: `
     <div class="bubble-menu" tiptapBubbleMenu
       [editor]="editor()"
-      [updateDelay]="0"
       [shouldShow]="shouldShow"
       [pluginKey]="'answerBoxBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
@@ -103,11 +102,12 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
     }
 
     shouldShow = ({ editor }: { editor: Editor }) => {
-        const { selection } = editor.state;
-        const isAnswerBox = editor.isActive('answerBox') || (selection instanceof NodeSelection && selection.node?.type.name === 'answerBox');
-        const hasFocus = editor.view.hasFocus() || (document.activeElement && document.activeElement.closest('.ex-toolbar-editor'));
+        if (!editor.isFocused) {
+            return false;
+        }
 
-        return !!isAnswerBox && !!hasFocus;
+        const { selection } = editor.state;
+        return editor.isActive('answerBox') || (selection instanceof NodeSelection && selection.node?.type.name === 'answerBox');
     };
 
     onShow = () => {

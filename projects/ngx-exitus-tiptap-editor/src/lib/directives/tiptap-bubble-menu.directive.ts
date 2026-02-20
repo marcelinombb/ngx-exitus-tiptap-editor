@@ -37,10 +37,15 @@ export class TiptapBubbleMenuDirective implements OnInit, OnDestroy {
             editor,
             element: bubbleMenuElement,
             options: this.options(),
-            shouldShow: this.shouldShow(),
+            shouldShow: (props) => {
+                if (!editor.isEditable) {
+                    return false;
+                }
+                return this.shouldShow()?.(props) ?? false;
+            },
             updateDelay: this.updateDelay(),
             // @ts-ignore
-            appendTo: this.appendTo(),
+            appendTo: this.editor().view.dom.parentElement,
             getReferencedVirtualElement: this.getReferencedVirtualElement()
         }));
     }

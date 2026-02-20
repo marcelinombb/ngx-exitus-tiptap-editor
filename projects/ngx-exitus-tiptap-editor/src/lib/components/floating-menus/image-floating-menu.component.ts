@@ -14,7 +14,6 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
   template: `
     <div class="bubble-menu" tiptapBubbleMenu
       [editor]="editor()"
-      [updateDelay]="0"
       [shouldShow]="shouldShowImage"
       [pluginKey]="'imageBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
@@ -165,8 +164,11 @@ export class ImageFloatingMenuComponent implements OnInit {
     return null;
   }
 
-  shouldShowImage = (props: any) => {
-    return (this.editor().isActive('image') || this.editor().isActive("figure")) && this.editor().isFocused;
+  shouldShowImage = ({ editor }: { editor: Editor }) => {
+    if (!editor.isFocused) {
+      return false;
+    }
+    return editor.isActive('image') || editor.isActive('figure');
   };
 
   toggleCaption() {

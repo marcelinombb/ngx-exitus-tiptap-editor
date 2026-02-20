@@ -13,7 +13,6 @@ import { EditorDropdownComponent } from "../editor-dropdown.component";
     template: `
     <div class="bubble-menu" tiptapBubbleMenu
       [editor]="editor()"
-      [updateDelay]="0"
       [shouldShow]="shouldShowTable"
       [pluginKey]="'tableBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
@@ -128,8 +127,11 @@ export class TableFloatingMenuComponent implements OnInit, OnDestroy {
         }
     }
 
-    shouldShowTable = (props: any) => {
-        return this.editor().isActive('table') && this.editor().isFocused;
+    shouldShowTable = ({ editor }: { editor: Editor }) => {
+        if (!editor.isFocused) {
+            return false;
+        }
+        return editor.isActive('table');
     };
 
     addColumnBefore() {

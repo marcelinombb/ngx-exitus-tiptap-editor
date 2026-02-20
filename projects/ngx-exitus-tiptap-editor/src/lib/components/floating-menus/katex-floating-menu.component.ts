@@ -1,12 +1,9 @@
-import { Component, input, signal, ElementRef, viewChild } from '@angular/core';
+import { Component, input, signal, ElementRef, viewChild, inject } from '@angular/core';
 import { updateLatexDisplay } from '../../extensions/katex/katexView';
 import { FormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
 import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
-
-export const katexMenuControl = {
-    forceOpen: false,
-}
+import { KatexMenuService } from '../../services/katex-menu.service';
 
 @Component({
     selector: 'katex-floating-menu',
@@ -42,6 +39,8 @@ export class KatexFloatingMenuComponent {
 
     pos: number | null = null;
 
+    private katexMenuService = inject(KatexMenuService);
+
     private currentFormula = signal<string>('');
 
     protected formula = signal<string>('')
@@ -50,21 +49,25 @@ export class KatexFloatingMenuComponent {
 
     private preview = viewChild.required<ElementRef>('preview');
 
-    shouldShowKatex = (props: any): boolean => {
+    shouldShowKatex = ({ editor }: { editor: Editor }) => {
 
-        const view = this.editor().view;
+        const view = editor.view;
         const { selection } = view.state;
         const pos = selection.$anchor.pos;
 
-        if (katexMenuControl.forceOpen) {
-            katexMenuControl.forceOpen = false
+        if (this.katexMenuService.forceOpen) {
+            this.katexMenuService.setForceOpen(false);
             this.isInsertingNew.set(true);
             return true
         }
 
         this.pos = pos;
 
-        return this.editor().isActive('katex');
+        if (!editor.isFocused) {
+            return false;
+        }
+
+        return editor.isActive('katex');
 
     }
 
