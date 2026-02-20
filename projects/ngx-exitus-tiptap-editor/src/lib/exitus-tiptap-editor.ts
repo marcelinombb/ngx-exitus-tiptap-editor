@@ -135,15 +135,14 @@ export class ExitusTiptapEditor implements OnDestroy {
         ...TableExtensions,
         SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker),
       ],
-      content: this.content(),
+      //content: this.content(),
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
         this.onContentChange.emit(html);
       },
       onCreate: ({ editor }) => {
-        const html = editor.getHTML();
+        editor.commands.setContent(this.content());
         this.onEditorReady.emit(editor);
-        this.onContentChange.emit(html);
       },
     });
 
