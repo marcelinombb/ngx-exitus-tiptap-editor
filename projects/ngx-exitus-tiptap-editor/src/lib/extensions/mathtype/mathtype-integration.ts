@@ -140,7 +140,24 @@ export class ExitusEditorIntegration extends IntegrationModel {
     openNewFormulaEditor() {
         // Store the editor selection as it will be lost upon opening the modal
         this.core.editionProperties.selection = this.editor.state.selection
-        return super.openNewFormulaEditor()
+
+        // Bypassing navigator.onLine check as it's unreliable in some environments
+        this.core.editionProperties.dbclick = false
+        this.core.editionProperties.isNewElement = true
+        this.core.openModalDialog(this.target, this.isIframe)
+    }
+
+    openExistingFormulaEditor() {
+        // Recover owner integration instance.
+        // @ts-ignore
+        if (typeof WirisPlugin !== 'undefined') {
+            // @ts-ignore
+            WirisPlugin.currentInstance = this
+        }
+
+        // Bypassing navigator.onLine check as it's unreliable in some environments
+        this.core.editionProperties.isNewElement = false
+        this.core.openModalDialog(this.target, this.isIframe)
     }
 
     /**

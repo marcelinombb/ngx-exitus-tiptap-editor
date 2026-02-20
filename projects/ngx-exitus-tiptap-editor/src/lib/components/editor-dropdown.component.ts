@@ -69,7 +69,6 @@ export class EditorDropdownComponent implements AfterContentInit {
         if ((this.icon() === undefined) || this.updateIcon()) {
             buttons.forEach(btn => {
                 btn.onClick.subscribe(() => {
-                    console.log(btn.icon()!, btn.title());
                     this.setCurrentButton(btn.icon()!, btn.title());
                     this.open = false;
                 })

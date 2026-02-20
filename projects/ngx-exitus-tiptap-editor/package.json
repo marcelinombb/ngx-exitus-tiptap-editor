@@ -1,6 +1,6 @@
 {
   "name": "ngx-exitus-tiptap-editor",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "Angular bindings and components for a Tiptap-based rich text editor with Math/Katex support.",
   "author": "marcelinombb",
   "license": "MIT",
