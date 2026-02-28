@@ -1,0 +1,135 @@
+.ex-association-wrapper {
+  margin: 1rem 0;
+  padding: 0.5rem 0;
+}
+
+.ex-association-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  user-select: none;
+
+  .col-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+
+    label {
+      font-weight: 600;
+      color: #334155;
+    }
+
+    select {
+      padding: 0.25rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+    }
+  }
+}
+
+.ex-association-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+
+  >.ex-association-col-wrapper {
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+}
+
+association-component .ex-association-content {
+  display: block; // Reset parent grid because inner wrapper takes over
+
+  >div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: stretch;
+    width: 100%;
+
+    >association-column-component {
+      flex: 1 1 50%;
+      min-width: 0;
+    }
+  }
+}
+
+.ex-association-col-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ex-association-col-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 2rem;
+
+  p.is-empty::before {
+    color: black;
+    content: "____DIGITE____";
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+}
+
+.ex-association-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  .ex-association-item-marker {
+    font-size: 1rem;
+    white-space: pre;
+    min-width: 2rem;
+    margin-top: 0.1rem;
+    color: #1e293b;
+  }
+
+  .ex-association-item-content {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+
+    >p {
+      margin: 0;
+    }
+  }
+}
+
+.ex-association-add-btn-wrapper {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ex-association-add-btn {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px dashed #cbd5e1;
+  border-radius: 4px;
+  color: #64748b;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #94a3b8;
+  }
+}

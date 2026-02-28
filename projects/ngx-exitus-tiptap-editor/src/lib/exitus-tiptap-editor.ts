@@ -20,6 +20,9 @@ import { MathType, MathTypePlugin } from './extensions/mathtype';
 import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
 import { EditorDropdownService } from './components/editor-dropdown.component';
 import { AnswerBox } from './extensions/answer-box/answer-box';
+import { Association } from './extensions/association/association';
+import { AssociationColumn } from './extensions/association/association-column';
+import { AssociationItem } from './extensions/association/association-item';
 import { SpellCheckerExtension } from './extensions/spell-checker';
 import { Paragraph } from '@tiptap/extension-paragraph';
 
@@ -130,6 +133,15 @@ export class ExitusTiptapEditor implements OnDestroy {
         MathType,
         MathTypePlugin,
         AnswerBox.configure({
+          injector: this.injector
+        }),
+        Association.configure({
+          injector: this.injector
+        }),
+        AssociationColumn.configure({
+          injector: this.injector
+        }),
+        AssociationItem.configure({
           injector: this.injector
         }),
         ...TableExtensions,

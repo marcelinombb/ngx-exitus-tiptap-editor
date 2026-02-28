@@ -40,6 +40,7 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
                 </editor-dropdown>
                 <editor-button [icon]="'image'" [title]="'Inserir imagem'" [active]="isActive('image')" (onClick)="insertImage()"></editor-button>
                 <editor-button [icon]="'blockquote'" [title]="'Citação'" [active]="isActive('blockquote')" (onClick)="toggleBlockquote()"></editor-button>
+                <editor-button [icon]="'layout-column-2'" [title]="'Associação'" [active]="isActive('association')" (onClick)="insertAssociation()"></editor-button>
                 <editor-button [icon]="'undo'" [title]="'Desfazer'" [active]="isActive('undo')" (onClick)="undo()"></editor-button>
                 <editor-button [icon]="'redo'" [title]="'Refazer'" [active]="isActive('redo')" (onClick)="redo()"></editor-button>
                  <editor-dropdown>
@@ -141,6 +142,10 @@ export class EditorToolbarComponent implements OnInit {
 
     unsetAllMarks() {
         this.editor().chain().focus().unsetAllMarks().run()
+    }
+
+    insertAssociation() {
+        this.editor().chain().focus().insertAssociation().run()
     }
 
     setTextAlign(align: 'left' | 'center' | 'right' | 'justify') {
