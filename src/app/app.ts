@@ -1,5 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Editor } from '@tiptap/core';
 import { ExitusTiptapEditor } from 'ngx-exitus-tiptap-editor';
 
 @Component({
@@ -17,6 +18,10 @@ export class App implements OnInit {
       apiUrl: 'https://spell-checker-function-15207959809.us-east4.run.app/check'
     }
   };
+
+  onEditorReady($event: Editor) {
+    console.log('Editor pronto', $event.getJSON());
+  }
 
   onContentChange($event: string) {
     //console.log($event);

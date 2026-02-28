@@ -5,13 +5,23 @@
 
 .ex-association-controls {
   display: flex;
-  gap: 1rem;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
   padding: 0.5rem;
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   user-select: none;
+
+  .controls-left {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .controls-right {
+    display: flex;
+  }
 
   .col-control {
     display: flex;
