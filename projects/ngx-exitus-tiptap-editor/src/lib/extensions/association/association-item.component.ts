@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit, OnDestroy, ViewEncapsulation, signal } from '@angular/core';
 import { AngularNodeViewComponent } from 'ngx-tiptap';
 
 @Component({
@@ -6,7 +6,7 @@ import { AngularNodeViewComponent } from 'ngx-tiptap';
     template: `
     <div class="ex-association-item" [class.ex-selected]="selected()">
       <div contenteditable="false" class="ex-association-item-marker">
-        {{ markerText }}
+        {{ markerText() }}
       </div>
       <div class="ex-association-item-content" data-node-view-content></div>
     </div>
@@ -17,14 +17,14 @@ import { AngularNodeViewComponent } from 'ngx-tiptap';
 })
 export class AssociationItemComponent extends AngularNodeViewComponent implements OnInit, OnDestroy {
 
-    markerText = '';
+    markerText = signal<string>('');
 
-    constructor(private cdr: ChangeDetectorRef) {
+    constructor() {
         super();
     }
 
     ngOnInit() {
-        this.markerText = this.node().attrs['data-marker'] || '';
+        this.markerText.set(this.node().attrs['data-marker'] || '');
         this.updateMarker();
         this.editor().on('update', this.onEditorUpdate);
         this.editor().on('transaction', this.onEditorUpdate);
@@ -93,8 +93,8 @@ export class AssociationItemComponent extends AngularNodeViewComponent implement
         });
 
         const newMarker = this.getMarkerLabel(listType, index);
-        if (newMarker !== this.markerText) {
-            this.markerText = newMarker;
+        if (newMarker !== this.markerText()) {
+            this.markerText.set(newMarker);
 
             // Ensure the node attribute is updated for getHTML() / renderHTML() output
             if (this.node().attrs['data-marker'] !== newMarker) {
@@ -105,8 +105,6 @@ export class AssociationItemComponent extends AngularNodeViewComponent implement
                     }
                 });
             }
-
-            this.cdr.detectChanges();
         }
     }
 
