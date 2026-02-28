@@ -17,6 +17,15 @@
   .controls-left {
     display: flex;
     gap: 1rem;
+    align-items: center;
+
+    .association-title {
+      font-weight: 600;
+      color: #1e293b;
+      padding-right: 0.5rem;
+      border-right: 1px solid #cbd5e1;
+      font-size: 0.875rem;
+    }
   }
 
   .controls-right {

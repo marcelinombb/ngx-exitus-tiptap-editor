@@ -12,6 +12,7 @@ import { EditorButtonComponent } from '../../components/editor-button.component'
          [attr.data-colb-type]="colBListType()">
       <div class="ex-association-controls" contenteditable="false" *ngIf="editor().isEditable">
         <div class="controls-left">
+          <span class="association-title">Associação</span>
           <div class="col-control">
             <label>Coluna A:</label>
             <select [value]="colAListType()" (change)="onColTypeChange('A', $event)">
