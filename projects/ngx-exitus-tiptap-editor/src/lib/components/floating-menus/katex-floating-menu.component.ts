@@ -1,4 +1,5 @@
-import { Component, input, signal, ElementRef, viewChild, inject } from '@angular/core';
+import { Component, input, signal, ElementRef, viewChild, inject, OnInit } from '@angular/core';
+import { FloatingMenuService } from '../../services/floating-menu.service';
 import { updateLatexDisplay } from '../../extensions/katex/katexView';
 import { FormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
@@ -33,7 +34,7 @@ import { KatexMenuService } from '../../services/katex-menu.service';
     imports: [FormsModule, TiptapBubbleMenuDirective],
 })
 
-export class KatexFloatingMenuComponent {
+export class KatexFloatingMenuComponent implements OnInit {
 
     editor = input.required<Editor>();
 
@@ -48,6 +49,12 @@ export class KatexFloatingMenuComponent {
     private isInsertingNew = signal<boolean>(false);
 
     private preview = viewChild.required<ElementRef>('preview');
+
+    private floatingMenuService = inject(FloatingMenuService);
+
+    ngOnInit() {
+        this.floatingMenuService.registerMenu('katex');
+    }
 
     shouldShowKatex = ({ editor }: { editor: Editor }) => {
 
@@ -67,7 +74,7 @@ export class KatexFloatingMenuComponent {
             return false;
         }
 
-        return editor.isActive('katex');
+        return this.floatingMenuService.isMostSpecificNodeActive(editor, 'katex');
 
     }
 

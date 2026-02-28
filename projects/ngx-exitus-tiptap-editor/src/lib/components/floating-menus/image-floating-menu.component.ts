@@ -1,4 +1,5 @@
-import { Component, input, OnInit, signal, viewChild } from '@angular/core';
+import { Component, input, OnInit, signal, viewChild, inject } from '@angular/core';
+import { FloatingMenuService } from '../../services/floating-menu.service';
 import { EditorButtonComponent } from '../editor-button.component';
 import { EditorDropdownComponent } from '../editor-dropdown.component';
 import { Editor } from '@tiptap/core';
@@ -97,7 +98,11 @@ export class ImageFloatingMenuComponent implements OnInit {
 
   imageSizeDropdown = viewChild.required<EditorDropdownComponent>('imagesize');
 
+  private floatingMenuService = inject(FloatingMenuService);
+
   ngOnInit() {
+    this.floatingMenuService.registerMenu('image');
+    this.floatingMenuService.registerMenu('figure');
     this.editor().on('transaction', () => {
       this.syncImageState();
     });
@@ -168,7 +173,7 @@ export class ImageFloatingMenuComponent implements OnInit {
     if (!editor.isFocused) {
       return false;
     }
-    return editor.isActive('image') || editor.isActive('figure');
+    return this.floatingMenuService.isMostSpecificNodeActive(editor, ['image', 'figure']);
   };
 
   toggleCaption() {

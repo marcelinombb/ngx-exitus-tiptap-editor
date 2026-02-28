@@ -1,4 +1,5 @@
-import { Component, input, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, input, OnInit, OnDestroy, signal, inject } from '@angular/core';
+import { FloatingMenuService } from '../../services/floating-menu.service';
 import { Editor } from '@tiptap/core';
 import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 import { EditorButtonComponent } from '../editor-button.component';
@@ -78,7 +79,10 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
     boxHeader = signal<boolean>(false);
     boxBorder = signal<boolean>(true);
 
+    private floatingMenuService = inject(FloatingMenuService);
+
     ngOnInit() {
+        this.floatingMenuService.registerMenu('answerBox');
         this.editor().on('transaction', () => this.syncState());
         this.editor().on('selectionUpdate', () => this.syncState());
         this.editor().on('focus', () => this.syncState());
@@ -105,9 +109,7 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
         if (!editor.isFocused) {
             return false;
         }
-
-        const { selection } = editor.state;
-        return editor.isActive('answerBox') || (selection instanceof NodeSelection && selection.node?.type.name === 'answerBox');
+        return this.floatingMenuService.isMostSpecificNodeActive(editor, 'answerBox');
     };
 
     onShow = () => {

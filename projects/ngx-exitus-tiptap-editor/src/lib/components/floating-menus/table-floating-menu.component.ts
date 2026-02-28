@@ -1,10 +1,11 @@
-import { Component, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, input, OnDestroy, OnInit, signal, inject } from '@angular/core';
 import { EditorButtonComponent } from '../editor-button.component';
 import { Editor, findParentNode } from '@tiptap/core';
 import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 import { NodeSelection } from '@tiptap/pm/state';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { EditorDropdownComponent } from "../editor-dropdown.component";
+import { FloatingMenuService } from '../../services/floating-menu.service';
 
 @Component({
     standalone: true,
@@ -107,7 +108,10 @@ export class TableFloatingMenuComponent implements OnInit, OnDestroy {
 
     tableBorder = signal<boolean>(true);
 
+    private floatingMenuService = inject(FloatingMenuService);
+
     ngOnInit() {
+        this.floatingMenuService.registerMenu('table');
         this.editor().on('transaction', () => this.syncState());
         this.editor().on('selectionUpdate', () => this.syncState());
         this.editor().on('focus', () => this.syncState());
@@ -131,7 +135,7 @@ export class TableFloatingMenuComponent implements OnInit, OnDestroy {
         if (!editor.isFocused) {
             return false;
         }
-        return editor.isActive('table');
+        return this.floatingMenuService.isMostSpecificNodeActive(editor, 'table');
     };
 
     addColumnBefore() {
