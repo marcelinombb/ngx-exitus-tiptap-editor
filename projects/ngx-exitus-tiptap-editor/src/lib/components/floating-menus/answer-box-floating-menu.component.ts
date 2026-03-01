@@ -12,62 +12,112 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
     standalone: true,
     imports: [TiptapBubbleMenuDirective, EditorButtonComponent],
     template: `
-    <div class="bubble-menu" tiptapBubbleMenu
+    <div class="bubble-menu-answer-box" tiptapBubbleMenu
       [editor]="editor()"
       [shouldShow]="shouldShow"
       [pluginKey]="'answerBoxBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
       [options]="{ flip: true, placement: 'top', onShow }"
     >
-      <div class="ex-toolbar-editor">
-        <div class="ex-toolbar-items">
-             <select (change)="onStyleChange($event)" [value]="boxStyle()" class="ex-toolbar-select">
-                <option value="box">Caixa</option>
-                <option value="lines">Linhas</option>
-                <option value="numbered-lines">Linhas numeradas</option>
-            </select>
+      <div class="ex-toolbar-items">
+          <select (change)="onStyleChange($event)" [value]="boxStyle()" class="ex-toolbar-select">
+            <option value="box">Caixa</option>
+            <option value="lines">Linhas</option>
+            <option value="numbered-lines">Linhas numeradas</option>
+          </select>
 
-            <input 
-                type="number" 
-                [value]="boxLines()" 
-                (change)="onLinesChange($event)" 
-                class="ex-toolbar-input" 
-                min="1" 
-                max="20"
-            />
+          <input 
+            type="number" 
+            [value]="boxLines()" 
+            (change)="onLinesChange($event)" 
+            class="ex-toolbar-input" 
+            min="1" 
+            max="20"
+            title="Número de Linhas"
+          />
 
-            <editor-button
+          <div class="ex-toolbar-divider"></div>
+
+          <editor-button
             [icon]="!boxHeader() ? 'header-view' : 'header-slash'"
-            [title]="'Alternar Cabeçalho'"
+            [title]="!boxHeader() ? 'Adicionar Cabeçalho' : 'Remover Cabeçalho'"
             (onClick)="toggleHeader()"
-            >{{!boxHeader() ? 'Adicionar Cabeçalho' : 'Remover Cabeçalho'}}</editor-button>
-           <editor-button
+          ></editor-button>
+
+          <editor-button
             [icon]="!boxBorder() ? 'square-rounded' : 'square-rounded-slash'" 
-            [title]="'Alternar Borda'"
+            [title]="!boxBorder() ? 'Adicionar Borda' : 'Remover Borda'"
             (onClick)="toggleBorder()"
-          >{{!boxBorder() ? 'Adicionar Borda' : 'Remover Borda'}}</editor-button>
-        </div>
+          ></editor-button>
       </div>
     </div>
   `,
     styles: [`
-    .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
+    .bubble-menu-answer-box { 
+      display: block; 
+      font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+      width: max-content; 
+      background: #fefefe; 
+      padding: 0.5rem; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04); 
+      border: 1px solid #e6decc;
+      user-select: none;
+    }
+    
     .ex-toolbar-items {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-        gap: 5px;
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 0.5rem;
     }
+    
     .ex-toolbar-select, .ex-toolbar-input {
-        background: var(--ex-toolbar-bg, #fff);
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        padding: 4px;
-        font-size: 12px;
-        color: #333;
+      background: transparent;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0.375rem 0.5rem;
+      font-size: 0.8125rem;
+      font-family: inherit;
+      color: #4a4a4a;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #94a3b8;
+        background-color: #f8fafc;
+      }
+      
+      &:focus {
+        outline: none;
+        border-color: #94a3b8;
+        box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1);
+      }
     }
+
+    .ex-toolbar-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      padding-right: 1.75rem;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238F8F8F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 14px;
+    }
+    
     .ex-toolbar-input {
-        width: 50px;
+      width: 50px;
+      text-align: center;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .ex-toolbar-divider {
+      height: 24px;
+      width: 1px;
+      background-color: #e6decc;
+      margin: 0 0.125rem;
     }
   `]
 })

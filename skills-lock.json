@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "airbnb-ui-skills": {
+      "source": "ihlamury/design-skills",
+      "sourceType": "github",
+      "computedHash": "859ec22b1c16cf8f03ca4902bfc37a7cab33ba2d0136e8acd4a4653a0c07843d"
+    },
     "angular-component": {
       "source": "analogjs/angular-skills",
       "sourceType": "github",
@@ -35,6 +40,11 @@
       "source": "xiaolai/vmark",
       "sourceType": "github",
       "computedHash": "6143592f0d3e729145873ca48a6ff02a472a6b8f10fbdaf533f2d00ed4992728"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "computedHash": "e688fcd4c5693e14ebd00d48e982dbd2be060fbea89f5f60531e79c704a1bc28"
     }
   }
 }

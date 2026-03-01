@@ -9,25 +9,107 @@ import { KatexMenuService } from '../../services/katex-menu.service';
 @Component({
     selector: 'katex-floating-menu',
     template: `
-    <div class="bubble-menu" tiptapBubbleMenu
+    <div class="bubble-menu-katex" tiptapBubbleMenu
       [editor]="editor()"
       [shouldShow]="shouldShowKatex"
       [pluginKey]="'katexBubbleMenu'"
       [options]="{ onUpdate }"
     >
-        <input type="text" [ngModel]="formula()" (ngModelChange)="onFormulaChange($event)"/>
-        <button (click)="aplicar()">aplicar</button>
-        <div #preview class="katex-preview" style="margin-top:8px;"></div>
+      <div class="katex-input-row">
+        <input type="text" [ngModel]="formula()" (ngModelChange)="onFormulaChange($event)" placeholder="Digite a fórmula LaTeX..."/>
+        <button class="katex-apply-btn" (click)="aplicar()">Aplicar</button>
+      </div>
+      <div #preview class="katex-preview"></div>
     </div>
     `,
     styles: [
         `
-         .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
-         input[type="text"]{ width:100%; padding:8px 10px; border-radius:8px; border:1px solid #e6edf3; box-sizing:border-box }
-         button{ margin-top:8px; background:#2563eb; color:white; border:none; padding:7px 10px; border-radius:8px; cursor:pointer }
-         button:active{ transform:translateY(1px) }
-         .katex-preview{ margin-top:8px; background:#fbfdff; border:1px solid #e6eef8; padding:8px; border-radius:8px; min-height:36px; overflow:auto }
-         .katex-preview.math-tex-error{ background:#fff7f7; border-color:#ffd4d4; color:#7f1d1d }
+        .bubble-menu-katex { 
+          display: flex; 
+          flex-direction: column;
+          gap: 0.75rem;
+          font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+          width: 320px; 
+          max-width: 90vw;
+          background: #fefefe; 
+          padding: 1rem; 
+          border-radius: 12px; 
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04); 
+          border: 1px solid #e6decc;
+          user-select: none;
+        }
+
+        .katex-input-row {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        input[type="text"] { 
+          flex: 1;
+          padding: 0.5rem 0.75rem; 
+          border-radius: 6px; 
+          border: 1px solid #cbd5e1; 
+          box-sizing: border-box;
+          font-family: 'Inter', monospace;
+          font-size: 0.875rem;
+          color: #1e293b;
+          transition: all 0.2s ease;
+          background: #f8fafc;
+
+          &::placeholder {
+            color: #94a3b8;
+          }
+
+          &:focus {
+            outline: none;
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1);
+            background: #ffffff;
+          }
+        }
+
+        .katex-apply-btn { 
+          background: #1e293b; 
+          color: #fefefe; 
+          border: 1px solid #1e293b; 
+          padding: 0.5rem 1rem; 
+          border-radius: 6px; 
+          cursor: pointer;
+          font-size: 0.875rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background-color: #334155;
+            border-color: #334155;
+          }
+
+          &:active {
+            background-color: #0f172a;
+            transform: scale(0.98);
+          }
+        }
+
+        .katex-preview { 
+          background: #f8fafc; 
+          border: 1px solid #e2e8f0; 
+          padding: 0.75rem; 
+          border-radius: 6px; 
+          min-height: 48px; 
+          overflow-x: auto;
+          overflow-y: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .katex-preview.math-tex-error { 
+          background: #fef2f2; 
+          border-color: #fecaca; 
+          color: #991b1b; 
+          font-size: 0.875rem;
+          padding: 0.5rem;
+        }
         `
     ],
     standalone: true,

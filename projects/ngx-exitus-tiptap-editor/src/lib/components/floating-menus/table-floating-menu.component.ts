@@ -12,94 +12,92 @@ import { FloatingMenuService } from '../../services/floating-menu.service';
     imports: [EditorButtonComponent, TiptapBubbleMenuDirective, EditorDropdownComponent],
     selector: 'table-floating-menu',
     template: `
-    <div class="bubble-menu" tiptapBubbleMenu
+    <div class="bubble-menu-table" tiptapBubbleMenu
       [editor]="editor()"
       [shouldShow]="shouldShowTable"
       [pluginKey]="'tableBubbleMenu'"
       [getReferencedVirtualElement]="getReferencedVirtualElement"
       [options]="{ flip: true, placement: 'top', onShow }"
     >
-      <div class="ex-toolbar-editor" style="border: none; padding: 0;">
-        <div class="ex-toolbar-items">
-            <editor-dropdown icon="table-header-column" title="Colunas" [updateIcon]="false">
-                <editor-button icon="table-header-column" title="Alternar coluna de cabeçalho" (onClick)="toggleHeaderColumn()">
-                    Alternar coluna de cabeçalho
-                </editor-button>
-                <editor-button icon="table-column-plus-before" title="Adicionar coluna antes" (onClick)="addColumnBefore()">
-                    Adicionar coluna antes
-                </editor-button>
-                <editor-button icon="table-column-plus-after" title="Adicionar coluna depois" (onClick)="addColumnAfter()">
-                    Adicionar coluna depois 
-                </editor-button>
-                <editor-button icon="table-column-remove" title="Remover coluna" (onClick)="deleteColumn()">
-                    Remover coluna
-                </editor-button>
-            </editor-dropdown>
-          <span class="ex-toolbar-separator"></span>
-          <editor-dropdown icon="table-header-row" title="Linhas" [updateIcon]="false">
-            <editor-button icon="table-header-row" title="Alternar linha de cabeçalho" (onClick)="toggleHeaderRow()">
-                Alternar linha de cabeçalho
-            </editor-button>
-            <editor-button icon="table-row-plus-before" title="Adicionar linha antes" (onClick)="addRowBefore()">
-                Adicionar linha antes
-            </editor-button>
-            <editor-button icon="table-row-plus-after" title="Adicionar linha depois" (onClick)="addRowAfter()">
-                Adicionar linha depois
-                </editor-button>
-            <editor-button icon="table-row-remove" title="Remover linha" (onClick)="deleteRow()">
-                Remover linha
-            </editor-button>
+      <div class="ex-toolbar-items">
+          <editor-dropdown icon="table-header-column" title="Colunas" [updateIcon]="false">
+              <editor-button icon="table-header-column" title="Alternar coluna de cabeçalho" (onClick)="toggleHeaderColumn()">
+                  Alternar coluna de cabeçalho
+              </editor-button>
+              <editor-button icon="table-column-plus-before" title="Adicionar coluna antes" (onClick)="addColumnBefore()">
+                  Adicionar coluna antes
+              </editor-button>
+              <editor-button icon="table-column-plus-after" title="Adicionar coluna depois" (onClick)="addColumnAfter()">
+                  Adicionar coluna depois 
+              </editor-button>
+              <editor-button icon="table-column-remove" title="Remover coluna" (onClick)="deleteColumn()">
+                  Remover coluna
+              </editor-button>
           </editor-dropdown>
-          <span class="ex-toolbar-separator"></span>
-          <editor-dropdown icon="table-merge-cell" title="Mesclar células" [updateIcon]="false">   
-            <editor-button icon="merge-cells-horizontal" title="Mesclar células" (onClick)="mergeCells()">
-                Mesclar células
-            </editor-button>
-            <editor-button icon="split-cells-horizontal" title="Dividir célula" (onClick)="splitCell()">
-                Dividir células
-            </editor-button>
-          </editor-dropdown>
-          <span class="ex-toolbar-separator"></span>
-          <!-- <editor-dropdown icon="table-view" title="Bordas" [updateIcon]="false">
-            <editor-button icon="table-view" title="Alternar bordas externas" (onClick)="toggleOuterBorder()"></editor-button>
-            <editor-button icon="table-row" title="Apenas bordas horizontais" (onClick)="toggleVerticalBorder()"></editor-button>
-        </editor-dropdown> -->
-          <editor-button [icon]="!tableBorder() ? 'square-rounded-slash' : 'square-rounded'" [title]="!tableBorder() ? 'Remover bordas' : 'Adicionar bordas'" (onClick)="toggleBorders()"></editor-button>
-          <span class="ex-toolbar-separator"></span>
-          <editor-button icon="delete-bin" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
-        </div>
+        
+        <div class="ex-toolbar-divider"></div>
+        
+        <editor-dropdown icon="table-header-row" title="Linhas" [updateIcon]="false">
+          <editor-button icon="table-header-row" title="Alternar linha de cabeçalho" (onClick)="toggleHeaderRow()">
+              Alternar linha de cabeçalho
+          </editor-button>
+          <editor-button icon="table-row-plus-before" title="Adicionar linha antes" (onClick)="addRowBefore()">
+              Adicionar linha antes
+          </editor-button>
+          <editor-button icon="table-row-plus-after" title="Adicionar linha depois" (onClick)="addRowAfter()">
+              Adicionar linha depois
+          </editor-button>
+          <editor-button icon="table-row-remove" title="Remover linha" (onClick)="deleteRow()">
+              Remover linha
+          </editor-button>
+        </editor-dropdown>
+        
+        <div class="ex-toolbar-divider"></div>
+
+        <editor-dropdown icon="table-merge-cell" title="Mesclar células" [updateIcon]="false">   
+          <editor-button icon="merge-cells-horizontal" title="Mesclar células" (onClick)="mergeCells()">
+              Mesclar células
+          </editor-button>
+          <editor-button icon="split-cells-horizontal" title="Dividir célula" (onClick)="splitCell()">
+              Dividir células
+          </editor-button>
+        </editor-dropdown>
+        
+        <div class="ex-toolbar-divider"></div>
+
+        <editor-button [icon]="!tableBorder() ? 'square-rounded-slash' : 'square-rounded'" [title]="!tableBorder() ? 'Remover bordas' : 'Adicionar bordas'" (onClick)="toggleBorders()"></editor-button>
+        
+        <div class="ex-toolbar-divider"></div>
+
+        <editor-button icon="delete-bin" title="Remover tabela" (onClick)="deleteTable()"></editor-button>
       </div>
     </div>
   `,
     styles: `
-        .bubble-menu { display:block; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; width: max-content; background: #ffffff; padding:12px; border-radius:12px; box-shadow: 0 8px 24px rgba(20,27,33,0.10); border: 1px solid rgba(16,24,40,0.04) }
-        .ex-toolbar-editor,
+        .bubble-menu-table { 
+          display: block; 
+          font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+          width: max-content; 
+          background: #fefefe; 
+          padding: 0.5rem; 
+          border-radius: 12px; 
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04); 
+          border: 1px solid #e6decc;
+          user-select: none;
+        }
+        
         .ex-toolbar-items {
-            display: flex;
-            background-color: #fff;
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          gap: 0.25rem;
         }
 
-        .ex-toolbar-editor {
-            border: 1px solid var(--border-gray);
-            padding: 0 calc(0.6em * 0.5);
-            border-radius: 6px;
-        }
-
-        .ex-toolbar-items {
-            align-items: center;
-            border-radius: 5px;
-        }
-
-        .ex-toolbar-separator {
-            display: inline-block;
-            align-self: stretch;
-            background: var(--border-gray);
-            margin-bottom: var(--spacing-sm);
-            margin-top: var(--spacing-sm);
-            min-width: 1px;
-            width: 1px;
-            margin-right: var(--spacing-sm);
-            margin-left: var(--spacing-sm);
+        .ex-toolbar-divider {
+          height: 24px;
+          width: 1px;
+          background-color: #e6decc;
+          margin: 0 0.125rem;
         }
     `
 })
