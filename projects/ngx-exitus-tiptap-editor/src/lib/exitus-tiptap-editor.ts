@@ -23,6 +23,8 @@ import { AnswerBox } from './extensions/answer-box/answer-box';
 import { Association } from './extensions/association/association';
 import { AssociationColumn } from './extensions/association/association-column';
 import { AssociationItem } from './extensions/association/association-item';
+import { Alternative } from './extensions/alternatives/alternative';
+import { AlternativeItem } from './extensions/alternatives/alternative-item';
 import { SpellCheckerExtension } from './extensions/spell-checker';
 import { Paragraph } from '@tiptap/extension-paragraph';
 
@@ -142,6 +144,12 @@ export class ExitusTiptapEditor implements OnDestroy {
           injector: this.injector
         }),
         AssociationItem.configure({
+          injector: this.injector
+        }),
+        Alternative.configure({
+          injector: this.injector
+        }),
+        AlternativeItem.configure({
           injector: this.injector
         }),
         ...TableExtensions,

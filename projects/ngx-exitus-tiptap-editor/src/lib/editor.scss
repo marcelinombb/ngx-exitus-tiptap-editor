@@ -1,6 +1,7 @@
 @use './preview.scss' as preview-style;
 @use './extensions/spell-checker/style.scss' as spell-checker-style;
 @use './extensions/association/style.scss' as association-style;
+@use './extensions/alternatives/style.scss' as alternatives-style;
 
 .exitus-tiptap-editor {
     --border-gray: #ccced1;
