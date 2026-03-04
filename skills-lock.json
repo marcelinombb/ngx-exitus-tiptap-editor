@@ -36,6 +36,11 @@
       "sourceType": "github",
       "computedHash": "60de610a3c143f79f69552b7da60298bb46c9e8d80ab16c4c111b025823345d1"
     },
+    "tiptap-dev": {
+      "source": "xiaolai/vmark",
+      "sourceType": "github",
+      "computedHash": "59db27355eb62c9ba0ad53ecdb4be72ab93817ebf92f498c65afa3164277ddef"
+    },
     "tiptap-editor": {
       "source": "xiaolai/vmark",
       "sourceType": "github",

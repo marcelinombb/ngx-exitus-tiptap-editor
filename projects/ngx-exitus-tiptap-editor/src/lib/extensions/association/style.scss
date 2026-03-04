@@ -1,5 +1,8 @@
 .ex-association-wrapper {
   margin: 1.5rem 0;
+}
+
+association-component .ex-association-wrapper {
   background: #fefefe;
   border: 1px solid #e6decc;
   border-radius: 12px;
@@ -80,7 +83,7 @@
         border-color: #94a3b8;
         box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.1);
       }
-      
+
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
@@ -112,7 +115,7 @@ association-component .ex-association-content {
       flex: 1 1 50%;
       min-width: 0;
       padding: 1rem;
-      
+
       &:first-child {
         border-right: 1px dashed #e6decc;
       }
@@ -206,7 +209,7 @@ association-component .ex-association-content {
     color: #4a4a4a;
     border-color: #b4bac8;
   }
-  
+
   &:active {
     background: #e6decc;
   }

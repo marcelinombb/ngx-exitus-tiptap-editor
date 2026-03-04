@@ -57,7 +57,6 @@ export const AlternativeItem = Node.create<AlternativeItemOptions>({
 
     addKeyboardShortcuts() {
         return {
-            Enter: () => this.editor.commands.splitListItem(this.name),
             'Shift-Tab': () => this.editor.commands.liftListItem(this.name),
         }
     },
