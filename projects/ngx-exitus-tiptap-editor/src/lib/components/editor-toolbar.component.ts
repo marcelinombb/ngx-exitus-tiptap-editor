@@ -89,25 +89,25 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
           <editor-button
             [icon]="'align-left'"
             [title]="'Alinhar à esquerda'"
-            [active]="isActive('alignLeft')"
+            [active]="isActive({ textAlign: 'left' })"
             (onClick)="setTextAlign('left')"
           ></editor-button>
           <editor-button
             [icon]="'align-right'"
             [title]="'Alinhar à direita'"
-            [active]="isActive('alignRight')"
+            [active]="isActive({ textAlign: 'right' })"
             (onClick)="setTextAlign('right')"
           ></editor-button>
           <editor-button
             [icon]="'align-center'"
             [title]="'Alinhar ao centro'"
-            [active]="isActive('alignCenter')"
+            [active]="isActive({ textAlign: 'center' })"
             (onClick)="setTextAlign('center')"
           ></editor-button>
           <editor-button
             [icon]="'align-justify'"
             [title]="'Alinhar justificado'"
-            [active]="isActive('alignJustify')"
+            [active]="isActive({ textAlign: 'justify' })"
             (onClick)="setTextAlign('justify')"
           ></editor-button>
         </editor-dropdown>
@@ -244,8 +244,8 @@ export class EditorToolbarComponent implements OnInit {
     this.editor().on('transaction', () => this.cdr.detectChanges());
   }
 
-  isActive(name: string): boolean {
-    return this.editor().isActive(name);
+  isActive(name: string | any, attrs?: any): boolean {
+    return this.editor().isActive(name, attrs);
   }
 
   toggleBold() {

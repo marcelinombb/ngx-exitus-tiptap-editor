@@ -1,5 +1,7 @@
 import {
   AfterContentInit,
+  computed,
+  effect,
   Component,
   ElementRef,
   contentChildren,
@@ -30,22 +32,21 @@ export class EditorDropdownService {
   template: `
     <div class="ex-toolbar-dropdown" (clickOutside)="clickOutside()">
       <button
-        [class]="['ex-toolbar-button', 'btn', 'btn-' + currentIcon()]"
-        [title]="title()"
+        [class]="buttonClasses()"
+        [title]="displayTitle()"
         (click)="toggle()"
         [disabled]="disabled()"
       >
         <span class="ex-btn-caret" [class.open]="open"></span>
       </button>
-      @if (open) {
-        <div
-          class="ex-dropdown-menu "
-          [class.vertical]="orientation() === 'vertical'"
-          [class.horizontal]="orientation() === 'horizontal'"
-        >
-          <ng-content></ng-content>
-        </div>
-      }
+      <div
+        class="ex-dropdown-menu"
+        [class.ex-dropdown-open]="open"
+        [class.vertical]="orientation() === 'vertical'"
+        [class.horizontal]="orientation() === 'horizontal'"
+      >
+        <ng-content></ng-content>
+      </div>
     </div>
   `,
   styleUrls: ['editor-dropdown.component.scss', '../assets/icons/icons.css'],
@@ -67,6 +68,50 @@ export class EditorDropdownComponent implements AfterContentInit {
     descendants: true,
   });
 
+  readonly activeButton = computed(() => this.buttons().find((btn) => btn.active()));
+
+  readonly displayIcon = computed(() => {
+    const active = this.activeButton();
+    if (active && active.icon()) {
+      return active.icon();
+    }
+    return this.currentIcon();
+  });
+
+  readonly displayTitle = computed(() => {
+    const active = this.activeButton();
+    if (active && active.title()) {
+      return active.title();
+    }
+    return this.title();
+  });
+
+  readonly isActive = computed(() => !!this.activeButton());
+
+  readonly buttonClasses = computed(() => {
+    return {
+      'ex-toolbar-button': true,
+      btn: true,
+      ['btn-' + this.displayIcon()]: !!this.displayIcon(),
+      'ex-button-active': this.isActive(),
+    };
+  });
+
+  constructor() {
+    effect((onCleanup) => {
+      const buttons = this.buttons();
+      if (this.icon() === undefined || this.updateIcon()) {
+        const subs = buttons.map((btn) =>
+          btn.onClick.subscribe(() => {
+            this.setCurrentButton(btn.icon()!, btn.title());
+            this.open = false;
+          }),
+        );
+        onCleanup(() => subs.forEach((s) => s.unsubscribe()));
+      }
+    });
+  }
+
   ngAfterContentInit(): void {
     const buttons = this.buttons();
 
@@ -81,15 +126,6 @@ export class EditorDropdownComponent implements AfterContentInit {
     } else if (buttons && buttons.length > 0) {
       const first = buttons.at(0)!;
       this.setCurrentButton(first.icon()!, first.title());
-    }
-
-    if (this.icon() === undefined || this.updateIcon()) {
-      buttons.forEach((btn) => {
-        btn.onClick.subscribe(() => {
-          this.setCurrentButton(btn.icon()!, btn.title());
-          this.open = false;
-        });
-      });
     }
   }
 
