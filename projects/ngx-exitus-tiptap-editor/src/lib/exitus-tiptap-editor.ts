@@ -1,4 +1,16 @@
-import { Component, ElementRef, input, OnDestroy, output, signal, viewChild, ViewEncapsulation, Injector, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  input,
+  OnDestroy,
+  output,
+  signal,
+  viewChild,
+  ViewEncapsulation,
+  Injector,
+  inject,
+  AfterViewInit,
+} from '@angular/core';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
@@ -38,10 +50,16 @@ export interface EditorExtensionsConfig {
 
 @Component({
   selector: 'exitus-tiptap-editor',
-  imports: [EditorToolbarComponent, KatexFloatingMenuComponent, ImageFloatingMenuComponent, TableFloatingMenuComponent, AnswerBoxFloatingMenuComponent],
+  imports: [
+    EditorToolbarComponent,
+    KatexFloatingMenuComponent,
+    ImageFloatingMenuComponent,
+    TableFloatingMenuComponent,
+    AnswerBoxFloatingMenuComponent,
+  ],
   template: `
     <div class="exitus-tiptap-editor">
-      @if(editorInstance) {
+      @if (editorInstance) {
         <editor-toolbar [editor]="editorInstance"></editor-toolbar>
         <katex-floating-menu [editor]="editorInstance"></katex-floating-menu>
         <image-floating-menu [editor]="editorInstance"></image-floating-menu>
@@ -55,9 +73,9 @@ export interface EditorExtensionsConfig {
   `,
   styleUrls: ['./exitus-tiptap-editor.scss'],
   encapsulation: ViewEncapsulation.None,
-  providers: [EditorDropdownService, KatexMenuService]
+  providers: [EditorDropdownService, KatexMenuService],
 })
-export class ExitusTiptapEditor implements OnDestroy {
+export class ExitusTiptapEditor implements OnDestroy, AfterViewInit {
   private editorElement = viewChild.required<ElementRef>('editor');
   private editor = signal<Editor | null>(null);
   private injector = inject(Injector);
@@ -87,75 +105,7 @@ export class ExitusTiptapEditor implements OnDestroy {
     const newEditor = new Editor({
       element: this.editorElement().nativeElement,
       editable: this.editable(),
-      extensions: [
-        StarterKit.configure({
-          link: false,
-          trailingNode: false,
-          heading: false,
-          codeBlock: false,
-          code: false,
-          listKeymap: false,
-          paragraph: false,
-        }),
-        Paragraph.extend({
-          parseHTML() {
-            return [
-              {
-                tag: 'p',
-                getAttrs: (node) => {
-                  if (node.querySelector("img")) {
-                    return false
-                  }
-                  return {};
-                },
-              },
-            ];
-          },
-        }),
-        Subscript,
-        Superscript,
-        TextAlign.configure({
-          types: ['heading', 'paragraph'],
-        }),
-        Indent,
-        Tab,
-        Katex,
-        Image.configure({
-          inline: false,
-          allowBase64: true,
-          proxyUrl: this.extensionsConfig()?.imageProxyUrl,
-        }),
-        Figcaption,
-        Figure.configure({
-          injector: this.injector
-        }),
-        ColarQuestao.configure({
-          injector: this.injector
-        }),
-        MathType,
-        MathTypePlugin,
-        AnswerBox.configure({
-          injector: this.injector
-        }),
-        Association.configure({
-          injector: this.injector
-        }),
-        AssociationColumn.configure({
-          injector: this.injector
-        }),
-        AssociationItem.configure({
-          injector: this.injector
-        }),
-        Alternative.configure({
-          injector: this.injector
-        }),
-        AlternativeItem.configure({
-          injector: this.injector
-        }),
-        ...TableExtensions,
-        SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker),
-      ],
-      //content: this.content(),
+      extensions: this.getExtensions(),
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
         this.onContentChange.emit(html);
@@ -169,8 +119,78 @@ export class ExitusTiptapEditor implements OnDestroy {
     this.editor.set(newEditor);
   }
 
+  private getExtensions() {
+    return [
+      StarterKit.configure({
+        link: false,
+        trailingNode: false,
+        heading: false,
+        codeBlock: false,
+        code: false,
+        listKeymap: false,
+        paragraph: false,
+      }),
+      Paragraph.extend({
+        parseHTML() {
+          return [
+            {
+              tag: 'p',
+              getAttrs: (node) => {
+                if (node instanceof HTMLElement && node.querySelector('img')) {
+                  return false;
+                }
+                return {};
+              },
+            },
+          ];
+        },
+      }),
+      Subscript,
+      Superscript,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Indent,
+      Tab,
+      Katex,
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        proxyUrl: this.extensionsConfig()?.imageProxyUrl,
+      }),
+      Figcaption,
+      Figure.configure({
+        injector: this.injector,
+      }),
+      ColarQuestao.configure({
+        injector: this.injector,
+      }),
+      MathType,
+      MathTypePlugin,
+      AnswerBox.configure({
+        injector: this.injector,
+      }),
+      Association.configure({
+        injector: this.injector,
+      }),
+      AssociationColumn.configure({
+        injector: this.injector,
+      }),
+      AssociationItem.configure({
+        injector: this.injector,
+      }),
+      Alternative.configure({
+        injector: this.injector,
+      }),
+      AlternativeItem.configure({
+        injector: this.injector,
+      }),
+      ...TableExtensions,
+      SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker),
+    ];
+  }
+
   ngOnDestroy(): void {
     this.editor()?.destroy();
   }
-
 }

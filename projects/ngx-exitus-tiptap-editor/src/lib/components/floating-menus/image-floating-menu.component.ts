@@ -13,7 +13,9 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
   imports: [EditorButtonComponent, EditorDropdownComponent, TiptapBubbleMenuDirective],
   selector: 'image-floating-menu',
   template: `
-    <div class="bubble-menu-image" tiptapBubbleMenu
+    <div
+      class="bubble-menu-image"
+      tiptapBubbleMenu
       [editor]="editor()"
       [shouldShow]="shouldShowImage"
       [pluginKey]="'imageBubbleMenu'"
@@ -26,7 +28,12 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
           [title]="'Legenda da Imagem'"
           (onClick)="toggleCaption()"
         ></editor-button>
-        <editor-dropdown #imagesize [title]="'Tamanho da Imagem'" [icon]="'image-middle'" orientation="horizontal">
+        <editor-dropdown
+          #imagesize
+          [title]="'Tamanho da Imagem'"
+          [icon]="'image-middle'"
+          orientation="horizontal"
+        >
           <editor-button
             [icon]="'image-left'"
             [title]="'Alinhar à Esquerda'"
@@ -46,24 +53,29 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
             (onClick)="setAlignment('right')"
           ></editor-button>
         </editor-dropdown>
-        <editor-dropdown #imagesize [icon]="'image-size'" [title]="'Tamanho da Imagem'" [updateIcon]="false">
-          <editor-button (onClick)="setWidth(300)" [title]="'Pequena'"
-            >Pequena</editor-button
-          >
-          <editor-button (onClick)="setWidth(500)" [title]="'Média'"
-            >Média</editor-button
-          >
-          <editor-button (onClick)="setWidth(700)" [title]="'Grande'"
-            >Grande</editor-button
-          >
+        <editor-dropdown
+          #imagesize
+          [icon]="'image-size'"
+          [title]="'Tamanho da Imagem'"
+          [updateIcon]="false"
+        >
+          <editor-button (onClick)="setWidth(300)" [title]="'Pequena'">Pequena</editor-button>
+          <editor-button (onClick)="setWidth(500)" [title]="'Média'">Média</editor-button>
+          <editor-button (onClick)="setWidth(700)" [title]="'Grande'">Grande</editor-button>
         </editor-dropdown>
         <editor-dropdown [title]="'Alinhar imagem ao texto'" orientation="horizontal">
-          <editor-button [icon]="'image-float-left'" (onClick)="setAlignment('inlineLeft')" [title]="'Esquerda'"
-            ></editor-button>
-          <editor-button [icon]="'image-float-right'" (onClick)="setAlignment('inlineRight')" [title]="'Direita'"
-            ></editor-button>
+          <editor-button
+            [icon]="'image-float-left'"
+            (onClick)="setAlignment('inlineLeft')"
+            [title]="'Esquerda'"
+          ></editor-button>
+          <editor-button
+            [icon]="'image-float-right'"
+            (onClick)="setAlignment('inlineRight')"
+            [title]="'Direita'"
+          ></editor-button>
         </editor-dropdown>
-        
+
         <div class="ex-toolbar-divider"></div>
 
         <editor-button
@@ -73,9 +85,9 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
         ></editor-button>
         @if (editor().isActive('figure')) {
           <editor-button
-              [icon]="'image-crop'"
-              [title]="'Recortar Imagem'"
-              (onClick)="toggleCropping()"
+            [icon]="'image-crop'"
+            [title]="'Recortar Imagem'"
+            (onClick)="toggleCropping()"
           ></editor-button>
         }
       </div>
@@ -83,33 +95,39 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
   `,
   styles: [
     `
-    .bubble-menu-image { 
-      display: block; 
-      font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-      width: max-content; 
-      background: #fefefe; 
-      padding: 0.5rem; 
-      border-radius: 12px; 
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04); 
-      border: 1px solid #e6decc;
-      user-select: none;
-    }
-    
-    .ex-toolbar-items {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      gap: 0.25rem;
-    }
+      .bubble-menu-image {
+        display: block;
+        font-family:
+          'Inter',
+          system-ui,
+          -apple-system,
+          sans-serif;
+        width: max-content;
+        background: #fefefe;
+        padding: 0.5rem;
+        border-radius: 12px;
+        box-shadow:
+          0 4px 12px rgba(0, 0, 0, 0.08),
+          0 1px 2px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e6decc;
+        user-select: none;
+      }
 
-    .ex-toolbar-divider {
-      height: 24px;
-      width: 1px;
-      background-color: #e6decc;
-      margin: 0 0.125rem;
-    }
-    `
-  ]
+      .ex-toolbar-items {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 0.25rem;
+      }
+
+      .ex-toolbar-divider {
+        height: 24px;
+        width: 1px;
+        background-color: #e6decc;
+        margin: 0 0.125rem;
+      }
+    `,
+  ],
 })
 export class ImageFloatingMenuComponent implements OnInit {
   editor = input.required<Editor>();
@@ -132,7 +150,7 @@ export class ImageFloatingMenuComponent implements OnInit {
     const view = this.editor().view;
     const { selection } = view.state;
 
-    if (!this.editor().isActive('image') && !this.editor().isActive("figure")) {
+    if (!this.editor().isActive('image') && !this.editor().isActive('figure')) {
       this.activeClasses.set(new Set());
       return;
     }
@@ -150,7 +168,9 @@ export class ImageFloatingMenuComponent implements OnInit {
       return;
     }
 
-    this.activeClasses.set(new Set((figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)));
+    this.activeClasses.set(
+      new Set((figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)),
+    );
   }
 
   isButtonActive(className: string) {
@@ -162,7 +182,7 @@ export class ImageFloatingMenuComponent implements OnInit {
   };
 
   onShow = () => {
-    requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'))
+    requestAnimationFrame(() => this.editor().commands.setMeta('bubbleMenu', 'updatePosition'));
   };
 
   getReferencedVirtualElement = () => {
@@ -187,7 +207,7 @@ export class ImageFloatingMenuComponent implements OnInit {
     }
 
     return null;
-  }
+  };
 
   shouldShowImage = ({ editor }: { editor: Editor }) => {
     if (!editor.isFocused) {

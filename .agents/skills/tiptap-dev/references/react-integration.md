@@ -33,11 +33,7 @@ function Editor() {
 ```typescript
 const editor = useEditor({
   // Required: extensions array
-  extensions: [
-    StarterKit,
-    Highlight,
-    Link.configure({ openOnClick: false }),
-  ],
+  extensions: [StarterKit, Highlight, Link.configure({ openOnClick: false })],
 
   // Initial content (HTML, JSON, or null)
   content: '<p>Initial content</p>',
@@ -68,7 +64,7 @@ const editor = useEditor({
     handleDrop: (view, event, slice, moved) => {},
     handlePaste: (view, event, slice) => {},
   },
-})
+});
 ```
 
 ### Accessing Editor
@@ -280,28 +276,28 @@ Editable content area within node view. Use when `content` is defined.
 
 ```typescript
 interface NodeViewProps {
-  node: ProseMirrorNode        // The node
-  updateAttributes: Function   // Update node attributes
-  selected: boolean            // Is selected
-  editor: Editor               // Editor instance
-  getPos: () => number         // Get node position
-  deleteNode: () => void       // Delete this node
-  extension: Extension         // The extension
+  node: ProseMirrorNode; // The node
+  updateAttributes: Function; // Update node attributes
+  selected: boolean; // Is selected
+  editor: Editor; // Editor instance
+  getPos: () => number; // Get node position
+  deleteNode: () => void; // Delete this node
+  extension: Extension; // The extension
 }
 ```
 
 ## TypeScript
 
 ```typescript
-import { Editor } from '@tiptap/react'
+import { Editor } from '@tiptap/react';
 
 // Type for editor prop
 interface Props {
-  editor: Editor | null
+  editor: Editor | null;
 }
 
 // Type for content
-type Content = string | JSONContent | JSONContent[] | null
+type Content = string | JSONContent | JSONContent[] | null;
 ```
 
 ## Performance Tips

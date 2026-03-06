@@ -10,7 +10,7 @@
 
 - 📐 **Scientific Formula Support**: Full [KaTeX](https://katex.org/) and [MathType](https://www.wiris.com/mathtype/) integration.
 - 🖼️ **Advanced Image Handling**: Responsive images with figures, captions, alignment, and resizing handles.
-- 🛠️ **Custom Extensions**: 
+- 🛠️ **Custom Extensions**:
   - **Indent**: Control line indentation.
   - **Tab**: Custom tab key behavior.
   - **ColarQuestao**: Specialized tool for pasting educational questions.
@@ -26,6 +26,7 @@ npm install ngx-exitus-tiptap-editor
 ```
 
 ### Peer Dependencies
+
 This library depends on several Tiptap packages and KaTeX. Ensure you have them installed in your project:
 
 ```bash
@@ -56,6 +57,7 @@ To use the **MathType** features properly, you **must** configure your Angular a
 ## 📦 Usage
 
 ### 1. Import the Component
+
 In your component file:
 
 ```typescript
@@ -78,9 +80,7 @@ export class MyAppComponent {
 ### 2. Use in Template
 
 ```html
-<exitus-tiptap-editor 
-  [content]="editorContent" 
-  (onContentChange)="handleContentChange($event)">
+<exitus-tiptap-editor [content]="editorContent" (onContentChange)="handleContentChange($event)">
 </exitus-tiptap-editor>
 ```
 
@@ -89,13 +89,15 @@ export class MyAppComponent {
 ## 🛠️ API Reference
 
 ### Inputs
-| Input | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `content` | `string` | `""` | The initial HTML content of the editor. |
+
+| Input     | Type     | Default | Description                             |
+| :-------- | :------- | :------ | :-------------------------------------- |
+| `content` | `string` | `""`    | The initial HTML content of the editor. |
 
 ### Outputs
-| Output | Type | Description |
-| :--- | :--- | :--- |
+
+| Output            | Type                   | Description                                            |
+| :---------------- | :--------------------- | :----------------------------------------------------- |
 | `onContentChange` | `EventEmitter<string>` | Emits the HTML content whenever the editor is updated. |
 
 ---
@@ -103,17 +105,21 @@ export class MyAppComponent {
 ## 🧪 Extensions Detail
 
 ### 📐 Math & Science
+
 - **KaTeX**: Write LaTeX formulas directly. Includes a floating menu for quick editing.
 - **MathType**: Advanced formula editor integration via Wiris.
 
 ### 🖼️ Image Management
+
 The editor uses a custom `Figure` extension that wraps images in a `<figure>` tag with support for:
+
 - `<figcaption>` for image descriptions.
 - Resizing handles (300px to 700px).
 - Alignment options (left, center, right).
 - Fullscreen/Wide modes.
 
 ### 📝 Productivity
+
 - **Indent/Outdent**: Standard shortcut and toolbar support.
 - **Tab Handling**: Consistent tab behavior within the editor.
 - **Colar Questão**: specialized logic for pasting data into educational templates.
@@ -123,15 +129,19 @@ The editor uses a custom `Figure` extension that wraps images in a `<figure>` ta
 ## 🛠 Development
 
 ### Setup
+
 Run `npm install` to install dependencies.
 
 ### Development Server
+
 Run `npm run dev` to start a development server for both the library and the test application. This command uses `concurrently` to watch for library changes and serve the app.
 
 ### Building
+
 Run `npm run build:lib` to build the library. The build artifacts will be stored in the `dist/ngx-exitus-tiptap-editor` directory.
 
 ---
 
 ## 📜 License
+
 MIT

@@ -7,6 +7,7 @@ The key insight: **Objects are defined by their responsibilities, not their data
 ### Finding Objects
 
 Start with:
+
 1. **Nouns** in requirements → candidate objects
 2. **Verbs** → candidate methods/behaviors
 3. **Domain concepts** → value objects
@@ -14,6 +15,7 @@ Start with:
 ### Finding Responsibilities
 
 Each object should answer:
+
 - What does this object **know**?
 - What does this object **do**?
 - What does this object **decide**?
@@ -22,18 +24,19 @@ Each object should answer:
 
 Every class fits one (or maybe two) stereotypes:
 
-| Stereotype | Purpose | Example |
-|------------|---------|---------|
-| **Information Holder** | Knows things, holds data | `User`, `Product`, `Address` |
-| **Structurer** | Maintains relationships | `OrderItems`, `UserGroup` |
-| **Service Provider** | Performs work | `PaymentProcessor`, `EmailSender` |
-| **Coordinator** | Orchestrates workflow | `OrderFulfillmentService` |
-| **Controller** | Makes decisions, delegates | `CheckoutController` |
-| **Interfacer** | Transforms between systems | `UserAPIAdapter`, `DatabaseMapper` |
+| Stereotype             | Purpose                    | Example                            |
+| ---------------------- | -------------------------- | ---------------------------------- |
+| **Information Holder** | Knows things, holds data   | `User`, `Product`, `Address`       |
+| **Structurer**         | Maintains relationships    | `OrderItems`, `UserGroup`          |
+| **Service Provider**   | Performs work              | `PaymentProcessor`, `EmailSender`  |
+| **Coordinator**        | Orchestrates workflow      | `OrderFulfillmentService`          |
+| **Controller**         | Makes decisions, delegates | `CheckoutController`               |
+| **Interfacer**         | Transforms between systems | `UserAPIAdapter`, `DatabaseMapper` |
 
 ### The Two Questions
 
 For every class, ask:
+
 1. **"What pattern is this?"** - Which stereotype? Which design pattern?
 2. **"Is it doing too much?"** - Check object calisthenics rules
 
@@ -66,6 +69,7 @@ The object that has the data should have the behavior.
 ## Design by Contract (DbC)
 
 Every method has:
+
 - **Preconditions** - What must be true BEFORE calling
 - **Postconditions** - What will be true AFTER calling
 - **Invariants** - What is ALWAYS true about the object
@@ -100,21 +104,26 @@ class BankAccount {
 **Prefer composing objects over extending classes.**
 
 ### Why Inheritance is Problematic:
+
 - Tight coupling between parent and child
 - Fragile base class problem
 - Difficult to change parent without breaking children
 - Forces "is-a" relationship that may not fit
 
 ### When to Use Inheritance:
+
 - True "is-a" relationship (rare)
 - Framework requirements
 - Template Method pattern (intentional)
 
 ### Prefer Composition:
+
 ```typescript
 // BAD: Inheritance
 class PremiumUser extends User {
-  getDiscount(): number { return 20; }
+  getDiscount(): number {
+    return 20;
+  }
 }
 
 // GOOD: Composition
@@ -139,6 +148,7 @@ new User(new NoDiscount());
 **Only talk to your immediate friends.**
 
 A method should only call:
+
 1. Methods on `this`
 2. Methods on parameters
 3. Methods on objects it creates
@@ -161,6 +171,7 @@ This reduces coupling - changes to `Address` don't ripple through all callers.
 **Hide internal details, expose behavior.**
 
 ### Levels of Encapsulation:
+
 1. **Data** - private fields, no direct access
 2. **Implementation** - how things work internally
 3. **Type** - concrete class hidden behind interface
@@ -236,6 +247,7 @@ function calculateShipping(method: ShippingMethod, value: number): number {
 ## Value Objects vs Entities
 
 ### Value Objects
+
 - Defined by their attributes (no identity)
 - Immutable
 - Comparable by value
@@ -245,12 +257,11 @@ function calculateShipping(method: ShippingMethod, value: number): number {
 class Money {
   constructor(
     private readonly amount: number,
-    private readonly currency: string
+    private readonly currency: string,
   ) {}
 
   equals(other: Money): boolean {
-    return this.amount === other.amount &&
-           this.currency === other.currency;
+    return this.amount === other.amount && this.currency === other.currency;
   }
 
   add(other: Money): Money {
@@ -263,6 +274,7 @@ class Money {
 ```
 
 ### Entities
+
 - Have identity (survives attribute changes)
 - Usually mutable (via methods)
 - Comparable by identity
@@ -273,7 +285,7 @@ class User {
   constructor(
     private readonly id: UserId,
     private email: Email,
-    private name: Name
+    private name: Name,
   ) {}
 
   equals(other: User): boolean {

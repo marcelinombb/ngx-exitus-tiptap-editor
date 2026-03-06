@@ -9,6 +9,7 @@ NodeViews são usados quando você precisa de uma representação complexa para 
 Para criar um NodeView, crie um componente Angular que estenda `AngularNodeViewComponent`. Isso fornece acesso ao node, extension, editor e métodos para atualizar atributos.
 
 ### Exemplo: `CounterComponent`
+
 Um componente simples que exibe um contador interativo.
 
 ```typescript
@@ -24,30 +25,33 @@ import { AngularNodeViewComponent } from 'ngx-tiptap';
       <button (click)="increment()">+1</button>
     </div>
   `,
-  styles: [`
-    .counter-wrapper {
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 4px;
-      display: inline-block;
-    }
-    button {
-      margin-top: 5px;
-      padding: 4px 8px;
-    }
-  `]
+  styles: [
+    `
+      .counter-wrapper {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 4px;
+        display: inline-block;
+      }
+      button {
+        margin-top: 5px;
+        padding: 4px 8px;
+      }
+    `,
+  ],
 })
 export class CounterComponent extends AngularNodeViewComponent {
   increment() {
     // Atualiza o atributo 'count' do node
     this.updateAttributes({
-      count: this.node.attrs.count + 1
+      count: this.node.attrs.count + 1,
     });
   }
 }
 ```
 
 **Pontos Importantes:**
+
 - `this.node.attrs`: Acesso aos atributos do node.
 - `this.updateAttributes({})`: Método para atualizar atributos e manter o estado sincronizado com o documento Prosemirror.
 - `contenteditable="false"` não é necessário no wrapper principal se o componente não contiver conteúdo editável do editor, mas cuidado com seleção. O `ngx-tiptap` geralmente lida com o wrapper.
@@ -65,7 +69,7 @@ import { CounterComponent } from './counter.component'; // Importe seu component
 import { Injector } from '@angular/core';
 
 export interface CounterOptions {
-    injector: Injector;
+  injector: Injector;
 }
 
 export const CounterExtension = Node.create<CounterOptions>({
@@ -112,20 +116,21 @@ import { CounterExtension } from './counter.extension';
 
 // ...
 export class EditorComponent {
-    constructor(private injector: Injector) {}
+  constructor(private injector: Injector) {}
 
-    editor = new Editor({
-        extensions: [
-            // ... outras extensões
-            CounterExtension.configure({
-                injector: this.injector
-            })
-        ]
-    })
+  editor = new Editor({
+    extensions: [
+      // ... outras extensões
+      CounterExtension.configure({
+        injector: this.injector,
+      }),
+    ],
+  });
 }
 ```
 
 ## Resumo
+
 1.  Crie um Componente Angular extendendo `AngularNodeViewComponent`.
 2.  Use `this.node.attrs` para ler e `this.updateAttributes` para escrever.
 3.  Crie a Extensão do Node e configure `addNodeView` com `AngularNodeViewRenderer`.

@@ -1,1 +1,1 @@
-export * from './colar-questao'
+export * from './colar-questao';

@@ -1,24 +1,29 @@
 # Angular Signal Forms - ( FormValueControl )
 
 ## Table of Contents
+
 - [Signal Form FormValueControl](#formValueControl)
 
 ## Signal Forms FormValueControl
 
-``` typescript 
-
-interface  Rating {
-    rating : number
+```typescript
+interface Rating {
+  rating: number;
 }
 
-import { form, FormField, FormValueControl, ValidationError, WithOptionalField } from '@angular/forms/signals';
+import {
+  form,
+  FormField,
+  FormValueControl,
+  ValidationError,
+  WithOptionalField,
+} from '@angular/forms/signals';
 import { MatIconModule } from '@angular/material/icon';
 import { MatError } from '@angular/material/form-field';
 
-
 @Component({
   selector: 'app-rating',
-  imports : [MatIconModule,MatError],
+  imports: [MatIconModule, MatError],
   template: `
     <div class="star-rating-container">
       @for (star of starArray(); track $index) {
@@ -58,10 +63,10 @@ export class Rating implements FormValueControl<number> {
   );
 
   getStarIcon(index: number): string {
-    const floorRating = Math.floor(this.value()); 
+    const floorRating = Math.floor(this.value());
     if (index <= floorRating) {
       return 'star'; // Full star
-    }  else {
+    } else {
       return 'star_border'; // Empty star
     }
   }
@@ -72,39 +77,32 @@ export class Rating implements FormValueControl<number> {
   }
 }
 
-
 import { FormField } from '@angular/forms/signals';
 
 @Component({
   selector: 'app-signal-forms',
-  imports : [FormField, Rating],
+  imports: [FormField, Rating],
   template: `
-   <form autocomplete="off" (submit)="submit($event)">
-     <div class="form-field">
-          <app-rating [formField]="ratingForm.rating">
-
-          </app-rating>
-          <!-- print to show the value updation -->
-          {{ratingForm.rating().value()}}
-        </div>
-   </form>
+    <form autocomplete="off" (submit)="submit($event)">
+      <div class="form-field">
+        <app-rating [formField]="ratingForm.rating"> </app-rating>
+        <!-- print to show the value updation -->
+        {{ ratingForm.rating().value() }}
+      </div>
+    </form>
   `,
   styles: ``,
 })
 export class SignalForms {
   readonly ratingModel = signal<Rating>({
     rating: 0,
-  }); 
+  });
 
-  readonly ratingForm = form(this.ratingModel)
+  readonly ratingForm = form(this.ratingModel);
 
   submit(event: Event): void {
     event.preventDefault();
     console.log(this.ratingForm.rating().value());
   }
 }
-
-
-
 ```
-

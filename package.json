@@ -15,7 +15,10 @@
     "dev": "rm -rf dist && concurrently \"npm run watch:lib\" \"wait-on dist/ngx-exitus-tiptap-editor/index.d.ts && npm run start\"",
     "watch": "ng build --watch --configuration development",
     "publish": "npm run build:lib && cd dist/ngx-exitus-tiptap-editor && npm publish",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "ng lint",
+    "format": "prettier --write \"**/*.{ts,html,scss,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,html,scss,json,md}\""
   },
   "prettier": {
     "printWidth": 100,
@@ -60,7 +63,9 @@
     "@angular/cli": "^20.3.8",
     "@angular/compiler-cli": "^20.3.0",
     "@types/jasmine": "~5.1.0",
+    "angular-eslint": "21.0.1",
     "concurrently": "^9.2.0",
+    "eslint": "^9.39.1",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -68,8 +73,10 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^20.3.0",
+    "prettier": "^3.8.1",
     "sass": "^1.97.3",
     "typescript": "~5.9.2",
+    "typescript-eslint": "8.46.4",
     "wait-on": "^8.0.3"
   }
 }

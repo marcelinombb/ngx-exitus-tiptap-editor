@@ -100,6 +100,15 @@
               "src/styles.css"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -124,7 +133,20 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "tsConfig": "projects/ngx-exitus-tiptap-editor/tsconfig.spec.json"
+            "tsConfig": "projects/ngx-exitus-tiptap-editor/tsconfig.spec.json",
+            "loader": {
+              ".svg": "file"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngx-exitus-tiptap-editor/**/*.ts",
+              "projects/ngx-exitus-tiptap-editor/**/*.html"
+            ],
+            "eslintConfig": "projects/ngx-exitus-tiptap-editor/eslint.config.js"
           }
         }
       }

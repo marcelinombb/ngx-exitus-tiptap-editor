@@ -12,6 +12,7 @@ This skill documents proper Tiptap API usage patterns for vmark development. It 
 ## When to Use Tiptap API
 
 **Always prefer Tiptap API for:**
+
 - Format commands (bold, italic, underline, etc.)
 - Block type changes (heading, paragraph, code block)
 - List operations (bullet, ordered, toggle, indent/outdent)
@@ -20,25 +21,27 @@ This skill documents proper Tiptap API usage patterns for vmark development. It 
 - Editor state queries (`isActive`, `getAttributes`)
 
 **Tiptap patterns to use:**
+
 ```typescript
 // Direct commands
-editor.commands.toggleBold()
-editor.commands.setHeading({ level: 2 })
-editor.commands.setContent(doc, { emitUpdate: false })
+editor.commands.toggleBold();
+editor.commands.setHeading({ level: 2 });
+editor.commands.setContent(doc, { emitUpdate: false });
 
 // Chained commands (for multiple operations)
-editor.chain().focus().setHeading({ level: 2 }).run()
-editor.chain().focus().toggleMark("underline").run()
+editor.chain().focus().setHeading({ level: 2 }).run();
+editor.chain().focus().toggleMark('underline').run();
 
 // State queries
-editor.isActive("blockquote")
-editor.isActive("heading", { level: 2 })
-editor.getAttributes("link")
+editor.isActive('blockquote');
+editor.isActive('heading', { level: 2 });
+editor.getAttributes('link');
 ```
 
 ## When Direct ProseMirror is Appropriate
 
 **Use ProseMirror directly for:**
+
 - Markdown conversion layer (`proseMirrorToMdast.ts`, `mdastToProseMirror.ts`)
 - Multi-cursor/selection subclassing (`MultiSelection.ts`)
 - Custom node views
@@ -48,6 +51,7 @@ editor.getAttributes("link")
 ## Known Issues in vmark
 
 ### 1. cursorHandlers.ts Block Boundary Issue
+
 `src/hooks/mcpBridge/cursorHandlers.ts` uses `doc.textContent` which flattens the document and loses block boundaries. The correct approach is to use `$pos` helpers:
 
 ```typescript
@@ -62,9 +66,11 @@ const blockEnd = $pos.after($pos.depth);
 ```
 
 ### 2. Cursor Sync Drift After WYSIWYG Edits
+
 `sourceLine` attributes are only set on initial parse. After WYSIWYG edits that add/remove blocks, line numbers no longer match the source. This is a known limitation.
 
 ### 3. HtmlNodeView.ts Store Issue
+
 `src/plugins/markdownArtifacts/HtmlNodeView.ts` writes cursor info to wrong store.
 
 ## References

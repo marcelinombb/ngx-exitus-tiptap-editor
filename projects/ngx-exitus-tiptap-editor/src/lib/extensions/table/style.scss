@@ -1,157 +1,152 @@
 .exitus-tiptap-editor {
-    .tiptap {
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 0;
-            overflow: hidden;
+  .tiptap {
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0;
+      overflow: hidden;
 
-            &[data-no-outer-border] {
-                border-style: hidden;
+      &[data-no-outer-border] {
+        border-style: hidden;
 
-                // Ensure no double borders mess it up, but hidden on table should suffice for outer edge.
-                // If it fails, fallback to specific cell targeting.
-            }
+        // Ensure no double borders mess it up, but hidden on table should suffice for outer edge.
+        // If it fails, fallback to specific cell targeting.
+      }
 
-            &[data-no-vertical-border] {
-
-                td,
-                th {
-                    border-left: hidden;
-                    border-right: hidden;
-                }
-            }
-
-            &[data-no-borders] {
-                border-style: dotted;
-                border-color: #bfbfbf;
-                border-width: 1px;
-
-                td,
-                th {
-                    border: dashed;
-                    border-color: #bfbfbf;
-                    border-width: 1px;
-                }
-            }
-
-            td,
-            th {
-                min-width: 2em;
-                border: 1px solid #bfbfbf;
-                padding: .4em;
-                vertical-align: top;
-                box-sizing: border-box;
-                position: relative;
-
-                >* {
-                    margin-bottom: 0;
-                }
-            }
-
-            th {
-                font-weight: bold;
-                text-align: left;
-                background-color: #f1f3f5;
-            }
-
-            .selectedCell:after {
-                z-index: 2;
-                position: absolute;
-                content: "";
-                left: 0;
-                right: 0;
-                top: 0;
-                bottom: 0;
-                background: rgba(200, 200, 255, 0.4);
-                pointer-events: none;
-            }
-
-            .column-resize-handle {
-                position: absolute;
-                right: -2px;
-                top: 0;
-                bottom: -2px;
-                width: 4px;
-                background-color: #adf;
-                pointer-events: none;
-            }
-
-            p {
-                margin: 0;
-            }
+      &[data-no-vertical-border] {
+        td,
+        th {
+          border-left: hidden;
+          border-right: hidden;
         }
+      }
+
+      &[data-no-borders] {
+        border-style: dotted;
+        border-color: #bfbfbf;
+        border-width: 1px;
+
+        td,
+        th {
+          border: dashed;
+          border-color: #bfbfbf;
+          border-width: 1px;
+        }
+      }
+
+      td,
+      th {
+        min-width: 2em;
+        border: 1px solid #bfbfbf;
+        padding: 0.4em;
+        vertical-align: top;
+        box-sizing: border-box;
+        position: relative;
+
+        > * {
+          margin-bottom: 0;
+        }
+      }
+
+      th {
+        font-weight: bold;
+        text-align: left;
+        background-color: #f1f3f5;
+      }
+
+      .selectedCell:after {
+        z-index: 2;
+        position: absolute;
+        content: '';
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: rgba(200, 200, 255, 0.4);
+        pointer-events: none;
+      }
+
+      .column-resize-handle {
+        position: absolute;
+        right: -2px;
+        top: 0;
+        bottom: -2px;
+        width: 4px;
+        background-color: #adf;
+        pointer-events: none;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+
+  .tableWrapper {
+    display: table;
+    margin: 0.9em auto;
+
+    /* Styles for Insert Paragraph Buttons */
+    .insert-paragraph-btn {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background-color: #ffc83d;
+      color: white;
+      border-radius: 50%;
+      display: none;
+      z-index: 30;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.2s;
+      align-items: center;
+      justify-content: center;
     }
 
-    .tableWrapper {
-        display: table;
-        margin: .9em auto;
-
-                /* Styles for Insert Paragraph Buttons */
-        .insert-paragraph-btn {
-            position: absolute;
-            width: 18px;
-            height: 18px;
-            background-color: #ffc83d;
-            color: white;
-            border-radius: 50%;
-            display: none;
-            z-index: 30;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.2s;
-            align-items: center;
-            justify-content: center;
-        }
-
-        &.ex-selected .insert-paragraph-btn,
-        &:hover .insert-paragraph-btn {
-            display: flex;
-        }
-
-        .ex-selected .insert-paragraph-btn {
-            background-color: #3b82f6;
-        }
-
-        .insert-paragraph-btn:hover {
-            background-color: #3b82f6;
-        }
-
-        .insert-paragraph-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .insert-paragraph-before {
-            top: -12px;
-            left: 20px;
-        }
-
-        .insert-paragraph-after {
-            bottom: -12px;
-            right: 20px;
-        }
-
+    &.ex-selected .insert-paragraph-btn,
+    &:hover .insert-paragraph-btn {
+      display: flex;
     }
 
-    .resize-cursor {
-        cursor: ew-resize;
-        cursor: col-resize;
+    .ex-selected .insert-paragraph-btn {
+      background-color: #3b82f6;
     }
 
+    .insert-paragraph-btn:hover {
+      background-color: #3b82f6;
+    }
 
+    .insert-paragraph-btn svg {
+      width: 16px;
+      height: 16px;
+    }
 
+    .insert-paragraph-before {
+      top: -12px;
+      left: 20px;
+    }
+
+    .insert-paragraph-after {
+      bottom: -12px;
+      right: 20px;
+    }
+  }
+
+  .resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
+  }
 }
 
 .preview-paper {
-    table {
-       &[data-no-borders] {
-                border-style: none!important;
+  table {
+    &[data-no-borders] {
+      border-style: none !important;
 
-                td,
-                th {
-                    border-style: none!important;
-                }
-            }
+      td,
+      th {
+        border-style: none !important;
+      }
     }
+  }
 }

@@ -9,201 +9,350 @@ import { SpecialCharactersComponent } from './special-characters.component';
 import { AnswerBoxConfigComponent } from './answer-box-config.component';
 
 @Component({
-    standalone: true,
-    imports: [EditorButtonComponent, EditorDropdownComponent, TableGridComponent, SpecialCharactersComponent, AnswerBoxConfigComponent],
-    selector: 'editor-toolbar',
-    template: `
-        <div class="ex-toolbar-editor">
-            <div class="ex-toolbar-items">
-                <editor-button [icon]="'bold'" [title]="'Negrito'" [active]="isActive('bold')" (onClick)="toggleBold()"></editor-button>
-                <editor-button [icon]="'italic'" [title]="'Itálico'" [active]="isActive('italic')" (onClick)="toggleItalic()"></editor-button>
-                <editor-button [icon]="'underline'" [title]="'Sublinhado'" [active]="isActive('underline')" (onClick)="toggleUnderline()"></editor-button>
-                <editor-button [icon]="'strike'" [title]="'Tachado'" [active]="isActive('strike')" (onClick)="toggleStrike()"></editor-button>
-                <editor-button [icon]="'subscript'" [title]="'Subscrito'" [active]="isActive('subscript')" (onClick)="toggleSubscript()"></editor-button>
-                <editor-button [icon]="'superscript'" [title]="'Sobrescrito'" [active]="isActive('superscript')" (onClick)="toggleSuperscript()"></editor-button>
-                <editor-button [icon]="'format-clear'" [title]="'Limpar formatação'" [active]="isActive('format-clear')" (onClick)="unsetAllMarks()"></editor-button>
-                <span class="ex-toolbar-separator"></span>
-                <editor-dropdown icon="text-block" [title]="'Caixa de Resposta'" #answerBoxDropdown>
-                    <answer-box-config [editor]="editor()" (onSelect)="answerBoxDropdown.open = false"></answer-box-config>
-                </editor-dropdown>
-                <editor-dropdown icon="table" [title]="'Tabela'" #tableDropdown>
-                    <table-grid (onSelect)="insertTable($event.rows, $event.cols); tableDropdown.open = false"></table-grid>
-                </editor-dropdown>
-                <editor-dropdown icon="special-characters" [title]="'Caracteres especiais'" #specialCharsDropdown>
-                    <special-characters [editor]="editor()" (onSelect)="specialCharsDropdown.open = false"></special-characters>
-                </editor-dropdown>
-                <editor-dropdown>
-                    <editor-button [icon]="'align-left'" [title]="'Alinhar à esquerda'" [active]="isActive('alignLeft')" (onClick)="setTextAlign('left')"></editor-button>
-                    <editor-button [icon]="'align-right'" [title]="'Alinhar à direita'" [active]="isActive('alignRight')" (onClick)="setTextAlign('right')"></editor-button>
-                    <editor-button [icon]="'align-center'" [title]="'Alinhar ao centro'" [active]="isActive('alignCenter')" (onClick)="setTextAlign('center')"></editor-button>
-                    <editor-button [icon]="'align-justify'" [title]="'Alinhar justificado'" [active]="isActive('alignJustify')" (onClick)="setTextAlign('justify')"></editor-button>
-                </editor-dropdown>
-                <editor-button [icon]="'image'" [title]="'Inserir imagem'" [active]="isActive('image')" (onClick)="insertImage()"></editor-button>
-                <editor-button [icon]="'blockquote'" [title]="'Citação'" [active]="isActive('blockquote')" (onClick)="toggleBlockquote()"></editor-button>
-                <editor-button [icon]="'layout-column-2'" [title]="'Associação'" [active]="isActive('association')" (onClick)="insertAssociation()"></editor-button>
-                <editor-button [icon]="'list-check'" [title]="'Alternativas'" [active]="isActive('alternative')" (onClick)="insertAlternative()"></editor-button>
-                <editor-button [icon]="'undo'" [title]="'Desfazer'" [active]="isActive('undo')" (onClick)="undo()"></editor-button>
-                <editor-button [icon]="'redo'" [title]="'Refazer'" [active]="isActive('redo')" (onClick)="redo()"></editor-button>
-                 <editor-dropdown>
-                    <editor-button [icon]="'bullet-list'" [title]="'Lista não ordenada'" [active]="isActive('bulletList')" (onClick)="toggleBulletList()"></editor-button>
-                    <editor-button [icon]="'ordered-list'" [title]="'Lista ordenada'" [active]="isActive('orderedList')" (onClick)="toggleOrderedList()"></editor-button>
-                </editor-dropdown>
-                <editor-button [icon]="'indent-decrease'" [title]="'Diminuir recuo'" [active]="isActive('indent')" (onClick)="decreaseIndent()"></editor-button>
-                <editor-button [icon]="'indent-increase'" [title]="'Aumentar recuo'" [active]="isActive('indent')" (onClick)="increaseIndent()"></editor-button>
-                <span class="ex-toolbar-separator"></span>
-                <editor-button [icon]="'formula'" [title]="'Inserir fórmula'" [active]="isActive('katex')" (onClick)="insertFormula()"></editor-button>
-                <editor-button [icon]="'mathtype'" [title]="'MathType'" (onClick)="insertMathType()"></editor-button>
-                <editor-button [icon]="'chemtype'" [title]="'ChemType'" (onClick)="insertChemType()"></editor-button>
-             </div>
-        </div>
-    `,
-    styles: `
-        .ex-toolbar-editor,
-        .ex-toolbar-items {
-            display: flex;
-            background-color: #f8fafc;;
-        }
+  standalone: true,
+  imports: [
+    EditorButtonComponent,
+    EditorDropdownComponent,
+    TableGridComponent,
+    SpecialCharactersComponent,
+    AnswerBoxConfigComponent,
+  ],
+  selector: 'editor-toolbar',
+  template: `
+    <div class="ex-toolbar-editor" [class.ex-disabled]="!editor().isEditable">
+      <div class="ex-toolbar-items">
+        <editor-button
+          [icon]="'bold'"
+          [title]="'Negrito'"
+          [active]="isActive('bold')"
+          (onClick)="toggleBold()"
+        ></editor-button>
+        <editor-button
+          [icon]="'italic'"
+          [title]="'Itálico'"
+          [active]="isActive('italic')"
+          (onClick)="toggleItalic()"
+        ></editor-button>
+        <editor-button
+          [icon]="'underline'"
+          [title]="'Sublinhado'"
+          [active]="isActive('underline')"
+          (onClick)="toggleUnderline()"
+        ></editor-button>
+        <editor-button
+          [icon]="'strike'"
+          [title]="'Tachado'"
+          [active]="isActive('strike')"
+          (onClick)="toggleStrike()"
+        ></editor-button>
+        <editor-button
+          [icon]="'subscript'"
+          [title]="'Subscrito'"
+          [active]="isActive('subscript')"
+          (onClick)="toggleSubscript()"
+        ></editor-button>
+        <editor-button
+          [icon]="'superscript'"
+          [title]="'Sobrescrito'"
+          [active]="isActive('superscript')"
+          (onClick)="toggleSuperscript()"
+        ></editor-button>
+        <editor-button
+          [icon]="'format-clear'"
+          [title]="'Limpar formatação'"
+          [active]="isActive('format-clear')"
+          (onClick)="unsetAllMarks()"
+        ></editor-button>
+        <span class="ex-toolbar-separator"></span>
+        <editor-dropdown icon="text-block" [title]="'Caixa de Resposta'" #answerBoxDropdown>
+          <answer-box-config
+            [editor]="editor()"
+            (onSelect)="answerBoxDropdown.open = false"
+          ></answer-box-config>
+        </editor-dropdown>
+        <editor-dropdown icon="table" [title]="'Tabela'" #tableDropdown>
+          <table-grid
+            (onSelect)="insertTable($event.rows, $event.cols); tableDropdown.open = false"
+          ></table-grid>
+        </editor-dropdown>
+        <editor-dropdown
+          icon="special-characters"
+          [title]="'Caracteres especiais'"
+          #specialCharsDropdown
+        >
+          <special-characters
+            [editor]="editor()"
+            (onSelect)="specialCharsDropdown.open = false"
+          ></special-characters>
+        </editor-dropdown>
+        <editor-dropdown>
+          <editor-button
+            [icon]="'align-left'"
+            [title]="'Alinhar à esquerda'"
+            [active]="isActive('alignLeft')"
+            (onClick)="setTextAlign('left')"
+          ></editor-button>
+          <editor-button
+            [icon]="'align-right'"
+            [title]="'Alinhar à direita'"
+            [active]="isActive('alignRight')"
+            (onClick)="setTextAlign('right')"
+          ></editor-button>
+          <editor-button
+            [icon]="'align-center'"
+            [title]="'Alinhar ao centro'"
+            [active]="isActive('alignCenter')"
+            (onClick)="setTextAlign('center')"
+          ></editor-button>
+          <editor-button
+            [icon]="'align-justify'"
+            [title]="'Alinhar justificado'"
+            [active]="isActive('alignJustify')"
+            (onClick)="setTextAlign('justify')"
+          ></editor-button>
+        </editor-dropdown>
+        <editor-button
+          [icon]="'image'"
+          [title]="'Inserir imagem'"
+          [active]="isActive('image')"
+          (onClick)="insertImage()"
+        ></editor-button>
+        <editor-button
+          [icon]="'blockquote'"
+          [title]="'Citação'"
+          [active]="isActive('blockquote')"
+          (onClick)="toggleBlockquote()"
+        ></editor-button>
+        <editor-button
+          [icon]="'layout-column-2'"
+          [title]="'Associação'"
+          [active]="isActive('association')"
+          (onClick)="insertAssociation()"
+        ></editor-button>
+        <editor-button
+          [icon]="'list-check'"
+          [title]="'Alternativas'"
+          [active]="isActive('alternative')"
+          (onClick)="insertAlternative()"
+        ></editor-button>
+        <editor-button
+          [icon]="'undo'"
+          [title]="'Desfazer'"
+          [active]="isActive('undo')"
+          (onClick)="undo()"
+        ></editor-button>
+        <editor-button
+          [icon]="'redo'"
+          [title]="'Refazer'"
+          [active]="isActive('redo')"
+          (onClick)="redo()"
+        ></editor-button>
+        <editor-dropdown>
+          <editor-button
+            [icon]="'bullet-list'"
+            [title]="'Lista não ordenada'"
+            [active]="isActive('bulletList')"
+            (onClick)="toggleBulletList()"
+          ></editor-button>
+          <editor-button
+            [icon]="'ordered-list'"
+            [title]="'Lista ordenada'"
+            [active]="isActive('orderedList')"
+            (onClick)="toggleOrderedList()"
+          ></editor-button>
+        </editor-dropdown>
+        <editor-button
+          [icon]="'indent-decrease'"
+          [title]="'Diminuir recuo'"
+          [active]="isActive('indent')"
+          (onClick)="decreaseIndent()"
+        ></editor-button>
+        <editor-button
+          [icon]="'indent-increase'"
+          [title]="'Aumentar recuo'"
+          [active]="isActive('indent')"
+          (onClick)="increaseIndent()"
+        ></editor-button>
+        <span class="ex-toolbar-separator"></span>
+        <editor-button
+          [icon]="'formula'"
+          [title]="'Inserir fórmula'"
+          [active]="isActive('katex')"
+          (onClick)="insertFormula()"
+        ></editor-button>
+        <editor-button
+          [icon]="'mathtype'"
+          [title]="'MathType'"
+          (onClick)="insertMathType()"
+        ></editor-button>
+        <editor-button
+          [icon]="'chemtype'"
+          [title]="'ChemType'"
+          (onClick)="insertChemType()"
+        ></editor-button>
+      </div>
+    </div>
+  `,
+  styles: `
+    .ex-toolbar-editor,
+    .ex-toolbar-items {
+      display: flex;
+      background-color: #f8fafc;
+    }
 
-        .ex-toolbar-editor {
-            border-radius: 10px;
-            border: 1px solid var(--border-gray);
-            padding: 0 calc(0.6em * 0.5);
-            margin: 6px 7px;
-            background-color: #f8fafc;;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.281);
-        }
+    .ex-toolbar-editor {
+      border-radius: 10px;
+      border: 1px solid var(--border-gray);
+      padding: 0 calc(0.6em * 0.5);
+      margin: 6px 7px;
+      background-color: #f8fafc;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.281);
+      transition: opacity 0.2s ease;
+    }
 
-        .ex-toolbar-items {
-            align-items: center;
-            border-radius: 5px;
-        }
+    .ex-toolbar-editor.ex-disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
 
-        .ex-toolbar-separator {
-            display: inline-block;
-            align-self: stretch;
-            background: var(--border-gray);
-            margin-bottom: var(--spacing-sm);
-            margin-top: var(--spacing-sm);
-            min-width: 1px;
-            width: 1px;
-            margin-right: var(--spacing-sm);
-        }
-    `
+    .ex-toolbar-items {
+      align-items: center;
+      border-radius: 5px;
+    }
+
+    .ex-toolbar-separator {
+      display: inline-block;
+      align-self: stretch;
+      background: var(--border-gray);
+      margin-bottom: var(--spacing-sm);
+      margin-top: var(--spacing-sm);
+      min-width: 1px;
+      width: 1px;
+      margin-right: var(--spacing-sm);
+    }
+  `,
 })
 export class EditorToolbarComponent implements OnInit {
+  private cdr = inject(ChangeDetectorRef);
+  private katexMenuService = inject(KatexMenuService);
 
-    private cdr = inject(ChangeDetectorRef);
-    private katexMenuService = inject(KatexMenuService);
+  editor = input.required<Editor>();
 
-    editor = input.required<Editor>()
+  ngOnInit(): void {
+    this.editor().on('selectionUpdate', () => this.cdr.detectChanges());
+    this.editor().on('transaction', () => this.cdr.detectChanges());
+  }
 
-    ngOnInit(): void {
-        this.editor().on('selectionUpdate', () => this.cdr.detectChanges());
-    }
+  isActive(name: string): boolean {
+    return this.editor().isActive(name);
+  }
 
-    isActive(name: string): boolean {
-        return this.editor().isActive(name);
-    }
+  toggleBold() {
+    this.editor().chain().focus().toggleBold().run();
+  }
 
-    toggleBold() {
-        this.editor().chain().focus().toggleBold().run();
-    }
+  toggleItalic() {
+    this.editor().chain().focus().toggleItalic().run();
+  }
 
-    toggleItalic() {
-        this.editor().chain().focus().toggleItalic().run()
-    }
+  toggleStrike() {
+    this.editor().chain().focus().toggleStrike().run();
+  }
 
-    toggleStrike() {
-        this.editor().chain().focus().toggleStrike().run()
-    }
+  toggleUnderline() {
+    this.editor().chain().focus().toggleUnderline().run();
+  }
 
-    toggleUnderline() {
-        this.editor().chain().focus().toggleUnderline().run()
-    }
+  toggleBlockquote() {
+    this.editor().chain().focus().toggleBlockquote().run();
+  }
 
-    toggleBlockquote() {
-        this.editor().chain().focus().toggleBlockquote().run()
-    }
+  toggleBulletList() {
+    this.editor().chain().focus().toggleBulletList().run();
+  }
 
-    toggleBulletList() {
-        this.editor().chain().focus().toggleBulletList().run()
-    }
+  toggleOrderedList() {
+    this.editor().chain().focus().toggleOrderedList().run();
+  }
 
-    toggleOrderedList() {
-        this.editor().chain().focus().toggleOrderedList().run()
-    }
+  toggleSubscript() {
+    this.editor().chain().focus().toggleSubscript().run();
+  }
 
-    toggleSubscript() {
-        this.editor().chain().focus().toggleSubscript().run()
-    }
+  toggleSuperscript() {
+    this.editor().chain().focus().toggleSuperscript().run();
+  }
 
-    toggleSuperscript() {
-        this.editor().chain().focus().toggleSuperscript().run()
-    }
+  unsetAllMarks() {
+    this.editor().chain().focus().unsetAllMarks().run();
+  }
 
-    unsetAllMarks() {
-        this.editor().chain().focus().unsetAllMarks().run()
-    }
+  insertAssociation() {
+    this.editor().chain().focus().insertAssociation().run();
+  }
 
-    insertAssociation() {
-        this.editor().chain().focus().insertAssociation().run()
-    }
+  insertAlternative() {
+    this.editor().chain().focus().insertAlternative().run();
+  }
 
-    insertAlternative() {
-        this.editor().chain().focus().insertAlternative().run()
-    }
+  setTextAlign(align: 'left' | 'center' | 'right' | 'justify') {
+    this.editor().chain().focus().setTextAlign(align).run();
+  }
 
-    setTextAlign(align: 'left' | 'center' | 'right' | 'justify') {
-        this.editor().chain().focus().setTextAlign(align).run()
-    }
+  decreaseIndent() {
+    this.editor().commands.outdent();
+  }
 
-    decreaseIndent() {
-        this.editor().commands.outdent()
-    }
+  increaseIndent() {
+    this.editor().commands.indent();
+  }
 
-    increaseIndent() {
-        this.editor().commands.indent()
-    }
+  undo() {
+    this.editor().chain().focus().undo().run();
+  }
 
-    undo() {
-        this.editor().chain().focus().undo().run()
-    }
+  redo() {
+    this.editor().chain().focus().redo().run();
+  }
 
-    redo() {
-        this.editor().chain().focus().redo().run()
-    }
+  insertFormula() {
+    this.katexMenuService.setForceOpen(true);
+    this.editor().commands.focus();
+  }
 
-    insertFormula() {
-        this.katexMenuService.setForceOpen(true);
-        this.editor().commands.focus()
-    }
+  insertColarQuestao() {
+    this.editor().commands.addColarQuestao('teste');
+  }
 
-    insertColarQuestao() {
-        this.editor().commands.addColarQuestao("teste")
-    }
+  insertImage() {
+    const inputElement = document.createElement('input');
+    inputElement.setAttribute('type', 'file');
+    inputElement.className = 'ex-hidden';
+    inputElement.setAttribute('id', 'editorImagePicker');
+    inputElement.setAttribute(
+      'accept',
+      'image/jpeg,image/png,image/gif,image/bmp,image/webp,image/tiff',
+    );
+    inputElement.addEventListener(
+      'change',
+      () => {
+        parseImagesToBase64(inputElement.files![0], this.editor());
+      },
+      { once: true },
+    );
+    inputElement.click();
+  }
 
-    insertImage() {
-        const inputElement = document.createElement('input')
-        inputElement.setAttribute('type', 'file')
-        inputElement.className = 'ex-hidden'
-        inputElement.setAttribute('id', 'editorImagePicker')
-        inputElement.setAttribute('accept', 'image/jpeg,image/png,image/gif,image/bmp,image/webp,image/tiff')
-        inputElement.addEventListener('change', () => {
-            parseImagesToBase64(inputElement.files![0], this.editor())
-        }, { once: true })
-        inputElement.click()
-    }
+  insertMathType() {
+    (this.editor().commands as any).openMathType();
+  }
 
-    insertMathType() {
-        (this.editor().commands as any).openMathType()
-    }
+  insertChemType() {
+    (this.editor().commands as any).openMathType('chemistry');
+  }
 
-    insertChemType() {
-        (this.editor().commands as any).openMathType('chemistry')
-    }
-
-    insertTable(rows: number = 3, cols: number = 3) {
-        this.editor().chain().focus().insertTable({ rows, cols, withHeaderRow: false }).run();
-    }
-
+  insertTable(rows = 3, cols = 3) {
+    this.editor().chain().focus().insertTable({ rows, cols, withHeaderRow: false }).run();
+  }
 }

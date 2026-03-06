@@ -4,31 +4,31 @@ The schema defines the document structure: which nodes exist, what content they 
 
 ## Node Schema Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `content` | string | Content expression defining allowed children |
-| `marks` | string | Allowed marks: `_` (all), `''` (none), `bold italic` |
-| `group` | string | Node groups: `block`, `inline`, `list` |
-| `inline` | boolean | Is inline node (vs block) |
-| `atom` | boolean | Cannot contain content, selected as unit |
-| `selectable` | boolean | Can be selected with click |
-| `draggable` | boolean | Can be dragged with mouse |
-| `defining` | boolean | Content stays when surrounding replaced |
-| `isolating` | boolean | Blocks splitting/lifting operations |
+| Property     | Type    | Description                                          |
+| ------------ | ------- | ---------------------------------------------------- |
+| `content`    | string  | Content expression defining allowed children         |
+| `marks`      | string  | Allowed marks: `_` (all), `''` (none), `bold italic` |
+| `group`      | string  | Node groups: `block`, `inline`, `list`               |
+| `inline`     | boolean | Is inline node (vs block)                            |
+| `atom`       | boolean | Cannot contain content, selected as unit             |
+| `selectable` | boolean | Can be selected with click                           |
+| `draggable`  | boolean | Can be dragged with mouse                            |
+| `defining`   | boolean | Content stays when surrounding replaced              |
+| `isolating`  | boolean | Blocks splitting/lifting operations                  |
 
 ## Content Expressions
 
 ```typescript
 // Content model syntax
-content: 'paragraph'           // Single paragraph
-content: 'paragraph+'          // One or more paragraphs
-content: 'paragraph*'          // Zero or more paragraphs
-content: 'paragraph?'          // Zero or one paragraph
-content: 'inline*'             // Zero or more inline nodes
-content: 'block+'              // One or more block nodes
-content: 'text*'               // Zero or more text nodes
-content: '(paragraph | heading)+'  // Paragraphs or headings
-content: 'paragraph heading'   // Paragraph then heading (sequence)
+content: 'paragraph'; // Single paragraph
+content: 'paragraph+'; // One or more paragraphs
+content: 'paragraph*'; // Zero or more paragraphs
+content: 'paragraph?'; // Zero or one paragraph
+content: 'inline*'; // Zero or more inline nodes
+content: 'block+'; // One or more block nodes
+content: 'text*'; // Zero or more text nodes
+content: '(paragraph | heading)+'; // Paragraphs or headings
+content: 'paragraph heading'; // Paragraph then heading (sequence)
 ```
 
 ### Common Patterns
@@ -38,14 +38,14 @@ content: 'paragraph heading'   // Paragraph then heading (sequence)
 Node.create({
   name: 'doc',
   content: 'block+',
-})
+});
 
 // Paragraph with inline content
 Node.create({
   name: 'paragraph',
   group: 'block',
   content: 'inline*',
-})
+});
 
 // Heading
 Node.create({
@@ -53,21 +53,21 @@ Node.create({
   group: 'block',
   content: 'inline*',
   defining: true,
-})
+});
 
 // List
 Node.create({
   name: 'bulletList',
   group: 'block list',
   content: 'listItem+',
-})
+});
 
 // List item
 Node.create({
   name: 'listItem',
   content: 'paragraph block*',
   defining: true,
-})
+});
 
 // Code block (no marks allowed)
 Node.create({
@@ -75,7 +75,7 @@ Node.create({
   group: 'block',
   content: 'text*',
   marks: '',
-})
+});
 
 // Image (atomic, no content)
 Node.create({
@@ -84,7 +84,7 @@ Node.create({
   atom: true,
   draggable: true,
   selectable: true,
-})
+});
 ```
 
 ## Node Groups
@@ -96,51 +96,51 @@ Nodes can belong to multiple groups:
 Node.create({
   name: 'paragraph',
   group: 'block',
-})
+});
 
 // Multiple groups
 Node.create({
   name: 'bulletList',
   group: 'block list',
-})
+});
 
 // Inline node
 Node.create({
   name: 'mention',
   group: 'inline',
   inline: true,
-})
+});
 ```
 
 Use groups in content expressions:
 
 ```typescript
-content: 'block+'    // Any block node
-content: 'list+'     // Any list node
-content: 'inline*'   // Any inline node
+content: 'block+'; // Any block node
+content: 'list+'; // Any list node
+content: 'inline*'; // Any inline node
 ```
 
 ## Mark Schema Properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `inclusive` | boolean | Extend mark to new content at edges |
-| `excludes` | string | Marks that can't coexist: `_` (all), `''` (none) |
-| `spanning` | boolean | Can span multiple nodes |
+| Property    | Type    | Description                                      |
+| ----------- | ------- | ------------------------------------------------ |
+| `inclusive` | boolean | Extend mark to new content at edges              |
+| `excludes`  | string  | Marks that can't coexist: `_` (all), `''` (none) |
+| `spanning`  | boolean | Can span multiple nodes                          |
 
 ```typescript
 Mark.create({
   name: 'link',
-  inclusive: false,  // Don't extend to new text
-  excludes: '',      // Can coexist with any mark
-  spanning: true,    // Can span multiple nodes
-})
+  inclusive: false, // Don't extend to new text
+  excludes: '', // Can coexist with any mark
+  spanning: true, // Can span multiple nodes
+});
 
 Mark.create({
   name: 'code',
   inclusive: true,
-  excludes: '_',     // Excludes all other marks
-})
+  excludes: '_', // Excludes all other marks
+});
 ```
 
 ## Attributes
@@ -155,12 +155,12 @@ Node.create({
     return {
       level: {
         default: 1,
-        parseHTML: element => parseInt(element.tagName.charAt(1)),
-        renderHTML: attributes => ({}), // Not rendered as HTML attr
+        parseHTML: (element) => parseInt(element.tagName.charAt(1)),
+        renderHTML: (attributes) => ({}), // Not rendered as HTML attr
       },
-    }
+    };
   },
-})
+});
 ```
 
 ### Attribute Options
@@ -247,20 +247,17 @@ renderHTML({ node, HTMLAttributes }) {
 
 ```typescript
 // Get schema from editor
-const schema = editor.schema
+const schema = editor.schema;
 
 // Get node type
-const paragraphType = schema.nodes.paragraph
+const paragraphType = schema.nodes.paragraph;
 
 // Get mark type
-const boldType = schema.marks.bold
+const boldType = schema.marks.bold;
 
 // Create node
-const node = schema.nodes.paragraph.create(
-  { align: 'center' },
-  schema.text('Hello')
-)
+const node = schema.nodes.paragraph.create({ align: 'center' }, schema.text('Hello'));
 
 // Create mark
-const mark = schema.marks.bold.create()
+const mark = schema.marks.bold.create();
 ```

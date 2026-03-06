@@ -3,6 +3,7 @@
 ## The Goal of Architecture
 
 Enable the development team to:
+
 1. **Add** features with minimal friction
 2. **Change** existing features safely
 3. **Remove** features cleanly
@@ -104,9 +105,9 @@ interface PaymentGateway {
 }
 
 // Multiple implementations possible
-class StripeGateway implements PaymentGateway { }
-class PayPalGateway implements PaymentGateway { }
-class MockGateway implements PaymentGateway { }  // For tests
+class StripeGateway implements PaymentGateway {}
+class PayPalGateway implements PaymentGateway {}
+class MockGateway implements PaymentGateway {} // For tests
 ```
 
 ### 5. Cross-Cutting Concerns
@@ -114,6 +115,7 @@ class MockGateway implements PaymentGateway { }  // For tests
 Concerns that span multiple features: logging, auth, validation, error handling.
 
 **Options:**
+
 - Middleware/interceptors
 - Decorators
 - Aspect-oriented approaches
@@ -252,6 +254,7 @@ Start with a minimal end-to-end slice:
 3. **Proves the architecture** works
 
 Example walking skeleton for e-commerce:
+
 - User can view ONE product (hardcoded)
 - User can add it to cart
 - User can "checkout" (just logs)
@@ -273,6 +276,7 @@ From there, flesh out each feature fully.
 ```
 
 **Test by layer:**
+
 - **Domain:** Unit tests (most tests here)
 - **Application:** Integration tests with mocked infra
 - **Infrastructure:** Integration tests with real dependencies
@@ -288,18 +292,23 @@ Document significant decisions:
 # ADR 001: Use PostgreSQL for persistence
 
 ## Status
+
 Accepted
 
 ## Context
+
 We need a database. Options: PostgreSQL, MongoDB, MySQL
 
 ## Decision
+
 PostgreSQL for:
+
 - ACID compliance
 - Team familiarity
 - JSON support for flexibility
 
 ## Consequences
+
 - Need PostgreSQL expertise
 - Schema migrations required
 - Excellent query capabilities

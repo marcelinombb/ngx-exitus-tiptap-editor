@@ -7,8 +7,8 @@ Input rules trigger transformations as users type, enabling Markdown-like shortc
 ### Adding Input Rules
 
 ```typescript
-import { Extension } from '@tiptap/core'
-import { markInputRule, nodeInputRule } from '@tiptap/core'
+import { Extension } from '@tiptap/core';
+import { markInputRule, nodeInputRule } from '@tiptap/core';
 
 Extension.create({
   name: 'myExtension',
@@ -16,9 +16,9 @@ Extension.create({
   addInputRules() {
     return [
       // Rules defined here
-    ]
+    ];
   },
-})
+});
 ```
 
 ### markInputRule
@@ -26,22 +26,22 @@ Extension.create({
 Apply marks based on text patterns:
 
 ```typescript
-import { markInputRule } from '@tiptap/core'
+import { markInputRule } from '@tiptap/core';
 
 // Bold with **text**
 markInputRule({
   find: /(?:\*\*)((?:[^*]+))(?:\*\*)$/,
   type: this.type, // or schema.marks.bold
-})
+});
 
 // Highlight with ==text==
 markInputRule({
   find: /(?:==)((?:[^=]+))(?:==)$/,
   type: this.type,
-  getAttributes: match => {
-    return { color: 'yellow' }
+  getAttributes: (match) => {
+    return { color: 'yellow' };
   },
-})
+});
 ```
 
 ### nodeInputRule
@@ -49,23 +49,23 @@ markInputRule({
 Insert or transform nodes based on patterns:
 
 ```typescript
-import { nodeInputRule } from '@tiptap/core'
+import { nodeInputRule } from '@tiptap/core';
 
 // Horizontal rule with ---
 nodeInputRule({
   find: /^(?:---|—-|___\s|\*\*\*\s)$/,
   type: this.type,
-})
+});
 
 // Image with ![alt](src "title")
 nodeInputRule({
   find: /!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\)$/,
   type: this.type,
-  getAttributes: match => {
-    const [, alt, src, title] = match
-    return { src, alt, title }
+  getAttributes: (match) => {
+    const [, alt, src, title] = match;
+    return { src, alt, title };
   },
-})
+});
 ```
 
 ### textInputRule
@@ -73,19 +73,19 @@ nodeInputRule({
 Replace text patterns with other text:
 
 ```typescript
-import { textInputRule } from '@tiptap/core'
+import { textInputRule } from '@tiptap/core';
 
 // Replace (c) with ©
 textInputRule({
   find: /\(c\)$/,
   replace: '©',
-})
+});
 
 // Replace -> with →
 textInputRule({
   find: /->$/,
   replace: '→',
-})
+});
 ```
 
 ### wrappingInputRule
@@ -93,19 +93,19 @@ textInputRule({
 Wrap content in a block node:
 
 ```typescript
-import { wrappingInputRule } from '@tiptap/core'
+import { wrappingInputRule } from '@tiptap/core';
 
 // Blockquote with > at start
 wrappingInputRule({
   find: /^>\s$/,
   type: this.type,
-})
+});
 
 // Bullet list with - at start
 wrappingInputRule({
   find: /^\s*([-+*])\s$/,
   type: this.type,
-})
+});
 ```
 
 ## Paste Rules
@@ -121,9 +121,9 @@ Extension.create({
   addPasteRules() {
     return [
       // Rules defined here
-    ]
+    ];
   },
-})
+});
 ```
 
 ### markPasteRule
@@ -131,19 +131,19 @@ Extension.create({
 Apply marks to pasted content:
 
 ```typescript
-import { markPasteRule } from '@tiptap/core'
+import { markPasteRule } from '@tiptap/core';
 
 // Highlight ==text== when pasted
 markPasteRule({
   find: /(?:==)((?:[^=]+))(?:==)/g, // Note: global flag
   type: this.type,
-})
+});
 
 // Bold **text** when pasted
 markPasteRule({
   find: /(?:\*\*)((?:[^*]+))(?:\*\*)/g,
   type: this.type,
-})
+});
 ```
 
 ### nodePasteRule
@@ -151,39 +151,39 @@ markPasteRule({
 Insert nodes from pasted content:
 
 ```typescript
-import { nodePasteRule } from '@tiptap/core'
+import { nodePasteRule } from '@tiptap/core';
 
 // Image from markdown syntax
 nodePasteRule({
   find: /!\[(.*?)\]\((.*?)(?:\s+"(.*?)")?\)/g,
   type: this.type,
-  getAttributes: match => {
-    const [, alt, src, title] = match
-    return { src, alt, title }
+  getAttributes: (match) => {
+    const [, alt, src, title] = match;
+    return { src, alt, title };
   },
-})
+});
 
 // Video from URL pattern
 nodePasteRule({
   find: /https:\/\/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/g,
   type: this.type,
-  getAttributes: match => {
-    const [, videoId] = match
-    return { src: `https://youtube.com/embed/${videoId}` }
+  getAttributes: (match) => {
+    const [, videoId] = match;
+    return { src: `https://youtube.com/embed/${videoId}` };
   },
-})
+});
 ```
 
 ## Configuration Options
 
 Both input and paste rules accept these options:
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `find` | RegExp | Pattern to match |
-| `type` | MarkType/NodeType | Mark or node type to apply |
-| `getAttributes` | Function | Extract attributes from match |
-| `undoable` | boolean | Can be undone (input rules, default: true) |
+| Option          | Type              | Description                                |
+| --------------- | ----------------- | ------------------------------------------ |
+| `find`          | RegExp            | Pattern to match                           |
+| `type`          | MarkType/NodeType | Mark or node type to apply                 |
+| `getAttributes` | Function          | Extract attributes from match              |
+| `undoable`      | boolean           | Can be undone (input rules, default: true) |
 
 ## Common Patterns
 
@@ -194,24 +194,24 @@ Both input and paste rules accept these options:
 textblockTypeInputRule({
   find: /^(#{1,6})\s$/,
   type: this.type,
-  getAttributes: match => ({
+  getAttributes: (match) => ({
     level: match[1].length,
   }),
-})
+});
 ```
 
 ### Code Block Input Rule
 
-```typescript
+````typescript
 // ```language
 textblockTypeInputRule({
   find: /^```([a-z]+)?\s$/,
   type: this.type,
-  getAttributes: match => ({
+  getAttributes: (match) => ({
     language: match[1],
   }),
-})
-```
+});
+````
 
 ### Link Paste Rule
 
@@ -220,10 +220,10 @@ textblockTypeInputRule({
 markPasteRule({
   find: /https?:\/\/[^\s]+/g,
   type: this.type,
-  getAttributes: match => ({
+  getAttributes: (match) => ({
     href: match[0],
   }),
-})
+});
 ```
 
 ## Tips

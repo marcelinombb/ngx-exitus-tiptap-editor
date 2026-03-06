@@ -2,7 +2,10 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Editor } from '@tiptap/core';
-import { unicodeCategories, type UnicodeCategory } from '../extensions/special-characters/unicodeSource';
+import {
+  unicodeCategories,
+  type UnicodeCategory,
+} from '../extensions/special-characters/unicodeSource';
 
 @Component({
   selector: 'special-characters',
@@ -12,14 +15,13 @@ import { unicodeCategories, type UnicodeCategory } from '../extensions/special-c
     <div class="ex-special-chars-container" (click)="$event.stopPropagation()">
       <div class="ex-special-chars-header">
         <div class="ex-special-chars-search">
-          <input 
-            type="text" 
-            class="ex-special-chars-search-input" 
-            placeholder="Buscar caractere..." 
+          <input
+            type="text"
+            class="ex-special-chars-search-input"
+            placeholder="Buscar caractere..."
             [(ngModel)]="searchQuery"
             (input)="handleSearch()"
-            autofocus
-          >
+          />
         </div>
         <div class="ex-special-chars-preview">
           <span class="ex-preview-char">{{ previewChar }}</span>
@@ -29,8 +31,8 @@ import { unicodeCategories, type UnicodeCategory } from '../extensions/special-c
 
       <div class="ex-special-chars-tabs">
         @for (category of categories; track category.name) {
-          <button 
-            class="ex-special-chars-tab" 
+          <button
+            class="ex-special-chars-tab"
             [class.active]="currentCategory === category.name"
             (click)="selectCategory(category.name)"
           >
@@ -41,25 +43,23 @@ import { unicodeCategories, type UnicodeCategory } from '../extensions/special-c
 
       <div class="ex-special-chars-grid">
         @if (displayedChars.length > 0) {
-            @for (char of displayedChars; track $index) {
-            <button 
-                class="ex-special-char-btn" 
-                [title]="getCharName(char)"
-                (click)="insertCharacter(char)"
-                (mouseenter)="updatePreview(char)"
+          @for (char of displayedChars; track $index) {
+            <button
+              class="ex-special-char-btn"
+              [title]="getCharName(char)"
+              (click)="insertCharacter(char)"
+              (mouseenter)="updatePreview(char)"
             >
-                {{ char }}
+              {{ char }}
             </button>
-            }
+          }
         } @else {
-            <div class="ex-special-chars-no-results">
-                Nenhum caractere encontrado
-            </div>
+          <div class="ex-special-chars-no-results">Nenhum caractere encontrado</div>
         }
       </div>
     </div>
   `,
-  styleUrls: ['./special-characters.component.scss']
+  styleUrls: ['./special-characters.component.scss'],
 })
 export class SpecialCharactersComponent {
   editor = input.required<Editor>();
@@ -67,10 +67,10 @@ export class SpecialCharactersComponent {
 
   categories = unicodeCategories;
   currentCategory = unicodeCategories[0]?.name || 'Letras Gregas';
-  
+
   searchQuery = '';
   displayedChars: string[] = [];
-  
+
   previewChar = 'Ω';
   previewName = 'Omega';
 
@@ -85,11 +85,11 @@ export class SpecialCharactersComponent {
   }
 
   renderCharacters(categoryName: string) {
-    const category = this.categories.find(c => c.name === categoryName);
+    const category = this.categories.find((c) => c.name === categoryName);
     if (!category) return;
-    
-    this.displayedChars = category.chars.filter(char => 
-        char && char.trim() !== '' && char.charCodeAt(0) >= 32
+
+    this.displayedChars = category.chars.filter(
+      (char) => char && char.trim() !== '' && char.charCodeAt(0) >= 32,
     );
   }
 
@@ -104,12 +104,12 @@ export class SpecialCharactersComponent {
     this.displayedChars = [];
 
     this.categories.forEach((category: UnicodeCategory) => {
-      category.chars.forEach(char => {
+      category.chars.forEach((char) => {
         if (!char || char.trim() === '' || char.charCodeAt(0) < 32) return;
 
         const charName = this.getCharName(char).toLowerCase();
         if (char.includes(query) || charName.includes(query)) {
-            this.displayedChars.push(char);
+          this.displayedChars.push(char);
         }
       });
     });

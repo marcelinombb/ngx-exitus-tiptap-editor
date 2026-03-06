@@ -3,13 +3,17 @@
 ## The Two Types of Complexity
 
 ### Essential Complexity
+
 Inherent to the problem domain. Cannot be removed, only managed.
+
 - Business rules
 - Domain logic
 - User requirements
 
 ### Accidental Complexity
+
 Introduced by our solutions. CAN and SHOULD be minimized.
+
 - Poor abstractions
 - Unnecessary indirection
 - Framework ceremony
@@ -22,6 +26,7 @@ Introduced by our solutions. CAN and SHOULD be minimized.
 ## Detecting Complexity
 
 ### 1. Change Amplification
+
 Small changes require touching many files.
 
 **Symptom:** "To add this field, I need to update 15 files."
@@ -29,6 +34,7 @@ Small changes require touching many files.
 **Cause:** Scattered responsibilities, poor abstraction boundaries.
 
 ### 2. Cognitive Load
+
 Code is hard to understand, requires holding too much in memory.
 
 **Symptom:** "I need to understand 10 other classes to understand this one."
@@ -36,6 +42,7 @@ Code is hard to understand, requires holding too much in memory.
 **Cause:** Tight coupling, hidden dependencies, unclear naming.
 
 ### 3. Unknown Unknowns
+
 Behavior is surprising, side effects are hidden.
 
 **Symptom:** "I changed this, and something completely unrelated broke."
@@ -49,18 +56,23 @@ Behavior is surprising, side effects are hidden.
 From Extreme Programming:
 
 ### 1. Communication
+
 Code should communicate clearly. Names, structure, tests all contribute.
 
 ### 2. Simplicity
+
 Do the simplest thing that could possibly work.
 
 ### 3. Feedback
+
 Fast feedback loops catch complexity early. TDD, CI, code review.
 
 ### 4. Courage
+
 Refactor aggressively. Don't let complexity accumulate.
 
 ### 5. Respect
+
 Respect future readers (including yourself). Write for humans first.
 
 ---
@@ -70,6 +82,7 @@ Respect future readers (including yourself). Write for humans first.
 > "The simplest solution that works is usually the best."
 
 ### How to Apply:
+
 1. Start with the obvious solution
 2. Only add complexity when REQUIRED
 3. Prefer boring, well-understood approaches
@@ -97,12 +110,14 @@ class UserService {
 > "Don't build features until they're actually needed."
 
 ### Warning Signs:
+
 - "We might need this later"
 - "It would be nice to have"
 - "Just in case"
 - "For future extensibility"
 
 ### The Cost of YAGNI Violations:
+
 1. **Development time** - Building unused features
 2. **Maintenance burden** - Code that must be maintained
 3. **Cognitive load** - More to understand
@@ -145,6 +160,7 @@ Duplication #3 → NOW extract it
 ```
 
 ### Example:
+
 ```typescript
 // First time - leave it
 function processUserOrder(order) {
@@ -185,12 +201,14 @@ function processOrder(order: Order, postProcessing: (o: Order) => void) {
 > "Each module should address a single concern."
 
 ### Concerns to Separate:
+
 - **Business logic** vs **Infrastructure**
 - **What** (policy) vs **How** (mechanism)
 - **Input** vs **Processing** vs **Output**
 - **Data** vs **Behavior**
 
 ### Example:
+
 ```typescript
 // BAD: Mixed concerns
 class OrderProcessor {
@@ -220,7 +238,7 @@ class OrderProcessor {
     private validator: OrderValidator,
     private calculator: OrderCalculator,
     private repository: OrderRepository,
-    private notifier: OrderNotifier
+    private notifier: OrderNotifier,
   ) {}
 
   process(order: Order): ProcessResult {
@@ -238,26 +256,31 @@ class OrderProcessor {
 ## Managing Technical Debt
 
 ### Types of Technical Debt:
+
 1. **Deliberate** - Conscious trade-off for speed
 2. **Accidental** - Mistakes, lack of knowledge
 3. **Bit rot** - Code degrades over time
 
 ### The Boy Scout Rule:
+
 > "Leave the code better than you found it."
 
 Every time you touch code:
+
 - Improve one small thing
 - Fix one naming issue
 - Extract one method
 - Add one missing test
 
 ### When to Pay Down Debt:
+
 - When it's in your path (you're already there)
 - When it's blocking new features
 - When it's causing bugs
 - During dedicated refactoring time
 
 ### When NOT to Refactor:
+
 - Code that works and won't change
 - Code being replaced soon
 - When you don't have tests

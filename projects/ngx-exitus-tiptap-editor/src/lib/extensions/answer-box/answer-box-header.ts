@@ -1,23 +1,23 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 
 export const AnswerBoxHeader = Node.create({
-    name: 'answerBoxHeader',
+  name: 'answerBoxHeader',
 
-    group: 'block',
+  group: 'block',
 
-    content: 'inline*',
+  content: 'inline*',
 
-    defining: true,
+  defining: true,
 
-    parseHTML() {
-        return [
-            {
-                tag: 'div.ex-answer-box-header',
-            },
-        ];
-    },
+  parseHTML() {
+    return [
+      {
+        tag: 'div.ex-answer-box-header',
+      },
+    ];
+  },
 
-    renderHTML({ HTMLAttributes }) {
-        return ['div', mergeAttributes(HTMLAttributes, { class: 'ex-answer-box-header' }), 0];
-    },
+  renderHTML({ HTMLAttributes }) {
+    return ['div', mergeAttributes(HTMLAttributes, { class: 'ex-answer-box-header' }), 0];
+  },
 });

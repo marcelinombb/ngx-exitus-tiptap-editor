@@ -98,19 +98,12 @@ class UserBuilder {
   }
 
   build(): User {
-    return new User(
-      this.user.name!,
-      this.user.email!,
-      this.user.age
-    );
+    return new User(this.user.name!, this.user.email!, this.user.age);
   }
 }
 
 // Usage
-const user = new UserBuilder()
-  .withName('Alice')
-  .withEmail('alice@example.com')
-  .build();
+const user = new UserBuilder().withName('Alice').withEmail('alice@example.com').build();
 ```
 
 ### Prototype
@@ -128,15 +121,11 @@ class Document implements Prototype {
   constructor(
     public title: string,
     public content: string,
-    public metadata: Metadata
+    public metadata: Metadata,
   ) {}
 
   clone(): Document {
-    return new Document(
-      this.title,
-      this.content,
-      { ...this.metadata }
-    );
+    return new Document(this.title, this.content, { ...this.metadata });
   }
 }
 ```
@@ -211,11 +200,7 @@ class SlackDecorator implements Notifier {
 }
 
 // Usage - compose behaviors
-const notifier = new SlackDecorator(
-  new SMSDecorator(
-    new EmailNotifier()
-  )
-);
+const notifier = new SlackDecorator(new SMSDecorator(new EmailNotifier()));
 notifier.send('Alert!'); // Sends to all three
 ```
 
@@ -282,10 +267,7 @@ class Box implements Component {
   }
 
   getPrice(): number {
-    return this.children.reduce(
-      (sum, child) => sum + child.getPrice(),
-      0
-    );
+    return this.children.reduce((sum, child) => sum + child.getPrice(), 0);
   }
 }
 
@@ -363,11 +345,11 @@ class EventEmitter {
   }
 
   unsubscribe(observer: Observer): void {
-    this.observers = this.observers.filter(o => o !== observer);
+    this.observers = this.observers.filter((o) => o !== observer);
   }
 
   notify(event: Event): void {
-    this.observers.forEach(o => o.update(event));
+    this.observers.forEach((o) => o.update(event));
   }
 }
 
@@ -449,7 +431,7 @@ interface Command {
 class AddItemCommand implements Command {
   constructor(
     private cart: Cart,
-    private item: Item
+    private item: Item,
   ) {}
 
   execute(): void {
@@ -495,10 +477,10 @@ This helps recognize patterns even in unfamiliar code.
 
 ## Anti-Patterns to Avoid
 
-| Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
-| **God Object** | Class does everything | Split by responsibility |
-| **Spaghetti Code** | Tangled, no structure | Refactor to layers |
-| **Golden Hammer** | Using one pattern for everything | Match pattern to problem |
-| **Premature Optimization** | Optimizing before needed | YAGNI, profile first |
-| **Copy-Paste Programming** | Duplication | Extract, Rule of Three |
+| Anti-Pattern               | Problem                          | Solution                 |
+| -------------------------- | -------------------------------- | ------------------------ |
+| **God Object**             | Class does everything            | Split by responsibility  |
+| **Spaghetti Code**         | Tangled, no structure            | Refactor to layers       |
+| **Golden Hammer**          | Using one pattern for everything | Match pattern to problem |
+| **Premature Optimization** | Optimizing before needed         | YAGNI, profile first     |
+| **Copy-Paste Programming** | Duplication                      | Extract, Rule of Three   |

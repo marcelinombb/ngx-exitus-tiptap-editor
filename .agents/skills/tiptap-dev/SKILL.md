@@ -21,14 +21,14 @@ Expert guidance for building rich text editors with Tiptap - a headless, framewo
 
 ## Reference Files
 
-| File | Description |
-|------|-------------|
-| `references/extensions.md` | Extension types (Node, Mark, Extension), creation patterns |
-| `references/commands-and-api.md` | Commands API, editor API, chaining |
-| `references/input-paste-rules.md` | Input rules and paste rules |
-| `references/react-integration.md` | React-specific hooks and components |
-| `references/schema.md` | Schema properties, content patterns |
-| `references/examples.md` | Complete working examples |
+| File                              | Description                                                |
+| --------------------------------- | ---------------------------------------------------------- |
+| `references/extensions.md`        | Extension types (Node, Mark, Extension), creation patterns |
+| `references/commands-and-api.md`  | Commands API, editor API, chaining                         |
+| `references/input-paste-rules.md` | Input rules and paste rules                                |
+| `references/react-integration.md` | React-specific hooks and components                        |
+| `references/schema.md`            | Schema properties, content patterns                        |
+| `references/examples.md`          | Complete working examples                                  |
 
 ## Quick Reference
 
@@ -48,8 +48,8 @@ Mark.create({ name: 'myMark', parseHTML() { ... }, renderHTML() { ... } })
 ### Command Chaining
 
 ```typescript
-editor.chain().focus().toggleBold().run()
-editor.can().chain().focus().toggleBold().run() // dry run
+editor.chain().focus().toggleBold().run();
+editor.can().chain().focus().toggleBold().run(); // dry run
 ```
 
 ### React Integration
@@ -59,7 +59,7 @@ const editor = useEditor({
   extensions: [StarterKit],
   content: '<p>Hello</p>',
   immediatelyRender: false, // for SSR
-})
+});
 ```
 
 ## Core Concepts

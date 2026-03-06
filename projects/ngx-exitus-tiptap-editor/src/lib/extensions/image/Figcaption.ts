@@ -1,4 +1,4 @@
-import { Node } from '@tiptap/core'
+import { Node } from '@tiptap/core';
 
 export const Figcaption = Node.create({
   name: 'figcaption',
@@ -7,10 +7,10 @@ export const Figcaption = Node.create({
   isolating: true,
 
   parseHTML() {
-    return [{ tag: 'figcaption' }]
+    return [{ tag: 'figcaption' }];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['figcaption', HTMLAttributes, 0]
+    return ['figcaption', HTMLAttributes, 0];
   },
-})
+});

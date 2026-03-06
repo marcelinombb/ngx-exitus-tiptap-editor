@@ -18,18 +18,18 @@ Ao criar um node com `Node.create`, você define um objeto de configuração rob
 
 Estas propriedades configuram como o ProseMirror entende o seu node.
 
-| Propriedade | Tipo | Descrição |
-| :--- | :--- | :--- |
-| `name` | `string` | **Obrigatório**. Identificador único (ex: `'paragraph'`, `'customBlock'`). |
-| `group` | `string` | Onde este node se encaixa (ex: `'block'`, `'inline'`, `'list_item'`). Usado na propriedade `content` de outros nodes. |
-| `content` | `string` | Expressão de conteúdo. Ex: `'inline*'` (texto/marks), `'block+'` (1+ blocos), `'(text|image)*'`. |
-| `inline` | `boolean` | `true` para nodes que fluem com o texto (ex: mention). `false` para blocos. Padrão: `false`. |
-| `atom` | `boolean` | `true` se o node deve ser tratado como uma unidade indivisível (o cursor pula ele, não entra nele). Útil para embeds. Padrão: `false`. |
-| `selectable` | `boolean` | Se o usuário pode selecionar o node clicando nele. Padrão: `true`. |
-| `draggable` | `boolean` | Se o node pode ser arrastado. Padrão: `false`. |
-| `code` | `boolean` | Se `true`, desativa transformações de texto automáticas dentro dele. |
-| `defining` | `boolean` | Se `true`, colar conteúdo dentro tende a preservar o conteúdo em vez de substituir o node. Essencial para containers (Blockquotes). |
-| `isolating` | `boolean` | Se `true`, edições (como backspace) não "vazam" para fora do node. Útil para Células de Tabela. |
+| Propriedade  | Tipo      | Descrição                                                                                                                              |
+| :----------- | :-------- | :------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `name`       | `string`  | **Obrigatório**. Identificador único (ex: `'paragraph'`, `'customBlock'`).                                                             |
+| `group`      | `string`  | Onde este node se encaixa (ex: `'block'`, `'inline'`, `'list_item'`). Usado na propriedade `content` de outros nodes.                  |
+| `content`    | `string`  | Expressão de conteúdo. Ex: `'inline*'` (texto/marks), `'block+'` (1+ blocos), `'(text                                                  | image)\*'`. |
+| `inline`     | `boolean` | `true` para nodes que fluem com o texto (ex: mention). `false` para blocos. Padrão: `false`.                                           |
+| `atom`       | `boolean` | `true` se o node deve ser tratado como uma unidade indivisível (o cursor pula ele, não entra nele). Útil para embeds. Padrão: `false`. |
+| `selectable` | `boolean` | Se o usuário pode selecionar o node clicando nele. Padrão: `true`.                                                                     |
+| `draggable`  | `boolean` | Se o node pode ser arrastado. Padrão: `false`.                                                                                         |
+| `code`       | `boolean` | Se `true`, desativa transformações de texto automáticas dentro dele.                                                                   |
+| `defining`   | `boolean` | Se `true`, colar conteúdo dentro tende a preservar o conteúdo em vez de substituir o node. Essencial para containers (Blockquotes).    |
+| `isolating`  | `boolean` | Se `true`, edições (como backspace) não "vazam" para fora do node. Útil para Células de Tabela.                                        |
 
 ### Exemplo de Configuração Avançada
 
@@ -38,8 +38,8 @@ export const SuperBlock = Node.create({
   name: 'superBlock',
   group: 'block',
   content: 'paragraph+', // Deve conter parágrafos
-  defining: true,       // Mantém o container ao colar
-  draggable: true,      // Pode ser arrastado
+  defining: true, // Mantém o container ao colar
+  draggable: true, // Pode ser arrastado
   // ...
 });
 ```
@@ -172,7 +172,7 @@ declare module '@tiptap/core' {
     callout: {
       setCallout: () => ReturnType;
       toggleCallout: () => ReturnType;
-    }
+    };
   }
 }
 
@@ -182,8 +182,8 @@ export const Callout = Node.create<CalloutOptions>({
   // Configuração do Schema
   group: 'block',
   content: 'inline*', // Contém texto
-  defining: true,     // User friendly ao colar/copiar 
-  
+  defining: true, // User friendly ao colar/copiar
+
   addOptions() {
     return {
       HTMLAttributes: {},
@@ -194,30 +194,34 @@ export const Callout = Node.create<CalloutOptions>({
     return {
       level: {
         default: 'info',
-        parseHTML: element => element.getAttribute('data-level'),
-        renderHTML: attributes => ({ 'data-level': attributes.level }),
+        parseHTML: (element) => element.getAttribute('data-level'),
+        renderHTML: (attributes) => ({ 'data-level': attributes.level }),
       },
     };
   },
 
   parseHTML() {
-    return [
-      { tag: 'div[data-type="callout"]' },
-    ];
+    return [{ tag: 'div[data-type="callout"]' }];
   },
 
   renderHTML({ HTMLAttributes }) {
     return [
-        'div', 
-        mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { 'data-type': 'callout' }), 
-        0 // Renderiza o conteúdo aqui
+      'div',
+      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { 'data-type': 'callout' }),
+      0, // Renderiza o conteúdo aqui
     ];
   },
 
   addCommands() {
     return {
-      setCallout: () => ({ commands }) => commands.setNode(this.name),
-      toggleCallout: () => ({ commands }) => commands.toggleNode(this.name, 'paragraph'),
+      setCallout:
+        () =>
+        ({ commands }) =>
+          commands.setNode(this.name),
+      toggleCallout:
+        () =>
+        ({ commands }) =>
+          commands.toggleNode(this.name, 'paragraph'),
     };
   },
 
@@ -225,7 +229,7 @@ export const Callout = Node.create<CalloutOptions>({
     return {
       'Mod-Shift-c': () => this.editor.commands.toggleCallout(),
     };
-  }
+  },
 });
 ```
 
@@ -236,6 +240,7 @@ export const Callout = Node.create<CalloutOptions>({
 Marks funcionam de forma muito similar a Nodes, mas sem a complexidade de estrutura (parent/child). Eles envolvem o texto.
 
 ### Diferenças Chave
+
 - Não possuem `group` ou `content`.
 - `parseHTML` geralmente busca estilos (`style`) ou tags simples (`strong`, `em`).
 - `renderHTML` quase sempre retorna arrays simples como `['strong', 0]`.

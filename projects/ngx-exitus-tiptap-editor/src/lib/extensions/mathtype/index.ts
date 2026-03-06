@@ -1,2 +1,2 @@
-export * from './mathtype'
-export * from './MathTypePlugin'
+export * from './mathtype';
+export * from './MathTypePlugin';

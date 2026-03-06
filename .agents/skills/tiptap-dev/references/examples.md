@@ -3,7 +3,7 @@
 ## Complete Custom Node: Callout Box
 
 ```typescript
-import { Node, mergeAttributes } from '@tiptap/core'
+import { Node, mergeAttributes } from '@tiptap/core';
 
 export const Callout = Node.create({
   name: 'callout',
@@ -15,35 +15,39 @@ export const Callout = Node.create({
     return {
       type: {
         default: 'info',
-        parseHTML: element => element.getAttribute('data-callout-type'),
-        renderHTML: attributes => ({ 'data-callout-type': attributes.type }),
+        parseHTML: (element) => element.getAttribute('data-callout-type'),
+        renderHTML: (attributes) => ({ 'data-callout-type': attributes.type }),
       },
-    }
+    };
   },
 
   parseHTML() {
-    return [{ tag: 'div[data-callout]' }]
+    return [{ tag: 'div[data-callout]' }];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['div', mergeAttributes(HTMLAttributes, { 'data-callout': '' }), 0]
+    return ['div', mergeAttributes(HTMLAttributes, { 'data-callout': '' }), 0];
   },
 
   addCommands() {
     return {
-      setCallout: (type = 'info') => ({ commands }) => {
-        return commands.wrapIn(this.name, { type })
-      },
-      toggleCallout: (type = 'info') => ({ commands }) => {
-        return commands.toggleWrap(this.name, { type })
-      },
-    }
+      setCallout:
+        (type = 'info') =>
+        ({ commands }) => {
+          return commands.wrapIn(this.name, { type });
+        },
+      toggleCallout:
+        (type = 'info') =>
+        ({ commands }) => {
+          return commands.toggleWrap(this.name, { type });
+        },
+    };
   },
 
   addKeyboardShortcuts() {
     return {
       'Mod-Shift-c': () => this.editor.commands.toggleCallout(),
-    }
+    };
   },
 
   addInputRules() {
@@ -51,17 +55,17 @@ export const Callout = Node.create({
       wrappingInputRule({
         find: /^:::(\w+)?\s$/,
         type: this.type,
-        getAttributes: match => ({ type: match[1] || 'info' }),
+        getAttributes: (match) => ({ type: match[1] || 'info' }),
       }),
-    ]
+    ];
   },
-})
+});
 ```
 
 ## Complete Custom Mark: Highlight
 
 ```typescript
-import { Mark, mergeAttributes, markInputRule, markPasteRule } from '@tiptap/core'
+import { Mark, mergeAttributes, markInputRule, markPasteRule } from '@tiptap/core';
 
 export const Highlight = Mark.create({
   name: 'highlight',
@@ -70,45 +74,51 @@ export const Highlight = Mark.create({
     return {
       colors: ['yellow', 'green', 'blue', 'pink'],
       defaultColor: 'yellow',
-    }
+    };
   },
 
   addAttributes() {
     return {
       color: {
         default: this.options.defaultColor,
-        parseHTML: element => element.getAttribute('data-color') || this.options.defaultColor,
-        renderHTML: attributes => ({ 'data-color': attributes.color }),
+        parseHTML: (element) => element.getAttribute('data-color') || this.options.defaultColor,
+        renderHTML: (attributes) => ({ 'data-color': attributes.color }),
       },
-    }
+    };
   },
 
   parseHTML() {
-    return [{ tag: 'mark' }]
+    return [{ tag: 'mark' }];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['mark', mergeAttributes(HTMLAttributes), 0]
+    return ['mark', mergeAttributes(HTMLAttributes), 0];
   },
 
   addCommands() {
     return {
-      setHighlight: (color) => ({ commands }) => {
-        return commands.setMark(this.name, { color })
-      },
-      toggleHighlight: (color) => ({ commands }) => {
-        return commands.toggleMark(this.name, { color })
-      },
-      unsetHighlight: () => ({ commands }) => {
-        return commands.unsetMark(this.name)
-      },
-    }
+      setHighlight:
+        (color) =>
+        ({ commands }) => {
+          return commands.setMark(this.name, { color });
+        },
+      toggleHighlight:
+        (color) =>
+        ({ commands }) => {
+          return commands.toggleMark(this.name, { color });
+        },
+      unsetHighlight:
+        () =>
+        ({ commands }) => {
+          return commands.unsetMark(this.name);
+        },
+    };
   },
 
   addKeyboardShortcuts() {
     return {
       'Mod-Shift-h': () => this.editor.commands.toggleHighlight(),
-    }
+    };
   },
 
   addInputRules() {
@@ -117,7 +127,7 @@ export const Highlight = Mark.create({
         find: /(?:==)((?:[^=]+))(?:==)$/,
         type: this.type,
       }),
-    ]
+    ];
   },
 
   addPasteRules() {
@@ -126,15 +136,15 @@ export const Highlight = Mark.create({
         find: /(?:==)((?:[^=]+))(?:==)/g,
         type: this.type,
       }),
-    ]
+    ];
   },
-})
+});
 ```
 
 ## Extension with Storage
 
 ```typescript
-import { Extension } from '@tiptap/core'
+import { Extension } from '@tiptap/core';
 
 export const WordCounter = Extension.create({
   name: 'wordCounter',
@@ -143,52 +153,52 @@ export const WordCounter = Extension.create({
     return {
       wordCount: 0,
       characterCount: 0,
-    }
+    };
   },
 
   onCreate() {
-    this.updateCounts()
+    this.updateCounts();
   },
 
   onUpdate() {
-    this.updateCounts()
+    this.updateCounts();
   },
 
   addOptions() {
     return {
       onUpdate: () => {},
-    }
+    };
   },
 
   updateCounts() {
-    const text = this.editor.getText()
-    this.storage.characterCount = text.length
-    this.storage.wordCount = text.split(/\s+/).filter(word => word.length > 0).length
+    const text = this.editor.getText();
+    this.storage.characterCount = text.length;
+    this.storage.wordCount = text.split(/\s+/).filter((word) => word.length > 0).length;
     this.options.onUpdate({
       words: this.storage.wordCount,
       characters: this.storage.characterCount,
-    })
+    });
   },
-})
+});
 
 // Usage
 const editor = useEditor({
   extensions: [
     WordCounter.configure({
       onUpdate: ({ words, characters }) => {
-        console.log(`${words} words, ${characters} characters`)
+        console.log(`${words} words, ${characters} characters`);
       },
     }),
   ],
-})
+});
 
 // Access storage
-editor.storage.wordCounter.wordCount
+editor.storage.wordCounter.wordCount;
 ```
 
 ## React Node View: Editable Code Block
 
-```typescript
+````typescript
 import { Node, mergeAttributes } from '@tiptap/core'
 import { ReactNodeViewRenderer, NodeViewWrapper, NodeViewContent } from '@tiptap/react'
 
@@ -257,7 +267,7 @@ export const CodeBlock = Node.create({
     ]
   },
 })
-```
+````
 
 ## Complete React Editor
 
@@ -335,14 +345,14 @@ export default Editor
 ## Extending StarterKit
 
 ```typescript
-import StarterKit from '@tiptap/starter-kit'
-import { Heading } from '@tiptap/extension-heading'
+import StarterKit from '@tiptap/starter-kit';
+import { Heading } from '@tiptap/extension-heading';
 
 // Disable specific extensions
 StarterKit.configure({
   heading: false,
   codeBlock: false,
-})
+});
 
 // Custom heading with limited levels
 const CustomHeading = Heading.extend({
@@ -351,9 +361,9 @@ const CustomHeading = Heading.extend({
       ...this.parent?.(),
       'Mod-Alt-1': () => this.editor.commands.toggleHeading({ level: 1 }),
       'Mod-Alt-2': () => this.editor.commands.toggleHeading({ level: 2 }),
-    }
+    };
   },
-})
+});
 
 const editor = useEditor({
   extensions: [
@@ -364,5 +374,5 @@ const editor = useEditor({
       levels: [1, 2, 3],
     }),
   ],
-})
+});
 ```

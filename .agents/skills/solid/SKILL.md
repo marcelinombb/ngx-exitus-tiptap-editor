@@ -10,6 +10,7 @@ You are now operating as a senior software engineer. Every line of code you writ
 ## When This Skill Applies
 
 **ALWAYS use this skill when:**
+
 - Writing ANY code (features, fixes, utilities)
 - Refactoring existing code
 - Planning or designing architecture
@@ -37,6 +38,7 @@ The goal of software: Enable developers to **discover, understand, add, change, 
 ```
 
 **The Three Laws of TDD:**
+
 1. You cannot write production code unless it makes a failing test pass
 2. You cannot write more test code than is sufficient to fail
 3. You cannot write more production code than is sufficient to pass
@@ -49,19 +51,20 @@ See: [references/tdd.md](references/tdd.md)
 
 Every class, every module, every function:
 
-| Principle | Question to Ask |
-|-----------|-----------------|
-| **S**RP - Single Responsibility | "Does this have ONE reason to change?" |
-| **O**CP - Open/Closed | "Can I extend without modifying?" |
-| **L**SP - Liskov Substitution | "Can subtypes replace base types safely?" |
+| Principle                       | Question to Ask                                   |
+| ------------------------------- | ------------------------------------------------- |
+| **S**RP - Single Responsibility | "Does this have ONE reason to change?"            |
+| **O**CP - Open/Closed           | "Can I extend without modifying?"                 |
+| **L**SP - Liskov Substitution   | "Can subtypes replace base types safely?"         |
 | **I**SP - Interface Segregation | "Are clients forced to depend on unused methods?" |
-| **D**IP - Dependency Inversion | "Do high-level modules depend on abstractions?" |
+| **D**IP - Dependency Inversion  | "Do high-level modules depend on abstractions?"   |
 
 See: [references/solid-principles.md](references/solid-principles.md)
 
 ### 3. Write Clean, Human-Readable Code
 
 **Naming (in order of priority):**
+
 1. **Consistency** - Same concept = same name everywhere
 2. **Understandability** - Domain language, not technical jargon
 3. **Specificity** - Precise, not vague (avoid `data`, `info`, `manager`)
@@ -69,6 +72,7 @@ See: [references/solid-principles.md](references/solid-principles.md)
 5. **Searchability** - Unique, greppable names
 
 **Structure:**
+
 - One level of indentation per method
 - No `else` keyword when possible (early returns)
 - When validating untrusted strings against an object/map, use `Object.hasOwn(...)` (or `Object.prototype.hasOwnProperty.call(...)`) — do not use the `in` operator, which matches prototype keys
@@ -79,12 +83,26 @@ See: [references/solid-principles.md](references/solid-principles.md)
 - No more than two instance variables per class
 
 **Value Objects are MANDATORY for:**
+
 ```typescript
 // ALWAYS create value objects for:
-class UserId { constructor(private readonly value: string) {} }
-class Email { constructor(private readonly value: string) { /* validate */ } }
-class Money { constructor(private readonly amount: number, private readonly currency: string) {} }
-class OrderId { constructor(private readonly value: string) {} }
+class UserId {
+  constructor(private readonly value: string) {}
+}
+class Email {
+  constructor(private readonly value: string) {
+    /* validate */
+  }
+}
+class Money {
+  constructor(
+    private readonly amount: number,
+    private readonly currency: string,
+  ) {}
+}
+class OrderId {
+  constructor(private readonly value: string) {}
+}
 
 // NEVER use raw primitives for domain concepts:
 // BAD: function createOrder(userId: string, email: string)
@@ -96,10 +114,12 @@ See: [references/clean-code.md](references/clean-code.md)
 ### 4. Design with Responsibility in Mind
 
 **Ask these questions for every class:**
+
 1. "What pattern is this?" (Entity, Service, Repository, Factory, etc.)
 2. "Is it doing too much?" (Check object calisthenics)
 
 **Object Stereotypes:**
+
 - **Information Holder** - Holds data, minimal behavior
 - **Structurer** - Manages relationships between objects
 - **Service Provider** - Performs work, stateless operations
@@ -115,11 +135,13 @@ See: [references/object-design.md](references/object-design.md)
 **Accidental complexity** = introduced by our solutions
 
 **Detect complexity through:**
+
 - Change amplification (small change = many files)
 - Cognitive load (hard to understand)
 - Unknown unknowns (surprises in behavior)
 
 **Fight complexity with:**
+
 - YAGNI - Don't build what you don't need NOW
 - KISS - Simplest solution that works
 - DRY - But only after Rule of Three (wait for 3 duplications)
@@ -129,14 +151,17 @@ See: [references/complexity.md](references/complexity.md)
 ### 6. Architect for Change
 
 **Vertical Slicing:**
+
 - Features as end-to-end slices
 - Each feature self-contained
 
 **Horizontal Decoupling:**
+
 - Layers don't know about each other's internals
 - Dependencies point inward (toward domain)
 
 **The Dependency Rule:**
+
 - Source code dependencies point toward high-level policies
 - Infrastructure depends on domain, never reverse
 
@@ -145,6 +170,7 @@ See: [references/architecture.md](references/architecture.md)
 ## The Four Elements of Simple Design (XP)
 
 In priority order:
+
 1. **Runs all the tests** - Must work correctly
 2. **Expresses intent** - Readable, reveals purpose
 3. **No duplication** - DRY (but Rule of Three)
@@ -154,19 +180,19 @@ In priority order:
 
 **Stop and refactor when you see:**
 
-| Smell | Solution |
-|-------|----------|
-| Long Method | Extract methods, compose method pattern |
-| Large Class | Extract class, single responsibility |
-| Long Parameter List | Introduce parameter object |
-| Divergent Change | Split into focused classes |
-| Shotgun Surgery | Move related code together |
-| Feature Envy | Move method to the envied class |
-| Data Clumps | Extract class for grouped data |
-| Primitive Obsession | Wrap in value objects |
-| Switch Statements | Replace with polymorphism |
-| Parallel Inheritance | Merge hierarchies |
-| Speculative Generality | YAGNI - remove unused abstractions |
+| Smell                  | Solution                                |
+| ---------------------- | --------------------------------------- |
+| Long Method            | Extract methods, compose method pattern |
+| Large Class            | Extract class, single responsibility    |
+| Long Parameter List    | Introduce parameter object              |
+| Divergent Change       | Split into focused classes              |
+| Shotgun Surgery        | Move related code together              |
+| Feature Envy           | Move method to the envied class         |
+| Data Clumps            | Extract class for grouped data          |
+| Primitive Obsession    | Wrap in value objects                   |
+| Switch Statements      | Replace with polymorphism               |
+| Parallel Inheritance   | Merge hierarchies                       |
+| Speculative Generality | YAGNI - remove unused abstractions      |
 
 See: [references/code-smells.md](references/code-smells.md)
 
@@ -183,11 +209,13 @@ See: [references/design-patterns.md](references/design-patterns.md)
 ## Testing Strategy
 
 **Test Types (from inner to outer):**
+
 1. **Unit Tests** - Single class/function, fast, isolated
 2. **Integration Tests** - Multiple components together
 3. **E2E/Acceptance Tests** - Full system, user perspective
 
 **Arrange-Act-Assert Pattern:**
+
 ```typescript
 // Arrange - Set up test state
 const calculator = new Calculator();
@@ -200,6 +228,7 @@ expect(result).toBe(5);
 ```
 
 **Test Naming:** Use concrete examples, not abstract statements
+
 ```typescript
 // BAD: 'can add numbers'
 // GOOD: 'when adding 2 + 3, returns 5'

@@ -1,16 +1,26 @@
-import { findParentNode, findParentNodeClosestToPos, mergeAttributes, Node as TiptapNode } from '@tiptap/core';
+import {
+  findParentNode,
+  findParentNodeClosestToPos,
+  mergeAttributes,
+  Node as TiptapNode,
+} from '@tiptap/core';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { TextSelection, NodeSelection, Plugin, PluginKey, EditorState } from 'prosemirror-state';
 import { Injector } from '@angular/core';
 import { AngularNodeViewRenderer } from 'ngx-tiptap';
 import { FigureComponent } from './figure.component';
+import { findFigureNode } from '../../utils/tiptap-selection';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     figure: {
       toggleFigcaption: () => ReturnType;
-      setImageAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
-      hasAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => ReturnType;
+      setImageAlignment: (
+        align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight',
+      ) => ReturnType;
+      hasAlignment: (
+        align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight',
+      ) => ReturnType;
       setImageWidth: (width: number | null) => ReturnType;
       cropImage: () => ReturnType;
       toggleGreyScale: () => ReturnType;
@@ -18,8 +28,8 @@ declare module '@tiptap/core' {
   }
 }
 
-const MIN_WIDTH = 300
-const MAX_WIDTH = 700
+const MIN_WIDTH = 300;
+const MAX_WIDTH = 700;
 
 const parseWidth = (value?: string | null): number | null => {
   if (!value) return null;
@@ -35,25 +45,27 @@ const ALIGN = {
   inlineRight: 'ex-image-float-right',
 } as const;
 
-const alignClasses = ['ex-image-block-align-left', 'ex-image-block-align-right', 'ex-image-block-middle']
+const alignClasses = [
+  'ex-image-block-align-left',
+  'ex-image-block-align-right',
+  'ex-image-block-middle',
+];
 
-const allowedClasses = ['ex-image-wrapper', ...alignClasses, 'ex-image-grayscale', 'ex-image-float-left', 'ex-image-float-right']
+const allowedClasses = [
+  'ex-image-wrapper',
+  ...alignClasses,
+  'ex-image-grayscale',
+  'ex-image-float-left',
+  'ex-image-float-right',
+];
 
-const defaultClasses = ['ex-image-wrapper', 'ex-image-block-middle', 'tiptap-widget']
+const defaultClasses = ['ex-image-wrapper', 'ex-image-block-middle', 'tiptap-widget'];
 
 export function hasFigureAlignment(
   state: EditorState,
-  align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight'
+  align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight',
 ): boolean {
-  const { selection } = state;
-
-  let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-  if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-    figureNode = { node: selection.node, pos: selection.from };
-  } else {
-    figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-  }
+  const figureNode = findFigureNode(state);
 
   if (!figureNode) return false;
 
@@ -72,15 +84,15 @@ export const Figure = TiptapNode.create<ImageOptions>({
   addOptions() {
     return {
       inline: false,
-    }
+    };
   },
 
   inline() {
-    return this.options.inline
+    return this.options.inline;
   },
 
   group() {
-    return this.options.inline ? 'inline' : 'block'
+    return this.options.inline ? 'inline' : 'block';
   },
 
   content: 'image figcaption?',
@@ -91,17 +103,16 @@ export const Figure = TiptapNode.create<ImageOptions>({
   parseHTML() {
     return [
       {
-        tag: 'figure'
-      }
+        tag: 'figure',
+      },
     ];
   },
 
   renderHTML({ HTMLAttributes, node }) {
-
     const attrs = {
       ...node.attrs,
-      style: `width: ${node.attrs['width']}px;`
-    }
+      style: `width: ${node.attrs['width']}px;`,
+    };
 
     return ['figure', mergeAttributes(HTMLAttributes, attrs), 0];
   },
@@ -116,22 +127,25 @@ export const Figure = TiptapNode.create<ImageOptions>({
         default: defaultClasses.join(' '),
         parseHTML: (element) => {
           if (element.getAttribute('class')) {
-            const classes = element.getAttribute('class')!.split(' ')
-            const filteredClasses = classes.filter(cls => allowedClasses.includes(cls))
+            const classes = element.getAttribute('class')!.split(' ');
+            const filteredClasses = classes.filter((cls) => allowedClasses.includes(cls));
 
-            if (filteredClasses.some(cls => alignClasses.includes(cls)) === false) {
-              filteredClasses.push('ex-image-block-middle')
+            if (filteredClasses.some((cls) => alignClasses.includes(cls)) === false) {
+              filteredClasses.push('ex-image-block-middle');
             }
 
-            return Array.from(new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses])).join(' ')
+            return Array.from(
+              new Set(['ex-image-wrapper', 'tiptap-widget', ...filteredClasses]),
+            ).join(' ');
           } else {
-            return null
+            return null;
           }
         },
       },
       width: {
         default: 300,
-        parseHTML: (element) => parseWidth(element.getAttribute('width')) || parseWidth(element.style.width),
+        parseHTML: (element) =>
+          parseWidth(element.getAttribute('width')) || parseWidth(element.style.width),
       },
       originalWidth: {
         default: 300,
@@ -156,7 +170,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
 
         const figure = findParentNodeClosestToPos(
           selection.$from,
-          (node) => node.type.name === 'figure'
+          (node) => node.type.name === 'figure',
         );
 
         if (!figure || editor.isActive('figcaption')) return false;
@@ -179,7 +193,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
 
         const figure = findParentNodeClosestToPos(
           selection.$from,
-          (node) => node.type.name === 'figure'
+          (node) => node.type.name === 'figure',
         );
 
         if (!figure || editor.isActive('figcaption')) return false;
@@ -227,7 +241,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
                   const figurePos = $pos.before(d);
 
                   const tr = view.state.tr.setSelection(
-                    NodeSelection.create(view.state.doc, figurePos)
+                    NodeSelection.create(view.state.doc, figurePos),
                   );
 
                   view.dispatch(tr);
@@ -251,21 +265,13 @@ export const Figure = TiptapNode.create<ImageOptions>({
         };
       },
       setImageAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => {
-        return ({ tr, state, dispatch, view }) => {
-          const { selection } = state;
+        return ({ tr, state, dispatch }) => {
+          const figureNode = findFigureNode(state);
 
-          let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-            figureNode = { node: selection.node, pos: selection.from };
-          } else {
-            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-          }
-
-          if (!figureNode || figureNode.node.type.name !== 'figure') return false;
+          if (!figureNode) return false;
 
           const classes = new Set(
-            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)
+            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean),
           );
 
           const targetClass = ALIGN[align];
@@ -296,72 +302,45 @@ export const Figure = TiptapNode.create<ImageOptions>({
       },
       toggleFigcaption:
         () =>
-          ({ state, dispatch }) => {
-            const { selection, schema } = state;
+        ({ state, dispatch }) => {
+          const figureNode = findFigureNode(state);
 
-            let node: ProseMirrorNode | null = null;
-            let figurePos: number | null = null;
-            let from: number = selection.from;
+          if (figureNode) {
+            const { node, pos: figurePos } = figureNode;
+            const { schema } = state;
+            const figcaptionType = schema.nodes['figcaption'];
 
-            if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-              node = selection.node;
-              figurePos = selection.from;
+            const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
+
+            let tr = state.tr;
+
+            if (hasCaption) {
+              const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
+
+              tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
             } else {
-              const { $from } = selection;
-              from = $from.pos; // fallback for later usage if needed, but not strictly used below for `d` loop identically
+              const caption = figcaptionType.createAndFill();
+              if (!caption) return false;
 
-              for (let d = $from.depth; d > 0; d--) {
-                const currNode = $from.node(d);
-                if (currNode.type.name === 'figure') {
-                  node = currNode;
-                  figurePos = $from.before(d);
-                  break;
-                }
-              }
+              const insertPos = figurePos + node.nodeSize - 1;
+              tr = tr.insert(insertPos, caption);
+
+              // move cursor INTO figcaption
+              const $pos = tr.doc.resolve(insertPos + 1);
+              tr = tr.setSelection(TextSelection.near($pos));
             }
 
-            if (node && figurePos !== null) {
-              const figcaptionType = schema.nodes['figcaption'];
-
-              const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
-
-              let tr = state.tr;
-
-              if (hasCaption) {
-                const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
-
-                tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
-              } else {
-                const caption = figcaptionType.createAndFill();
-                if (!caption) return false;
-
-                const insertPos = figurePos + node.nodeSize - 1;
-                tr = tr.insert(insertPos, caption);
-
-                // move cursor INTO figcaption
-                const $pos = tr.doc.resolve(insertPos + 1);
-                tr = tr.setSelection(TextSelection.near($pos));
-              }
-
-              dispatch && dispatch(tr.scrollIntoView());
-              return true;
-            }
-
-            return false;
-          },
-      setImageWidth: (width: number | null) => {
-        return ({ tr, state, dispatch, view }) => {
-          const { selection } = state;
-
-          let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-            figureNode = { node: selection.node, pos: selection.from };
-          } else {
-            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
+            dispatch && dispatch(tr.scrollIntoView());
+            return true;
           }
 
-          if (!figureNode || figureNode.node.type.name !== 'figure') return false;
+          return false;
+        },
+      setImageWidth: (width: number | null) => {
+        return ({ tr, state, dispatch }) => {
+          const figureNode = findFigureNode(state);
+
+          if (!figureNode) return false;
 
           tr = tr.setNodeMarkup(figureNode.pos, undefined, {
             ...figureNode.node.attrs,
@@ -401,26 +380,16 @@ export const Figure = TiptapNode.create<ImageOptions>({
       },
 
       toggleGreyScale: () => {
-        return ({ tr, state, dispatch, view }) => {
-          const { selection } = state;
+        return ({ tr, state, dispatch }) => {
+          const figureNode = findFigureNode(state);
 
-          let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-            figureNode = { node: selection.node, pos: selection.from };
-          } else {
-            figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-          }
-
-          if (!figureNode || figureNode.node.type.name !== 'figure') return false;
+          if (!figureNode) return false;
 
           const classes = new Set(
-            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean)
+            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean),
           );
 
-
           const isActive = classes.has('ex-image-grayscale');
-
 
           if (isActive) {
             classes.delete('ex-image-grayscale');
@@ -446,7 +415,7 @@ export const Figure = TiptapNode.create<ImageOptions>({
 
           return false;
         };
-      }
+      },
     };
   },
 });

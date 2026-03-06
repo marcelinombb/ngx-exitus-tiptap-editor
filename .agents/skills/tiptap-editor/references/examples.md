@@ -9,18 +9,18 @@ Real examples from the vmark codebase demonstrating Tiptap API patterns.
 ```typescript
 // Set block types based on type parameter
 switch (type) {
-  case "paragraph":
+  case 'paragraph':
     editor.commands.setParagraph();
     break;
-  case "heading":
-    const level = args.level as number ?? 1;
+  case 'heading':
+    const level = (args.level as number) ?? 1;
     editor.commands.setHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 });
     break;
-  case "codeBlock":
+  case 'codeBlock':
     const language = args.language as string | undefined;
     editor.commands.setCodeBlock(language ? { language } : undefined);
     break;
-  case "blockquote":
+  case 'blockquote':
     editor.commands.setBlockquote();
     break;
 }
@@ -31,19 +31,19 @@ switch (type) {
 ```typescript
 // Toggle patterns with special handling for blockquote
 switch (type) {
-  case "paragraph":
+  case 'paragraph':
     editor.commands.setParagraph();
     break;
-  case "heading":
+  case 'heading':
     editor.commands.toggleHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 });
     break;
-  case "codeBlock":
+  case 'codeBlock':
     editor.commands.toggleCodeBlock();
     break;
-  case "blockquote":
+  case 'blockquote':
     // Blockquote needs active check for toggle
-    if (editor.isActive("blockquote")) {
-      editor.commands.lift("blockquote");
+    if (editor.isActive('blockquote')) {
+      editor.commands.lift('blockquote');
     } else {
       editor.commands.setBlockquote();
     }
@@ -58,10 +58,10 @@ switch (type) {
 ```typescript
 // Toggle lists
 switch (type) {
-  case "bulletList":
+  case 'bulletList':
     editor.commands.toggleBulletList();
     break;
-  case "orderedList":
+  case 'orderedList':
     editor.commands.toggleOrderedList();
     break;
 }
@@ -70,8 +70,8 @@ switch (type) {
 editor.commands.setHorizontalRule();
 
 // List indentation
-editor.commands.sinkListItem("listItem");  // Indent
-editor.commands.liftListItem("listItem");  // Outdent
+editor.commands.sinkListItem('listItem'); // Indent
+editor.commands.liftListItem('listItem'); // Outdent
 ```
 
 ## Format Operations
@@ -81,11 +81,11 @@ editor.commands.liftListItem("listItem");  // Outdent
 ```typescript
 // Toggle marks with focus chain
 switch (mark) {
-  case "underline":
-    editor.chain().focus().toggleMark("underline").run();
+  case 'underline':
+    editor.chain().focus().toggleMark('underline').run();
     break;
-  case "highlight":
-    editor.chain().focus().toggleMark("highlight").run();
+  case 'highlight':
+    editor.chain().focus().toggleMark('highlight').run();
     break;
 }
 ```
@@ -96,19 +96,27 @@ switch (mark) {
 
 ```typescript
 // Decrease heading level (make bigger heading)
-const currentLevel = editor.getAttributes("heading").level as number | undefined;
+const currentLevel = editor.getAttributes('heading').level as number | undefined;
 if (!currentLevel) {
   // Not a heading - make it h6
   editor.chain().focus().setHeading({ level: 6 }).run();
 } else if (currentLevel > 1) {
-  editor.chain().focus().setHeading({ level: (currentLevel - 1) as 1 | 2 | 3 | 4 | 5 }).run();
+  editor
+    .chain()
+    .focus()
+    .setHeading({ level: (currentLevel - 1) as 1 | 2 | 3 | 4 | 5 })
+    .run();
 }
 
 // Increase heading level (make smaller heading)
 if (!currentLevel) {
   // Already paragraph, do nothing
 } else if (currentLevel < 6) {
-  editor.chain().focus().setHeading({ level: (currentLevel + 1) as 2 | 3 | 4 | 5 | 6 }).run();
+  editor
+    .chain()
+    .focus()
+    .setHeading({ level: (currentLevel + 1) as 2 | 3 | 4 | 5 | 6 })
+    .run();
 } else {
   // h6 -> paragraph
   editor.chain().focus().setParagraph().run();
@@ -152,7 +160,7 @@ editor.commands.setContent(doc, { emitUpdate: false });
 
 ```typescript
 // Update code block language attribute
-this.editor.chain().focus().updateAttributes("codeBlock", { language: langId }).run();
+this.editor.chain().focus().updateAttributes('codeBlock', { language: langId }).run();
 ```
 
 ## Editor Control
@@ -183,7 +191,7 @@ const { from, to } = editor.state.selection;
 
 ```typescript
 // Check if inside blockquote
-if (editor.isActive("blockquote")) {
+if (editor.isActive('blockquote')) {
   // Handle blockquote-specific behavior
 }
 ```
@@ -196,7 +204,7 @@ if (editor.isActive("blockquote")) {
 // WRONG - This loses block structure
 const text = doc.textContent;
 let lineStart = from;
-while (lineStart > 0 && text[lineStart - 1] !== "\n") lineStart--;
+while (lineStart > 0 && text[lineStart - 1] !== '\n') lineStart--;
 
 // BETTER - Use $pos for block-aware traversal
 const $pos = doc.resolve(from);
@@ -215,6 +223,10 @@ const blockText = blockNode.textContent;
 if (level === 0) {
   editor.chain().focus().setParagraph().run();
 } else {
-  editor.chain().focus().setHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 }).run();
+  editor
+    .chain()
+    .focus()
+    .setHeading({ level: level as 1 | 2 | 3 | 4 | 5 | 6 })
+    .run();
 }
 ```

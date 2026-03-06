@@ -9,7 +9,7 @@ Extensions are the building blocks of Tiptap. There are three types:
 For adding functionality without schema changes:
 
 ```typescript
-import { Extension } from '@tiptap/core'
+import { Extension } from '@tiptap/core';
 
 const MyExtension = Extension.create({
   name: 'myExtension',
@@ -17,29 +17,31 @@ const MyExtension = Extension.create({
   addOptions() {
     return {
       myOption: 'default',
-    }
+    };
   },
 
   addStorage() {
     return {
       count: 0,
-    }
+    };
   },
 
   addKeyboardShortcuts() {
     return {
       'Mod-Shift-x': () => this.editor.commands.myCommand(),
-    }
+    };
   },
 
   addCommands() {
     return {
-      myCommand: () => ({ commands }) => {
-        return commands.insertContent('Hello!')
-      },
-    }
+      myCommand:
+        () =>
+        ({ commands }) => {
+          return commands.insertContent('Hello!');
+        },
+    };
   },
-})
+});
 ```
 
 ### 2. Node (Block Content)
@@ -47,7 +49,7 @@ const MyExtension = Extension.create({
 For block-level content like paragraphs, headings, images:
 
 ```typescript
-import { Node } from '@tiptap/core'
+import { Node } from '@tiptap/core';
 
 const CustomNode = Node.create({
   name: 'customNode',
@@ -58,28 +60,28 @@ const CustomNode = Node.create({
     return {
       level: {
         default: 1,
-        parseHTML: element => element.getAttribute('data-level'),
-        renderHTML: attributes => ({ 'data-level': attributes.level }),
+        parseHTML: (element) => element.getAttribute('data-level'),
+        renderHTML: (attributes) => ({ 'data-level': attributes.level }),
       },
-    }
+    };
   },
 
   parseHTML() {
-    return [{ tag: 'custom-node' }]
+    return [{ tag: 'custom-node' }];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['custom-node', HTMLAttributes, 0]
+    return ['custom-node', HTMLAttributes, 0];
   },
 
   addNodeView() {
     return ({ node, getPos, editor }) => {
-      const dom = document.createElement('div')
+      const dom = document.createElement('div');
       // Custom rendering logic
-      return { dom }
-    }
+      return { dom };
+    };
   },
-})
+});
 ```
 
 ### 3. Mark (Inline Formatting)
@@ -87,7 +89,7 @@ const CustomNode = Node.create({
 For inline formatting like bold, italic, links:
 
 ```typescript
-import { Mark } from '@tiptap/core'
+import { Mark } from '@tiptap/core';
 
 const CustomMark = Mark.create({
   name: 'customMark',
@@ -95,28 +97,32 @@ const CustomMark = Mark.create({
   addAttributes() {
     return {
       color: { default: null },
-    }
+    };
   },
 
   parseHTML() {
-    return [{ tag: 'span[data-custom-mark]' }]
+    return [{ tag: 'span[data-custom-mark]' }];
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['span', { 'data-custom-mark': '', ...HTMLAttributes }, 0]
+    return ['span', { 'data-custom-mark': '', ...HTMLAttributes }, 0];
   },
 
   addCommands() {
     return {
-      setCustomMark: attributes => ({ commands }) => {
-        return commands.setMark(this.name, attributes)
-      },
-      toggleCustomMark: attributes => ({ commands }) => {
-        return commands.toggleMark(this.name, attributes)
-      },
-    }
+      setCustomMark:
+        (attributes) =>
+        ({ commands }) => {
+          return commands.setMark(this.name, attributes);
+        },
+      toggleCustomMark:
+        (attributes) =>
+        ({ commands }) => {
+          return commands.toggleMark(this.name, attributes);
+        },
+    };
   },
-})
+});
 ```
 
 ## Extending Existing Extensions
@@ -124,14 +130,14 @@ const CustomMark = Mark.create({
 Use `extend()` to modify built-in extensions:
 
 ```typescript
-import { Bold } from '@tiptap/extension-bold'
+import { Bold } from '@tiptap/extension-bold';
 
 const CustomBold = Bold.extend({
   // Override keyboard shortcuts
   addKeyboardShortcuts() {
     return {
       'Mod-Shift-b': () => this.editor.commands.toggleBold(),
-    }
+    };
   },
 
   // Add new attributes
@@ -139,9 +145,9 @@ const CustomBold = Bold.extend({
     return {
       ...this.parent?.(),
       customAttr: { default: null },
-    }
+    };
   },
-})
+});
 ```
 
 ## Extension Configuration
@@ -159,23 +165,23 @@ const editor = new Editor({
       myOption: 'value',
     }),
   ],
-})
+});
 ```
 
 ## Common Extension Properties
 
-| Property | Description |
-|----------|-------------|
-| `name` | Unique identifier (required) |
-| `group` | Schema group: 'block', 'inline', 'list' |
-| `content` | Content model: 'inline*', 'block+', 'text*' |
-| `marks` | Allowed marks: '_' (all), '' (none), 'bold italic' |
-| `atom` | Cannot contain content, selected as unit |
-| `inline` | Inline node (vs block) |
-| `draggable` | Can be dragged |
-| `selectable` | Can be selected as unit |
-| `defining` | Content stays when surrounding replaced |
-| `isolating` | Blocks splitting/lifting operations |
+| Property     | Description                                         |
+| ------------ | --------------------------------------------------- |
+| `name`       | Unique identifier (required)                        |
+| `group`      | Schema group: 'block', 'inline', 'list'             |
+| `content`    | Content model: 'inline*', 'block+', 'text*'         |
+| `marks`      | Allowed marks: '\_' (all), '' (none), 'bold italic' |
+| `atom`       | Cannot contain content, selected as unit            |
+| `inline`     | Inline node (vs block)                              |
+| `draggable`  | Can be dragged                                      |
+| `selectable` | Can be selected as unit                             |
+| `defining`   | Content stays when surrounding replaced             |
+| `isolating`  | Blocks splitting/lifting operations                 |
 
 ## Extension Lifecycle
 
@@ -202,5 +208,5 @@ Extension.create({
   onDestroy() {
     // Editor destroyed
   },
-})
+});
 ```

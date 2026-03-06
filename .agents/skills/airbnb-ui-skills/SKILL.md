@@ -4,7 +4,7 @@ description: Airbnb's UI design system. Use when building interfaces inspired by
 license: MIT
 metadata:
   author: design-skills
-  version: "1.0.0"
+  version: '1.0.0'
   source: https://airbnb.com
 ---
 
@@ -15,6 +15,7 @@ Opinionated constraints for building Airbnb-style interfaces with AI agents.
 ## When to Apply
 
 Reference these guidelines when:
+
 - Building light-mode interfaces
 - Creating Airbnb-inspired design systems
 - Implementing UIs with Inter font and 4px grid
@@ -28,17 +29,17 @@ Reference these guidelines when:
 
 ### Semantic Tokens
 
-| Token | HEX | RGB | Usage |
-|-------|-----|-----|-------|
-| `surface-base` | #FEFEFE | rgb(254,254,254) | Page background |
-| `surface-raised` | #EEEBE4 | rgb(238,235,228) | Cards, modals, raised surfaces |
-| `surface-overlay` | #D5D3D1 | rgb(213,211,209) | Overlays, tooltips, dropdowns |
-| `text-primary` | #8F8F8F | rgb(143,143,143) | Headings, body text |
-| `text-2` | #5C5955 | rgb(92,89,85) | Additional text |
-| `text-secondary` | #686868 | rgb(104,104,104) | Secondary, muted text |
-| `border-default` | #E6DECC | rgb(230,222,204) | Subtle borders, dividers |
-| `destructive` | #E25275 | rgb(226,82,117) | Error states, delete actions |
-| `warning` | #E6DECC | rgb(230,222,204) | Warning states, cautions |
+| Token             | HEX     | RGB              | Usage                          |
+| ----------------- | ------- | ---------------- | ------------------------------ |
+| `surface-base`    | #FEFEFE | rgb(254,254,254) | Page background                |
+| `surface-raised`  | #EEEBE4 | rgb(238,235,228) | Cards, modals, raised surfaces |
+| `surface-overlay` | #D5D3D1 | rgb(213,211,209) | Overlays, tooltips, dropdowns  |
+| `text-primary`    | #8F8F8F | rgb(143,143,143) | Headings, body text            |
+| `text-2`          | #5C5955 | rgb(92,89,85)    | Additional text                |
+| `text-secondary`  | #686868 | rgb(104,104,104) | Secondary, muted text          |
+| `border-default`  | #E6DECC | rgb(230,222,204) | Subtle borders, dividers       |
+| `destructive`     | #E25275 | rgb(226,82,117)  | Error states, delete actions   |
+| `warning`         | #E6DECC | rgb(230,222,204) | Warning states, cautions       |
 
 ## Typography
 
@@ -53,22 +54,23 @@ Reference these guidelines when:
 
 ### Text Styles
 
-| Style | Font | Size | Weight | Color | Count |
-|-------|------|------|--------|-------|-------|
-| `heading-1` | Inter | 19px | 500 | #4A4A4A | 1 |
-| `heading-2` | Inter | 19px | 500 | #E25275 | 1 |
-| `heading-3` | Inter | 15px | 300 | #C3C0BC | 1 |
-| `body` | Inter | 15px | 400 | #919191 | 1 |
-| `body-secondary` | Inter | 15px | 500 | #494949 | 1 |
-| `body-secondary` | Inter | 15px | 500 | #474747 | 1 |
-| `body-secondary` | Inter | 14px | 400 | #919191 | 5 |
-| `body-secondary` | Inter | 14px | 300 | #919191 | 3 |
-| `body-secondary` | Inter | 14px | 300 | #929292 | 3 |
-| `body-secondary` | Inter | 14px | 400 | #909090 | 1 |
+| Style            | Font  | Size | Weight | Color   | Count |
+| ---------------- | ----- | ---- | ------ | ------- | ----- |
+| `heading-1`      | Inter | 19px | 500    | #4A4A4A | 1     |
+| `heading-2`      | Inter | 19px | 500    | #E25275 | 1     |
+| `heading-3`      | Inter | 15px | 300    | #C3C0BC | 1     |
+| `body`           | Inter | 15px | 400    | #919191 | 1     |
+| `body-secondary` | Inter | 15px | 500    | #494949 | 1     |
+| `body-secondary` | Inter | 15px | 500    | #474747 | 1     |
+| `body-secondary` | Inter | 14px | 400    | #919191 | 5     |
+| `body-secondary` | Inter | 14px | 300    | #919191 | 3     |
+| `body-secondary` | Inter | 14px | 300    | #929292 | 3     |
+| `body-secondary` | Inter | 14px | 400    | #909090 | 1     |
 
 ### Typography Reference
 
 **Font Families:**
+
 - `Inter` (used 65x)
 
 **Font Sizes:** 6px, 8px, 9px, 10px, 11px, 13px, 14px, 15px, 19px
@@ -114,9 +116,9 @@ Reference these guidelines when:
 
 ### Buttons
 
-| Variant | Background | Text | Border | Height | Radius |
-|---------|------------|------|--------|--------|--------|
-| Ghost | transparent | #5C5955 | none | - | - |
+| Variant | Background  | Text    | Border | Height | Radius |
+| ------- | ----------- | ------- | ------ | ------ | ------ |
+| Ghost   | transparent | #5C5955 | none   | -      | -      |
 
 ### Inputs
 

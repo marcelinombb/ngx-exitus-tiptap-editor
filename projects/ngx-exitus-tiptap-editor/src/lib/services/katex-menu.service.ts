@@ -2,13 +2,13 @@ import { Injectable, signal } from '@angular/core';
 
 @Injectable()
 export class KatexMenuService {
-    private _forceOpen = signal<boolean>(false);
+  private _forceOpen = signal<boolean>(false);
 
-    get forceOpen() {
-        return this._forceOpen();
-    }
+  get forceOpen() {
+    return this._forceOpen();
+  }
 
-    setForceOpen(value: boolean) {
-        this._forceOpen.set(value);
-    }
+  setForceOpen(value: boolean) {
+    this._forceOpen.set(value);
+  }
 }

@@ -7,7 +7,8 @@ import {
   ViewEncapsulation,
   ChangeDetectionStrategy,
   viewChild,
-  signal
+  signal,
+  AfterViewInit,
 } from '@angular/core';
 import { AngularNodeViewComponent } from 'ngx-tiptap';
 import ImageCropper from './ImageCropper';
@@ -26,26 +27,13 @@ import ImageCropper from './ImageCropper';
       (click)="onFigureClick($event)"
     >
       <!-- contentDOM: Tiptap will render the image and figcaption inside this element -->
-      <figure data-node-view-content style="margin: 0; width: 100%;">
-      </figure>
+      <figure data-node-view-content style="margin: 0; width: 100%;"></figure>
 
       <!-- Resize Handles -->
-      <div
-        class="resize-handle resize-handle-tl"
-        (mousedown)="onMouseDown($event, 'tl')"
-      ></div>
-      <div
-        class="resize-handle resize-handle-tr"
-        (mousedown)="onMouseDown($event, 'tr')"
-      ></div>
-      <div
-        class="resize-handle resize-handle-bl"
-        (mousedown)="onMouseDown($event, 'bl')"
-      ></div>
-      <div
-        class="resize-handle resize-handle-br"
-        (mousedown)="onMouseDown($event, 'br')"
-      ></div>
+      <div class="resize-handle resize-handle-tl" (mousedown)="onMouseDown($event, 'tl')"></div>
+      <div class="resize-handle resize-handle-tr" (mousedown)="onMouseDown($event, 'tr')"></div>
+      <div class="resize-handle resize-handle-bl" (mousedown)="onMouseDown($event, 'bl')"></div>
+      <div class="resize-handle resize-handle-br" (mousedown)="onMouseDown($event, 'br')"></div>
 
       <!-- Insert Paragraph Buttons -->
       <div
@@ -77,16 +65,16 @@ import ImageCropper from './ImageCropper';
   styles: [
     `
       :host {
-        display: block!important;
+        display: block !important;
         width: 100%;
       }
       .ex-image-wrapper {
         position: relative;
       }
     `,
-  ]
+  ],
 })
-export class FigureComponent extends AngularNodeViewComponent implements OnDestroy {
+export class FigureComponent extends AngularNodeViewComponent implements OnDestroy, AfterViewInit {
   // Inputs as Signals
   // Inherited from AngularNodeViewComponent
 
@@ -103,16 +91,18 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
 
   readonly alignmentClass = computed(() => {
     const classes = (this.node().attrs['class'] || '').split(' ');
-    return classes.filter((c: string) =>
-      [
-        'ex-image-block-align-left',
-        'ex-image-block-align-right',
-        'ex-image-block-middle',
-        'ex-image-float-left',
-        'ex-image-float-right',
-        'ex-image-grayscale'
-      ].includes(c)
-    ).join(' ');
+    return classes
+      .filter((c: string) =>
+        [
+          'ex-image-block-align-left',
+          'ex-image-block-align-right',
+          'ex-image-block-middle',
+          'ex-image-float-left',
+          'ex-image-float-right',
+          'ex-image-grayscale',
+        ].includes(c),
+      )
+      .join(' ');
   });
 
   constructor() {
@@ -132,7 +122,7 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
       image: img as HTMLImageElement,
       imageWrapper: wrapperEl,
       figcaption: figcaption as HTMLElement,
-      updateAttributes: (attrs) => this.handleCropUpdate(attrs)
+      updateAttributes: (attrs) => this.handleCropUpdate(attrs),
     });
   }
 
@@ -166,7 +156,7 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
         if (child.type.name === 'image') {
           tr = tr.setNodeMarkup(pos + 1 + offset, undefined, {
             ...child.attrs,
-            src: attributes['src']
+            src: attributes['src'],
           });
         }
       });
@@ -199,7 +189,8 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
 
     const insertionPos = where === 'before' ? pos : pos + this.node().nodeSize;
 
-    this.editor().chain()
+    this.editor()
+      .chain()
       .insertContentAt(insertionPos, { type: 'paragraph' })
       .focus(where === 'before' ? insertionPos : insertionPos + 1)
       .run();
@@ -226,8 +217,8 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
     const onMouseMove = (moveEvent: MouseEvent) => {
       const currentX = moveEvent.clientX;
       const diffX = currentX - startX;
-      const multiplier = (direction === 'tl' || direction === 'bl') ? -1 : 1;
-      const newWidth = Math.max(300, Math.min(700, startWidth + (diffX * multiplier)));
+      const multiplier = direction === 'tl' || direction === 'bl' ? -1 : 1;
+      const newWidth = Math.max(300, Math.min(700, startWidth + diffX * multiplier));
 
       // Use signal for temporary resize state
       this.resizeWidth.set(newWidth);
@@ -239,8 +230,8 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
 
       const finalX = upEvent.clientX;
       const diffX = finalX - startX;
-      const multiplier = (direction === 'tl' || direction === 'bl') ? -1 : 1;
-      const newWidth = Math.max(300, Math.min(700, startWidth + (diffX * multiplier)));
+      const multiplier = direction === 'tl' || direction === 'bl' ? -1 : 1;
+      const newWidth = Math.max(300, Math.min(700, startWidth + diffX * multiplier));
 
       // Commit change to Tiptap node
       this.updateAttributes()({ width: newWidth });

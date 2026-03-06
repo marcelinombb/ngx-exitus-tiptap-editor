@@ -7,7 +7,9 @@ association-component .ex-association-wrapper {
   border: 1px solid #e6decc;
   border-radius: 12px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &.ex-selected {
     border-color: #cbd5e1;
@@ -103,7 +105,7 @@ association-component .ex-association-wrapper {
 association-component .ex-association-content {
   display: block; // Reset parent grid because inner wrapper takes over
 
-  >div {
+  > div {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0;
@@ -111,7 +113,7 @@ association-component .ex-association-content {
     width: 100%;
     border-radius: 0 0 12px 12px;
 
-    >association-column-component {
+    > association-column-component {
       flex: 1 1 50%;
       min-width: 0;
       padding: 1rem;
@@ -137,7 +139,7 @@ association-component .ex-association-content {
 
   p.is-empty::before {
     color: #94a3b8;
-    content: "Digite...";
+    content: 'Digite...';
     float: left;
     height: 0;
     pointer-events: none;
@@ -175,7 +177,7 @@ association-component .ex-association-content {
     word-break: break-word;
     color: #494949;
 
-    >p {
+    > p {
       margin: 0;
       line-height: 1.5;
     }

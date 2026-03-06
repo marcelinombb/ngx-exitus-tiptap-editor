@@ -3,7 +3,7 @@ import { Editor } from '@tiptap/core';
 import { NodeSelection } from '@tiptap/pm/state';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FloatingMenuService {
   private registeredNodes = new Set<string>();
@@ -15,7 +15,7 @@ export class FloatingMenuService {
   isMostSpecificNodeActive(editor: Editor, targetNodeName: string | string[]): boolean {
     const targets = Array.isArray(targetNodeName) ? targetNodeName : [targetNodeName];
 
-    if (!targets.some(t => editor.isActive(t))) {
+    if (!targets.some((t) => editor.isActive(t))) {
       return false;
     }
 
@@ -38,7 +38,7 @@ export class FloatingMenuService {
       depth--;
     }
 
-    // If no registered node is found in the path, technically this shouldn't happen 
+    // If no registered node is found in the path, technically this shouldn't happen
     // because `editor.isActive` was true, which usually means it's in the hierarchy.
     // However, if it happens, we assume the target is active because isActive is true.
     return true;

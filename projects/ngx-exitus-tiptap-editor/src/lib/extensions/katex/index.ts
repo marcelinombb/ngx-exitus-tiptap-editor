@@ -1,2 +1,2 @@
-export * from './katex'
-export * from './katexView'
+export * from './katex';
+export * from './katexView';

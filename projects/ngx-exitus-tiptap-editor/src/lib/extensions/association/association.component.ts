@@ -6,10 +6,12 @@ import { EditorButtonComponent } from '../../components/editor-button.component'
 @Component({
   selector: 'association-component',
   template: `
-    <div class="ex-association-wrapper" 
-         [class.ex-selected]="selected()"
-         [attr.data-cola-type]="colAListType()"
-         [attr.data-colb-type]="colBListType()">
+    <div
+      class="ex-association-wrapper"
+      [class.ex-selected]="selected()"
+      [attr.data-cola-type]="colAListType()"
+      [attr.data-colb-type]="colBListType()"
+    >
       <div class="ex-association-controls" contenteditable="false" *ngIf="editor().isEditable">
         <div class="controls-left">
           <span class="association-title">Associação</span>
@@ -23,8 +25,8 @@ import { EditorButtonComponent } from '../../components/editor-button.component'
             </select>
           </div>
           <div class="col-control">
-             <label>Coluna B:</label>
-             <select [value]="colBListType()" (change)="onColTypeChange('B', $event)">
+            <label>Coluna B:</label>
+            <select [value]="colBListType()" (change)="onColTypeChange('B', $event)">
               <option value="123" [disabled]="colAListType() === '123'">1, 2, 3</option>
               <option value="abc" [disabled]="colAListType() === 'abc'">A, B, C</option>
               <option value="roman" [disabled]="colAListType() === 'roman'">I, II, III</option>
@@ -33,7 +35,11 @@ import { EditorButtonComponent } from '../../components/editor-button.component'
           </div>
         </div>
         <div class="controls-right">
-          <editor-button icon="delete-bin" title="Remover Associação" (onClick)="removeAssociation()"></editor-button>
+          <editor-button
+            icon="delete-bin"
+            title="Remover Associação"
+            (onClick)="removeAssociation()"
+          ></editor-button>
         </div>
       </div>
 
@@ -42,7 +48,7 @@ import { EditorButtonComponent } from '../../components/editor-button.component'
   `,
   standalone: true,
   imports: [CommonModule, EditorButtonComponent],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class AssociationComponent extends AngularNodeViewComponent {
   colAListType = computed(() => this.node().attrs['colAListType'] || '123');

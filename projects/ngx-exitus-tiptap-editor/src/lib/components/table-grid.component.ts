@@ -1,18 +1,16 @@
 import { Component, output } from '@angular/core';
 
 @Component({
-    selector: 'table-grid',
-    standalone: true,
-    template: `
+  selector: 'table-grid',
+  standalone: true,
+  template: `
     <div class="ex-table-grid-container">
-      <div class="ex-table-grid-header">
-        {{ hoveredRows }} x {{ hoveredCols }}
-      </div>
+      <div class="ex-table-grid-header">{{ hoveredRows }} x {{ hoveredCols }}</div>
       <div class="ex-table-grid" (mouseleave)="resetHover()">
         @for (row of rows; track row) {
           <div class="ex-table-grid-row">
             @for (col of cols; track col) {
-              <div 
+              <div
                 class="ex-table-grid-cell"
                 [class.selected]="row <= hoveredRows && col <= hoveredCols"
                 (mouseenter)="onHover(row, col)"
@@ -24,7 +22,7 @@ import { Component, output } from '@angular/core';
       </div>
     </div>
   `,
-    styles: `
+  styles: `
     .ex-table-grid-container {
       padding: 10px;
       background: white;
@@ -63,28 +61,28 @@ import { Component, output } from '@angular/core';
       border-color: hsl(218, 81.8%, 56.9%);
       background-color: #cae1fc;
     }
-  `
+  `,
 })
 export class TableGridComponent {
-    onSelect = output<{ rows: number; cols: number }>();
+  onSelect = output<{ rows: number; cols: number }>();
 
-    rows = Array.from({ length: 10 }, (_, i) => i + 1);
-    cols = Array.from({ length: 10 }, (_, i) => i + 1);
+  rows = Array.from({ length: 10 }, (_, i) => i + 1);
+  cols = Array.from({ length: 10 }, (_, i) => i + 1);
 
-    hoveredRows = 0;
-    hoveredCols = 0;
+  hoveredRows = 0;
+  hoveredCols = 0;
 
-    onHover(row: number, col: number) {
-        this.hoveredRows = row;
-        this.hoveredCols = col;
-    }
+  onHover(row: number, col: number) {
+    this.hoveredRows = row;
+    this.hoveredCols = col;
+  }
 
-    resetHover() {
-        this.hoveredRows = 0;
-        this.hoveredCols = 0;
-    }
+  resetHover() {
+    this.hoveredRows = 0;
+    this.hoveredCols = 0;
+  }
 
-    selectGrid(rows: number, cols: number) {
-        this.onSelect.emit({ rows, cols });
-    }
+  selectGrid(rows: number, cols: number) {
+    this.onSelect.emit({ rows, cols });
+  }
 }

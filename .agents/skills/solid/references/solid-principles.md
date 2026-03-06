@@ -9,9 +9,11 @@ SOLID helps structure software to be flexible, maintainable, and testable. These
 > "A class should have one, and only one, reason to change."
 
 ### Problem It Solves
+
 God objects that do everything - hard to test, hard to change, hard to understand.
 
 ### How to Apply
+
 Each class handles ONE responsibility. If you find yourself saying "and" when describing what a class does, split it.
 
 ```typescript
@@ -40,6 +42,7 @@ class InvoiceGenerator {
 ```
 
 ### Detection Questions
+
 - Does this class have multiple reasons to change?
 - Can I describe it without using "and"?
 - Would different stakeholders request changes to different parts?
@@ -51,9 +54,11 @@ class InvoiceGenerator {
 > "Software entities should be open for extension but closed for modification."
 
 ### Problem It Solves
+
 Having to modify existing, tested code every time requirements change. Risk of breaking working features.
 
 ### How to Apply
+
 Design abstractions that allow new behavior through new classes, not edits to existing ones.
 
 ```typescript
@@ -92,6 +97,7 @@ class SameDayShipping implements ShippingMethod {
 ```
 
 ### Architectural Insight
+
 OCP at architecture level means: **design your codebase so new features are added by adding code, not changing existing code.**
 
 ---
@@ -101,9 +107,11 @@ OCP at architecture level means: **design your codebase so new features are adde
 > "Subtypes must be substitutable for their base types without altering program correctness."
 
 ### Problem It Solves
+
 Subclasses that break expectations, requiring type-checking and special cases.
 
 ### How to Apply
+
 Subclasses must honor the contract of the parent. If the parent returns positive numbers, subclasses cannot return negatives.
 
 ```typescript
@@ -123,7 +131,7 @@ class WeirdDiscount extends DiscountPolicy {
 // GOOD: Enforces contract
 class DiscountPolicy {
   constructor(private discount: number) {
-    if (discount < 0) throw new Error("Discount must be non-negative");
+    if (discount < 0) throw new Error('Discount must be non-negative');
   }
 
   getDiscount(): number {
@@ -133,6 +141,7 @@ class DiscountPolicy {
 ```
 
 ### Key Insight
+
 This is why you can swap `InMemoryUserRepo` for `PostgresUserRepo` - they both honor the `UserRepo` interface contract.
 
 ---
@@ -142,9 +151,11 @@ This is why you can swap `InMemoryUserRepo` for `PostgresUserRepo` - they both h
 > "Clients should not be forced to depend on methods they do not use."
 
 ### Problem It Solves
+
 Fat interfaces that force partial implementations, empty methods, or throws.
 
 ### How to Apply
+
 Split large interfaces into smaller, cohesive ones. Clients depend only on what they need.
 
 ```typescript
@@ -156,9 +167,15 @@ interface WarehouseDevice {
 }
 
 class BasicPrinter implements WarehouseDevice {
-  printLabel(orderId: string): void { /* works */ }
-  scanBarcode(): string { throw new Error("Not supported"); } // Forced!
-  packageItem(orderId: string): void { throw new Error("Not supported"); }
+  printLabel(orderId: string): void {
+    /* works */
+  }
+  scanBarcode(): string {
+    throw new Error('Not supported');
+  } // Forced!
+  packageItem(orderId: string): void {
+    throw new Error('Not supported');
+  }
 }
 
 // GOOD: Segregated interfaces
@@ -175,11 +192,14 @@ interface ItemPackager {
 }
 
 class BasicPrinter implements LabelPrinter {
-  printLabel(orderId: string): void { /* only what it does */ }
+  printLabel(orderId: string): void {
+    /* only what it does */
+  }
 }
 ```
 
 ### Detection
+
 If you see `throw new Error("Not implemented")` or empty method bodies, the interface is too fat.
 
 ---
@@ -189,9 +209,11 @@ If you see `throw new Error("Not implemented")` or empty method bodies, the inte
 > "High-level modules should not depend on low-level modules. Both should depend on abstractions."
 
 ### Problem It Solves
+
 Tight coupling to specific implementations (databases, APIs, frameworks). Hard to test, hard to swap.
 
 ### How to Apply
+
 Depend on interfaces, inject implementations.
 
 ```typescript
@@ -200,7 +222,7 @@ class OrderService {
   private emailService = new SendGridEmailService(); // Locked in!
 
   confirmOrder(email: string): void {
-    this.emailService.send(email, "Order confirmed");
+    this.emailService.send(email, 'Order confirmed');
   }
 }
 
@@ -213,7 +235,7 @@ class OrderService {
   constructor(private emailService: EmailService) {}
 
   confirmOrder(email: string): void {
-    this.emailService.send(email, "Order confirmed");
+    this.emailService.send(email, 'Order confirmed');
   }
 }
 
@@ -224,6 +246,7 @@ new OrderService(new MockEmailService()); // For tests!
 ```
 
 ### The Dependency Rule
+
 Source code dependencies should point **inward** toward high-level policies (domain logic), never toward low-level details (infrastructure).
 
 ```
@@ -241,22 +264,22 @@ Never: inner → outer
 
 These principles scale beyond classes:
 
-| Principle | Architecture Application |
-|-----------|--------------------------|
-| SRP | Each bounded context has one responsibility |
-| OCP | New features = new modules, not edits to existing |
-| LSP | Microservices with same contract are substitutable |
-| ISP | Thin interfaces between services |
-| DIP | High-level business logic doesn't know about databases/frameworks |
+| Principle | Architecture Application                                          |
+| --------- | ----------------------------------------------------------------- |
+| SRP       | Each bounded context has one responsibility                       |
+| OCP       | New features = new modules, not edits to existing                 |
+| LSP       | Microservices with same contract are substitutable                |
+| ISP       | Thin interfaces between services                                  |
+| DIP       | High-level business logic doesn't know about databases/frameworks |
 
 ---
 
 ## Quick Reference
 
-| Principle | One-Liner | Red Flag |
-|-----------|-----------|----------|
-| SRP | One reason to change | "This class handles X and Y and Z" |
-| OCP | Add, don't modify | `if/else` chains for types |
-| LSP | Subtypes are substitutable | Type-checking in calling code |
-| ISP | Small, focused interfaces | Empty method implementations |
-| DIP | Depend on abstractions | `new ConcreteClass()` in business logic |
+| Principle | One-Liner                  | Red Flag                                |
+| --------- | -------------------------- | --------------------------------------- |
+| SRP       | One reason to change       | "This class handles X and Y and Z"      |
+| OCP       | Add, don't modify          | `if/else` chains for types              |
+| LSP       | Subtypes are substitutable | Type-checking in calling code           |
+| ISP       | Small, focused interfaces  | Empty method implementations            |
+| DIP       | Depend on abstractions     | `new ConcreteClass()` in business logic |

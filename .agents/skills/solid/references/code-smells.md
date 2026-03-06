@@ -7,55 +7,60 @@ Indicators that something MAY be wrong. Not bugs, but design problems that make 
 ## The Five Categories
 
 ### 1. Bloaters
+
 Code that has grown too large.
 
-| Smell | Symptom | Refactoring |
-|-------|---------|-------------|
-| **Long Method** | > 10 lines | Extract Method |
-| **Large Class** | > 50 lines, multiple responsibilities | Extract Class |
-| **Long Parameter List** | > 3 parameters | Introduce Parameter Object |
-| **Data Clumps** | Same group of variables appear together | Extract Class |
-| **Primitive Obsession** | Primitives instead of small objects | Wrap in Value Object |
+| Smell                   | Symptom                                 | Refactoring                |
+| ----------------------- | --------------------------------------- | -------------------------- |
+| **Long Method**         | > 10 lines                              | Extract Method             |
+| **Large Class**         | > 50 lines, multiple responsibilities   | Extract Class              |
+| **Long Parameter List** | > 3 parameters                          | Introduce Parameter Object |
+| **Data Clumps**         | Same group of variables appear together | Extract Class              |
+| **Primitive Obsession** | Primitives instead of small objects     | Wrap in Value Object       |
 
 ### 2. Object-Orientation Abusers
+
 Misuse of OO principles.
 
-| Smell | Symptom | Refactoring |
-|-------|---------|-------------|
-| **Switch Statements** | Type checking, large switch/if-else | Replace with Polymorphism |
-| **Parallel Inheritance** | Adding subclass requires adding another | Merge Hierarchies |
-| **Refused Bequest** | Subclass doesn't use parent methods | Replace Inheritance with Delegation |
-| **Alternative Classes** | Different interfaces, same concept | Rename, Extract Superclass |
+| Smell                    | Symptom                                 | Refactoring                         |
+| ------------------------ | --------------------------------------- | ----------------------------------- |
+| **Switch Statements**    | Type checking, large switch/if-else     | Replace with Polymorphism           |
+| **Parallel Inheritance** | Adding subclass requires adding another | Merge Hierarchies                   |
+| **Refused Bequest**      | Subclass doesn't use parent methods     | Replace Inheritance with Delegation |
+| **Alternative Classes**  | Different interfaces, same concept      | Rename, Extract Superclass          |
 
 ### 3. Change Preventers
+
 Code that makes changes difficult.
 
-| Smell | Symptom | Refactoring |
-|-------|---------|-------------|
-| **Divergent Change** | One class changed for many reasons | Extract Class (SRP) |
-| **Shotgun Surgery** | One change touches many classes | Move Method/Field together |
-| **Parallel Inheritance** | (see above) | Merge Hierarchies |
+| Smell                    | Symptom                            | Refactoring                |
+| ------------------------ | ---------------------------------- | -------------------------- |
+| **Divergent Change**     | One class changed for many reasons | Extract Class (SRP)        |
+| **Shotgun Surgery**      | One change touches many classes    | Move Method/Field together |
+| **Parallel Inheritance** | (see above)                        | Merge Hierarchies          |
 
 ### 4. Dispensables
+
 Code that can be removed.
 
-| Smell | Symptom | Refactoring |
-|-------|---------|-------------|
-| **Comments** | Explaining bad code | Rename, Extract Method |
-| **Duplicate Code** | Copy-paste | Extract Method, Pull Up Method |
-| **Dead Code** | Unreachable code | Delete |
-| **Speculative Generality** | "Just in case" code | Delete (YAGNI) |
-| **Lazy Class** | Class that does almost nothing | Inline Class |
+| Smell                      | Symptom                        | Refactoring                    |
+| -------------------------- | ------------------------------ | ------------------------------ |
+| **Comments**               | Explaining bad code            | Rename, Extract Method         |
+| **Duplicate Code**         | Copy-paste                     | Extract Method, Pull Up Method |
+| **Dead Code**              | Unreachable code               | Delete                         |
+| **Speculative Generality** | "Just in case" code            | Delete (YAGNI)                 |
+| **Lazy Class**             | Class that does almost nothing | Inline Class                   |
 
 ### 5. Couplers
+
 Excessive coupling between classes.
 
-| Smell | Symptom | Refactoring |
-|-------|---------|-------------|
-| **Feature Envy** | Method uses another class's data extensively | Move Method |
-| **Inappropriate Intimacy** | Classes know too much about each other | Move Method, Extract Class |
-| **Message Chains** | `a.getB().getC().getD()` | Hide Delegate |
-| **Middle Man** | Class only delegates | Inline Class |
+| Smell                      | Symptom                                      | Refactoring                |
+| -------------------------- | -------------------------------------------- | -------------------------- |
+| **Feature Envy**           | Method uses another class's data extensively | Move Method                |
+| **Inappropriate Intimacy** | Classes know too much about each other       | Move Method, Extract Class |
+| **Message Chains**         | `a.getB().getC().getD()`                     | Hide Delegate              |
+| **Middle Man**             | Class only delegates                         | Inline Class               |
 
 ---
 
@@ -113,29 +118,45 @@ class User {
   email: string;
 
   // Authentication
-  login() { }
-  logout() { }
-  resetPassword() { }
+  login() {}
+  logout() {}
+  resetPassword() {}
 
   // Preferences
-  setTheme() { }
-  setLanguage() { }
+  setTheme() {}
+  setLanguage() {}
 
   // Notifications
-  sendEmail() { }
-  sendSMS() { }
+  sendEmail() {}
+  sendSMS() {}
 
   // Billing
-  charge() { }
-  refund() { }
+  charge() {}
+  refund() {}
 }
 
 // REFACTORED: Separate classes
-class User { name: string; email: string; }
-class AuthService { login(); logout(); resetPassword(); }
-class UserPreferences { setTheme(); setLanguage(); }
-class NotificationService { sendEmail(); sendSMS(); }
-class BillingService { charge(); refund(); }
+class User {
+  name: string;
+  email: string;
+}
+class AuthService {
+  login();
+  logout();
+  resetPassword();
+}
+class UserPreferences {
+  setTheme();
+  setLanguage();
+}
+class NotificationService {
+  sendEmail();
+  sendSMS();
+}
+class BillingService {
+  charge();
+  refund();
+}
 ```
 
 ### 3. Feature Envy
@@ -210,15 +231,21 @@ function createUser(email: Email, age: Age, address: Address) {
 // SMELL
 function getArea(shape: Shape): number {
   switch (shape.type) {
-    case 'circle': return Math.PI * shape.radius ** 2;
-    case 'rectangle': return shape.width * shape.height;
-    case 'triangle': return 0.5 * shape.base * shape.height;
+    case 'circle':
+      return Math.PI * shape.radius ** 2;
+    case 'rectangle':
+      return shape.width * shape.height;
+    case 'triangle':
+      return 0.5 * shape.base * shape.height;
   }
 }
 
 function getPerimeter(shape: Shape): number {
-  switch (shape.type) { // Same switch again!
-    case 'circle': return 2 * Math.PI * shape.radius;
+  switch (
+    shape.type // Same switch again!
+  ) {
+    case 'circle':
+      return 2 * Math.PI * shape.radius;
     // ...
   }
 }
@@ -231,8 +258,12 @@ interface Shape {
 
 class Circle implements Shape {
   constructor(private radius: number) {}
-  getArea(): number { return Math.PI * this.radius ** 2; }
-  getPerimeter(): number { return 2 * Math.PI * this.radius; }
+  getArea(): number {
+    return Math.PI * this.radius ** 2;
+  }
+  getPerimeter(): number {
+    return 2 * Math.PI * this.radius;
+  }
 }
 ```
 
@@ -295,11 +326,21 @@ interface PaymentProcessor {
 }
 
 class StripeProcessor implements PaymentProcessor {
-  process() { /* actual code */ }
-  rollback() { throw new Error('Not implemented'); }
-  audit() { throw new Error('Not implemented'); }
-  generateReport() { throw new Error('Not implemented'); }
-  scheduleRecurring() { throw new Error('Not implemented'); }
+  process() {
+    /* actual code */
+  }
+  rollback() {
+    throw new Error('Not implemented');
+  }
+  audit() {
+    throw new Error('Not implemented');
+  }
+  generateReport() {
+    throw new Error('Not implemented');
+  }
+  scheduleRecurring() {
+    throw new Error('Not implemented');
+  }
 }
 
 // REFACTORED: YAGNI
@@ -308,7 +349,9 @@ interface PaymentProcessor {
 }
 
 class StripeProcessor implements PaymentProcessor {
-  process() { /* actual code */ }
+  process() {
+    /* actual code */
+  }
 }
 // Add other methods when actually needed
 ```
