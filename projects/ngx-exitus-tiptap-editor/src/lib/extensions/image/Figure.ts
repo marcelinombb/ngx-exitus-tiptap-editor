@@ -1,15 +1,19 @@
 import {
-  findParentNode,
   findParentNodeClosestToPos,
   mergeAttributes,
   Node as TiptapNode,
 } from '@tiptap/core';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { TextSelection, NodeSelection, Plugin, PluginKey, EditorState } from 'prosemirror-state';
 import { Injector } from '@angular/core';
 import { AngularNodeViewRenderer } from 'ngx-tiptap';
 import { FigureComponent } from './figure.component';
-import { findFigureNode } from '../../utils/tiptap-selection';
+import {
+  defaultClasses,
+  allowedClasses,
+  alignClasses,
+  parseWidth,
+} from './figure-utils';
+import { createFigureCommands } from './figure-commands';
+import { createFigurePlugins } from './figure-plugins';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -26,51 +30,6 @@ declare module '@tiptap/core' {
       toggleGreyScale: () => ReturnType;
     };
   }
-}
-
-const MIN_WIDTH = 300;
-const MAX_WIDTH = 700;
-
-const parseWidth = (value?: string | null): number | null => {
-  if (!value) return null;
-  const width = parseInt(value.replace('px', ''), 10);
-  return isNaN(width) ? null : Math.min(Math.max(width, MIN_WIDTH), MAX_WIDTH);
-};
-
-const ALIGN = {
-  left: 'ex-image-block-align-left',
-  middle: 'ex-image-block-middle',
-  right: 'ex-image-block-align-right',
-  inlineLeft: 'ex-image-float-left',
-  inlineRight: 'ex-image-float-right',
-} as const;
-
-const alignClasses = [
-  'ex-image-block-align-left',
-  'ex-image-block-align-right',
-  'ex-image-block-middle',
-];
-
-const allowedClasses = [
-  'ex-image-wrapper',
-  ...alignClasses,
-  'ex-image-grayscale',
-  'ex-image-float-left',
-  'ex-image-float-right',
-];
-
-const defaultClasses = ['ex-image-wrapper', 'ex-image-block-middle', 'tiptap-widget'];
-
-export function hasFigureAlignment(
-  state: EditorState,
-  align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight',
-): boolean {
-  const figureNode = findFigureNode(state);
-
-  if (!figureNode) return false;
-
-  const classes = (figureNode.node.attrs['class'] ?? '').split(' ');
-  return classes.includes(ALIGN[align]);
 }
 
 export interface ImageOptions {
@@ -213,209 +172,10 @@ export const Figure = TiptapNode.create<ImageOptions>({
   },
 
   addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        key: new PluginKey('figure-drag-select'),
-        props: {
-          handleDOMEvents: {
-            dragstart(view, event) {
-              const target = event.target as HTMLElement;
-
-              if (!target || target.tagName !== 'IMG') {
-                return false;
-              }
-
-              const pos = view.posAtDOM(target, 0);
-
-              if (pos == null) {
-                return false;
-              }
-
-              const $pos = view.state.doc.resolve(pos);
-
-              // walk up to find the figure
-              for (let d = $pos.depth; d > 0; d--) {
-                const node = $pos.node(d);
-
-                if (node.type.name === 'figure') {
-                  const figurePos = $pos.before(d);
-
-                  const tr = view.state.tr.setSelection(
-                    NodeSelection.create(view.state.doc, figurePos),
-                  );
-
-                  view.dispatch(tr);
-
-                  return false; // allow native drag to continue
-                }
-              }
-
-              return false;
-            },
-          },
-        },
-      }),
-    ];
+    return createFigurePlugins();
   },
+
   addCommands() {
-    return {
-      hasAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => {
-        return ({ state }) => {
-          return hasFigureAlignment(state, align);
-        };
-      },
-      setImageAlignment: (align: 'left' | 'middle' | 'right' | 'inlineLeft' | 'inlineRight') => {
-        return ({ tr, state, dispatch }) => {
-          const figureNode = findFigureNode(state);
-
-          if (!figureNode) return false;
-
-          const classes = new Set(
-            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean),
-          );
-
-          const targetClass = ALIGN[align];
-          const isActive = classes.has(targetClass);
-
-          Object.values(ALIGN).forEach((cls) => classes.delete(cls));
-
-          classes.add(isActive ? ALIGN.middle : targetClass);
-
-          const attributes = {
-            class: [...classes].join(' '),
-          };
-
-          const pos = figureNode.pos;
-
-          tr = tr.setNodeMarkup(pos, undefined, {
-            ...figureNode.node.attrs,
-            ...attributes,
-          });
-
-          if (tr.docChanged) {
-            dispatch && dispatch(tr);
-            return true;
-          }
-
-          return false;
-        };
-      },
-      toggleFigcaption:
-        () =>
-        ({ state, dispatch }) => {
-          const figureNode = findFigureNode(state);
-
-          if (figureNode) {
-            const { node, pos: figurePos } = figureNode;
-            const { schema } = state;
-            const figcaptionType = schema.nodes['figcaption'];
-
-            const hasCaption = node.childCount > 1 && node.lastChild?.type === figcaptionType;
-
-            let tr = state.tr;
-
-            if (hasCaption) {
-              const captionPos = figurePos + node.nodeSize - node.lastChild!.nodeSize - 1;
-
-              tr = tr.delete(captionPos, captionPos + node.lastChild!.nodeSize);
-            } else {
-              const caption = figcaptionType.createAndFill();
-              if (!caption) return false;
-
-              const insertPos = figurePos + node.nodeSize - 1;
-              tr = tr.insert(insertPos, caption);
-
-              // move cursor INTO figcaption
-              const $pos = tr.doc.resolve(insertPos + 1);
-              tr = tr.setSelection(TextSelection.near($pos));
-            }
-
-            dispatch && dispatch(tr.scrollIntoView());
-            return true;
-          }
-
-          return false;
-        },
-      setImageWidth: (width: number | null) => {
-        return ({ tr, state, dispatch }) => {
-          const figureNode = findFigureNode(state);
-
-          if (!figureNode) return false;
-
-          tr = tr.setNodeMarkup(figureNode.pos, undefined, {
-            ...figureNode.node.attrs,
-            width,
-          });
-
-          if (tr.docChanged) {
-            dispatch && dispatch(tr);
-            return true;
-          }
-
-          return false;
-        };
-      },
-      cropImage: () => {
-        return ({ editor, view }) => {
-          const { selection } = view.state;
-          let targetPos: number | undefined;
-
-          if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-            targetPos = selection.from;
-          } else {
-            const figureResult = findParentNode((node) => node.type.name === 'figure')(selection);
-            targetPos = figureResult?.pos;
-          }
-
-          if (targetPos === undefined) return false;
-
-          const dom = view.nodeDOM(targetPos) as any;
-          if (dom && typeof dom.toggleCropping === 'function') {
-            dom.toggleCropping();
-            return true;
-          }
-
-          return false;
-        };
-      },
-
-      toggleGreyScale: () => {
-        return ({ tr, state, dispatch }) => {
-          const figureNode = findFigureNode(state);
-
-          if (!figureNode) return false;
-
-          const classes = new Set(
-            (figureNode.node.attrs['class'] ?? '').split(' ').filter(Boolean),
-          );
-
-          const isActive = classes.has('ex-image-grayscale');
-
-          if (isActive) {
-            classes.delete('ex-image-grayscale');
-          } else {
-            classes.add('ex-image-grayscale');
-          }
-
-          const attributes = {
-            class: [...classes].join(' '),
-          };
-
-          const pos = figureNode.pos;
-
-          tr = tr.setNodeMarkup(pos, undefined, {
-            ...figureNode.node.attrs,
-            ...attributes,
-          });
-
-          if (tr.docChanged) {
-            dispatch && dispatch(tr);
-            return true;
-          }
-
-          return false;
-        };
-      },
-    };
+    return createFigureCommands();
   },
 });

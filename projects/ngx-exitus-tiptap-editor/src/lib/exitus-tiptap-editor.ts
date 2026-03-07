@@ -12,34 +12,13 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { Editor } from '@tiptap/core';
-import StarterKit from '@tiptap/starter-kit';
-import Subscript from '@tiptap/extension-subscript';
-import Superscript from '@tiptap/extension-superscript';
-import TextAlign from '@tiptap/extension-text-align';
 import { EditorToolbarComponent } from './components/editor-toolbar.component';
-import { Indent } from './extensions/indent/indent';
-import { Tab } from './extensions/tab/tab';
-import { Katex } from './extensions/katex';
-import { Image } from './extensions/image/image';
 import { KatexFloatingMenuComponent } from './components/floating-menus/katex-floating-menu.component';
 import { ImageFloatingMenuComponent } from './components/floating-menus/image-floating-menu.component';
 import { TableFloatingMenuComponent } from './components/floating-menus/table-floating-menu.component';
 import { AnswerBoxFloatingMenuComponent } from './components/floating-menus/answer-box-floating-menu.component';
-import { Figure } from './extensions/image/Figure';
-import { Figcaption } from './extensions/image/Figcaption';
-import { ColarQuestao } from './extensions/colar-questao';
-import { MathType, MathTypePlugin } from './extensions/mathtype';
-import { fixTableEmptyParagraphs, TableExtensions } from './extensions/table';
+import { ExtensionFactory } from './extension-factory';
 import { EditorDropdownService } from './components/editor-dropdown.component';
-import { AnswerBox } from './extensions/answer-box/answer-box';
-import { Association } from './extensions/association/association';
-import { AssociationColumn } from './extensions/association/association-column';
-import { AssociationItem } from './extensions/association/association-item';
-import { Alternative } from './extensions/alternatives/alternative';
-import { AlternativeItem } from './extensions/alternatives/alternative-item';
-import { SpellCheckerExtension } from './extensions/spell-checker';
-import { Paragraph } from '@tiptap/extension-paragraph';
-
 import { KatexMenuService } from './services/katex-menu.service';
 import { SpellCheckerConfig } from './extensions/spell-checker/spell-checker';
 
@@ -120,74 +99,7 @@ export class ExitusTiptapEditor implements OnDestroy, AfterViewInit {
   }
 
   private getExtensions() {
-    return [
-      StarterKit.configure({
-        link: false,
-        trailingNode: false,
-        heading: false,
-        codeBlock: false,
-        code: false,
-        listKeymap: false,
-        paragraph: false,
-      }),
-      Paragraph.extend({
-        parseHTML() {
-          return [
-            {
-              tag: 'p',
-              getAttrs: (node) => {
-                if (node instanceof HTMLElement && node.querySelector('img')) {
-                  return false;
-                }
-                return {};
-              },
-            },
-          ];
-        },
-      }),
-      Subscript,
-      Superscript,
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-      Indent,
-      Tab,
-      Katex,
-      Image.configure({
-        inline: false,
-        allowBase64: true,
-        proxyUrl: this.extensionsConfig()?.imageProxyUrl,
-      }),
-      Figcaption,
-      Figure.configure({
-        injector: this.injector,
-      }),
-      ColarQuestao.configure({
-        injector: this.injector,
-      }),
-      MathType,
-      MathTypePlugin,
-      AnswerBox.configure({
-        injector: this.injector,
-      }),
-      Association.configure({
-        injector: this.injector,
-      }),
-      AssociationColumn.configure({
-        injector: this.injector,
-      }),
-      AssociationItem.configure({
-        injector: this.injector,
-      }),
-      Alternative.configure({
-        injector: this.injector,
-      }),
-      AlternativeItem.configure({
-        injector: this.injector,
-      }),
-      ...TableExtensions,
-      SpellCheckerExtension.configure(this.extensionsConfig()?.spellChecker),
-    ];
+    return ExtensionFactory.createExtensions(this.injector, this.extensionsConfig());
   }
 
   ngOnDestroy(): void {
