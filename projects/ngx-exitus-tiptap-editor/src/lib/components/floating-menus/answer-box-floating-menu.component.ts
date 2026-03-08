@@ -167,6 +167,15 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
   }
 
   shouldShow = ({ editor }: { editor: Editor }) => {
+    const { selection } = editor.state;
+
+    // When clicking on the visual area (contenteditable=false), ProseMirror creates
+    // a NodeSelection on the answerBox node — editor.isFocused may be false here.
+    // We still want to show the menu in this case.
+    if (selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
+      return true;
+    }
+
     if (!editor.isFocused) {
       return false;
     }
