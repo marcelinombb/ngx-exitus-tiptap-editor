@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Editor } from '@tiptap/core';
-import { ExitusTiptapEditor } from 'ngx-exitus-tiptap-editor';
+import { ExitusTiptapEditor, ImageProxyBuilders } from 'ngx-exitus-tiptap-editor';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +16,9 @@ export class App implements OnInit {
   extensionsConfig = {
     spellChecker: {
       apiUrl: 'https://spell-checker-function-15207959809.us-east4.run.app/check',
+    },
+    image: {
+      proxyUrl: ImageProxyBuilders.pathEncoded('http://localhost:9000/proxy/p'),
     },
   };
 

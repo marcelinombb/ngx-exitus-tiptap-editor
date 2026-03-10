@@ -3,6 +3,110 @@ import { Plugin, PluginKey } from 'prosemirror-state';
 
 import { ImageView } from './imageView';
 
+// ─────────────────────────────────────────────────────────────
+// PROXY URL ABSTRACTION
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Função que recebe a URL original da imagem e retorna a URL
+ * final a ser requisitada ao proxy.
+ *
+ * @example
+ * // Padrão customizado:
+ * const myBuilder: ImageProxyUrlBuilder = (src) =>
+ *   `https://meu-proxy.com/fetch?source=${encodeURIComponent(src)}`;
+ */
+export type ImageProxyUrlBuilder = (src: string) => string;
+
+/**
+ * Builders prontos para os padrões mais comuns de proxy.
+ * Nenhum padrão é obrigatório — o integrador pode usar qualquer um
+ * ou implementar o próprio {@link ImageProxyUrlBuilder}.
+ */
+export const ImageProxyBuilders = {
+  /**
+   * **Query parameter** (padrão retrocompatível com a versão anterior).
+   *
+   * `GET <base>?<param>=<encoded-src>`
+   *
+   * @param base   URL base do proxy, ex.: `https://proxy.example.com/img`
+   * @param param  Nome do query param (default: `imgurl`)
+   *
+   * @example
+   * ImageProxyBuilders.queryParam('https://proxy.example.com/img')
+   * // https://proxy.example.com/img?imgurl=https%3A%2F%2F...
+   *
+   * ImageProxyBuilders.queryParam('https://proxy.example.com/img', 'url')
+   * // https://proxy.example.com/img?url=https%3A%2F%2F...
+   */
+  queryParam:
+    (base: string, param = 'imgurl'): ImageProxyUrlBuilder =>
+      (src) =>
+        `${base}?${param}=${encodeURIComponent(src)}`,
+
+  /**
+   * **Path encoded** — a URL da imagem é embutida no path.
+   *
+   * `GET <base>/<encoded-src>`
+   *
+   * @param base  URL base do proxy, ex.: `https://proxy.example.com/img`
+   *
+   * @example
+   * ImageProxyBuilders.pathEncoded('https://proxy.example.com/img')
+   * // https://proxy.example.com/img/https%3A%2F%2F...
+   */
+  pathEncoded:
+    (base: string): ImageProxyUrlBuilder =>
+      (src) =>
+        `${base}/${encodeURIComponent(src)}`,
+
+  /**
+   * **POST body** — a URL da imagem é enviada no corpo da requisição.
+   *
+   * `POST <base>` com body `{ "url": "<src>" }`.
+   *
+   * **Nota:** este builder retorna a `base` e a lógica de POST é
+   * tratada em {@link ImageView.convertUrlToBase64} quando detecta
+   * que o builder foi criado com este helper.
+   *
+   * @param base  Endpoint do proxy, ex.: `https://proxy.example.com/img`
+   *
+   * @example
+   * ImageProxyBuilders.postBody('https://proxy.example.com/img')
+   */
+  postBody:
+    (base: string): ImageProxyUrlBuilder =>
+      (_src) =>
+        `__POST__${base}`,
+} as const;
+
+/** @internal Token que identifica um builder do tipo POST */
+export const POST_BODY_TOKEN = '__POST__';
+
+// ─────────────────────────────────────────────────────────────
+// OPTIONS
+// ─────────────────────────────────────────────────────────────
+
+export interface ImageOptions {
+  inline: boolean;
+  allowBase64: boolean;
+  HTMLAttributes: Record<string, any>;
+  /**
+   * Endereço ou função que define como a URL da imagem externa é
+   * transformada em uma requisição ao proxy de conversão base64.
+   *
+   * - `string` → retrocompatível; usa `?imgurl=<encoded>` automaticamente.
+   * - `ImageProxyUrlBuilder` → total controle sobre o formato da URL.
+   *
+   * @see {@link ImageProxyBuilders} para helpers prontos.
+   */
+  proxyUrl?: string | ImageProxyUrlBuilder;
+}
+
+// ─────────────────────────────────────────────────────────────
+// BASE64 UTILS (upload local de arquivo)
+// ─────────────────────────────────────────────────────────────
+
 export function convertToBase64(
   img: HTMLImageElement,
   callback: (base64Url: string, width: number) => void,
@@ -10,14 +114,12 @@ export function convertToBase64(
   return function () {
     const maxHeight = Math.min(img.height, 700);
     const maxWidth = Math.min(img.width, 700);
-    //let newHeight, newWidth;
     const newDimension =
       img.width > img.height
         ? { width: maxWidth, height: Math.round(maxWidth / (img.width / img.height)) }
         : { width: maxHeight * (img.width / img.height), height: maxHeight };
 
     const canvas = document.createElement('canvas');
-
     canvas.width = newDimension.width;
     canvas.height = newDimension.height;
 
@@ -36,13 +138,9 @@ export function parseImagesToBase64(img: File, editor: Editor) {
     const reader = new FileReader();
 
     reader.onload = function (e) {
-      const img = document.createElement('img') as HTMLImageElement;
+      const img = document.createElement('img');
       img.onload = convertToBase64(img, (base64Url: string) => {
-        editor
-          .chain()
-          .focus()
-          .setImage({ src: base64Url as string })
-          .run();
+        editor.chain().focus().setImage({ src: base64Url }).run();
       });
 
       img.src = e.target?.result as string;
@@ -52,12 +150,9 @@ export function parseImagesToBase64(img: File, editor: Editor) {
   }
 }
 
-export interface ImageOptions {
-  inline: boolean;
-  allowBase64: boolean;
-  HTMLAttributes: Record<string, any>;
-  proxyUrl: string | undefined;
-}
+// ─────────────────────────────────────────────────────────────
+// COMMANDS
+// ─────────────────────────────────────────────────────────────
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -67,7 +162,11 @@ declare module '@tiptap/core' {
   }
 }
 
-export const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
+export const inputRegex = /(?:^|\s)(!\[(.+|:?)](\((\S+)(?:(?:\s+)["'](\S+)["'])?\)))$/;
+
+// ─────────────────────────────────────────────────────────────
+// EXTENSION
+// ─────────────────────────────────────────────────────────────
 
 export const Image = Node.create<ImageOptions>({
   name: 'image',
@@ -83,18 +182,10 @@ export const Image = Node.create<ImageOptions>({
 
   addAttributes() {
     return {
-      src: {
-        default: null,
-      },
-      alt: {
-        default: null,
-      },
-      title: {
-        default: null,
-      },
-      classes: {
-        default: '',
-      },
+      src: { default: null },
+      alt: { default: null },
+      title: { default: null },
+      classes: { default: '' },
     };
   },
 
@@ -106,9 +197,8 @@ export const Image = Node.create<ImageOptions>({
     ];
   },
 
-  renderHTML({ node, HTMLAttributes }) {
-    const { style, classes, src } = HTMLAttributes;
-
+  renderHTML({ HTMLAttributes }) {
+    const { src } = HTMLAttributes;
     return ['img', { src, style: 'display: table-cell', draggable: false }];
   },
 
@@ -116,52 +206,53 @@ export const Image = Node.create<ImageOptions>({
     return {
       setImage:
         (options) =>
-        ({ commands }) => {
-          return commands.insertContent({
-            type: this.name,
-            attrs: options,
-          });
-        },
+          ({ commands }) => {
+            return commands.insertContent({
+              type: this.name,
+              attrs: options,
+            });
+          },
     };
   },
+
   addInputRules() {
     return [
       nodeInputRule({
         find: inputRegex,
         type: this.type,
         getAttributes: (match) => {
-          const [, , alt, src, title] = match;
+          const [, , alt, , src, title] = match;
           return { src, alt, title };
         },
       }),
     ];
   },
+
   addNodeView() {
     return ({ node, editor, getPos }) => {
       return new ImageView(node, editor, getPos, this.options.proxyUrl);
     };
   },
+
   addProseMirrorPlugins() {
     const self = this;
     return [
       new Plugin({
-        key: new PluginKey('eventHandler'),
+        key: new PluginKey('imageEventHandler'),
         props: {
           handleDOMEvents: {
             drop: (_view, event) => {
               const hasFiles =
-                event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length;
+                event.dataTransfer?.files?.length;
 
               if (hasFiles) {
                 const images = Array.from(event.dataTransfer?.files ?? []).filter((file) =>
                   /image/i.test(file.type),
                 );
 
-                if (images.length === 0) {
-                  return false;
-                }
-                images.forEach((image) => parseImagesToBase64(image, self.editor));
+                if (images.length === 0) return false;
 
+                images.forEach((image) => parseImagesToBase64(image, self.editor));
                 event.preventDefault();
                 return true;
               }

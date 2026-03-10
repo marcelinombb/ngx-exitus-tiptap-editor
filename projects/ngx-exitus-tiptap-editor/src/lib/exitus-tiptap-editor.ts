@@ -24,7 +24,7 @@ import { SpellCheckerConfig } from './extensions/spell-checker/spell-checker';
 
 export interface EditorExtensionsConfig {
   spellChecker?: SpellCheckerConfig;
-  imageProxyUrl?: string;
+  proxyUrl?: string;
 }
 
 @Component({

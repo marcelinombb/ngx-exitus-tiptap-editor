@@ -118,7 +118,64 @@ The editor uses a custom `Figure` extension that wraps images in a `<figure>` ta
 - Alignment options (left, center, right).
 - Fullscreen/Wide modes.
 
-### 📝 Productivity
+#### Image Proxy
+
+When the browser cannot load images directly from external URLs (CORS, mixed-content, etc.), configure a server-side proxy via `extensionsConfig.image.proxyUrl`.
+
+**Import the helper:**
+
+```typescript
+import { ExitusTiptapEditor, ImageProxyBuilders } from 'ngx-exitus-tiptap-editor';
+```
+
+**Configure in your component:**
+
+```typescript
+extensionsConfig = {
+  image: {
+    proxyUrl: ImageProxyBuilders.queryParam('https://myserver.com/proxy'),
+  },
+};
+```
+
+```html
+<exitus-tiptap-editor [extensionsConfig]="extensionsConfig" />
+```
+
+**Three built-in URL patterns:**
+
+| Helper | Server receives | Best for |
+|---|---|---|
+| `ImageProxyBuilders.queryParam(base)` | `GET /proxy?imgurl=<encoded>` | Proxy simples |
+| `ImageProxyBuilders.queryParam(base, 'url')` | `GET /proxy?url=<encoded>` | Nome de param customizado |
+| `ImageProxyBuilders.pathEncoded(base)` | `GET /proxy/<encoded>` | REST paths |
+| `ImageProxyBuilders.postBody(base)` | `POST /proxy` `{ "url": "..." }` | APIs JSON |
+
+**Custom function (avançado):**
+
+```typescript
+extensionsConfig = {
+  image: {
+    proxyUrl: (src: string) => `https://myserver.com/img/${btoa(src)}`,
+  },
+};
+```
+
+**Retrocompatibilidade:** uma `string` simples continua funcionando (usa `queryParam` internamente):
+
+```typescript
+// legado — ainda suportado
+extensionsConfig = {
+  image: {
+    proxyUrl: 'https://myserver.com/proxy',  // → GET /proxy?imgurl=<encoded>
+  },
+};
+```
+
+> [!TIP]
+> Um servidor de teste mínimo está disponível em `tools/proxy_server.py`.
+> Basta `python3 tools/proxy_server.py` (porta 8765) para testar localmente.
+
 
 - **Indent/Outdent**: Standard shortcut and toolbar support.
 - **Tab Handling**: Consistent tab behavior within the editor.
