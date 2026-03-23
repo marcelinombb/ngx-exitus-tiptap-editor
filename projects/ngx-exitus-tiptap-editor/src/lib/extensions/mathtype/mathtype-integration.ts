@@ -88,7 +88,7 @@ export class ExitusEditorIntegration extends IntegrationModel {
       if (this.editorParameters && this.editorParameters.language) {
         return this.editorParameters.language;
       }
-    } catch (e) {}
+    } catch (e) { }
 
     return super.getLanguage();
   }
@@ -192,29 +192,42 @@ export class ExitusEditorIntegration extends IntegrationModel {
       // Updating existing element
       const temporalImage = core.editionProperties.temporalImage;
       if (temporalImage) {
-        // Try to find the position of the node in the document
-        let pos = -1;
-        const widgetWrapper = temporalImage.closest('.tiptap-widget');
-        if (widgetWrapper) {
-          pos = this.editor.view.posAtDOM(widgetWrapper, -1);
-        }
+        // posAtDOM(domNode, 0) returns a position *inside* the node boundary.
+        // For an atom NodeView we need to resolve that position and walk up
+        // until we find the 'mathtype' node in the ProseMirror document.
+        const { state, view } = this.editor;
+        const domRef = (temporalImage.closest('.tiptap-widget') as HTMLElement) ?? temporalImage;
+        const rawPos = view.posAtDOM(domRef, 0);
+        const $pos = state.doc.resolve(rawPos);
 
-        // If we didn't find the wrapper, try the image itself
-        if (pos === -1) {
-          pos = this.editor.view.posAtDOM(temporalImage, 0);
-        }
-
-        if (pos > -1) {
-          const node = this.editor.state.doc.nodeAt(pos);
-          if (node && node.type.name === 'mathtype') {
-            const from = pos;
-            const to = pos + node.nodeSize;
-
-            const formulaImg = this.createViewImage(mathml);
-
-            // Replace the existing node
-            this.editor.chain().focus().insertContentAt({ from, to }, formulaImg).run();
+        // Walk up the resolved position's ancestry to find the mathtype node
+        let mathtypePos = -1;
+        for (let depth = $pos.depth; depth >= 0; depth--) {
+          if ($pos.node(depth).type.name === 'mathtype') {
+            mathtypePos = $pos.before(depth);
+            break;
           }
+        }
+
+        // Fallback: try nodeAt on the raw position and one step back
+        if (mathtypePos === -1) {
+          for (const tryPos of [rawPos, rawPos - 1]) {
+            if (tryPos >= 0) {
+              const n = state.doc.nodeAt(tryPos);
+              if (n && n.type.name === 'mathtype') {
+                mathtypePos = tryPos;
+                break;
+              }
+            }
+          }
+        }
+
+        if (mathtypePos > -1) {
+          const node = state.doc.nodeAt(mathtypePos)!;
+          const from = mathtypePos;
+          const to = mathtypePos + node.nodeSize;
+          const formulaImg = this.createViewImage(mathml);
+          this.editor.chain().focus().insertContentAt({ from, to }, formulaImg).run();
         }
       } else if (mathml) {
         // Fallback if temporalImage is lost but we have mathml?
