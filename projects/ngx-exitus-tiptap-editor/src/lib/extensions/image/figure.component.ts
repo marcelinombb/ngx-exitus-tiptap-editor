@@ -218,7 +218,7 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
       const currentX = moveEvent.clientX;
       const diffX = currentX - startX;
       const multiplier = direction === 'tl' || direction === 'bl' ? -1 : 1;
-      const newWidth = Math.max(300, Math.min(700, startWidth + diffX * multiplier));
+      const newWidth = Math.max(50, Math.min(700, startWidth + diffX * multiplier));
 
       // Use signal for temporary resize state
       this.resizeWidth.set(newWidth);
@@ -231,7 +231,7 @@ export class FigureComponent extends AngularNodeViewComponent implements OnDestr
       const finalX = upEvent.clientX;
       const diffX = finalX - startX;
       const multiplier = direction === 'tl' || direction === 'bl' ? -1 : 1;
-      const newWidth = Math.max(300, Math.min(700, startWidth + diffX * multiplier));
+      const newWidth = Math.max(50, Math.min(700, startWidth + diffX * multiplier));
 
       // Commit change to Tiptap node
       this.updateAttributes()({ width: newWidth });
