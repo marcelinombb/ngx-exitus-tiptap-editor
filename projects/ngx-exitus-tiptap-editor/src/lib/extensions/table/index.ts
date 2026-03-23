@@ -10,7 +10,7 @@ import { EditorView, NodeView } from '@tiptap/pm/view';
 
 export function fixTableEmptyParagraphs(html: string): string {
   const root = document.createElement('div');
-  
+
   root.innerHTML = html;
 
   root.querySelectorAll('td p').forEach((p) => {
@@ -38,7 +38,7 @@ export function fixTableEmptyParagraphs(html: string): string {
       p.appendChild(document.createElement('br'));
     }
   });
-  
+
   return root.innerHTML;
 }
 
@@ -84,13 +84,13 @@ export interface TableOptions {
    * @default TableView
    */
   View:
-    | (new (
-        node: ProsemirrorNode,
-        cellMinWidth: number,
-        view: EditorView,
-        getPos: () => number | undefined,
-      ) => NodeView)
-    | null;
+  | (new (
+    node: ProsemirrorNode,
+    cellMinWidth: number,
+    view: EditorView,
+    getPos: () => number | undefined,
+  ) => NodeView)
+  | null;
 
   /**
    * Enables the resizing of the last column.
@@ -166,17 +166,17 @@ export const TableExtensions = [
       return [
         ...(isResizable
           ? [
-              columnResizing(
-                {
-                  handleWidth: this.options.handleWidth,
-                  cellMinWidth: this.options.cellMinWidth,
-                  defaultCellMinWidth: this.options.cellMinWidth,
-                  View: this.options.View,
-                  lastColumnResizable: this.options.lastColumnResizable,
-                },
-                this.editor,
-              ),
-            ]
+            columnResizing(
+              {
+                handleWidth: this.options.handleWidth,
+                cellMinWidth: this.options.cellMinWidth,
+                defaultCellMinWidth: this.options.cellMinWidth,
+                View: this.options.View,
+                lastColumnResizable: this.options.lastColumnResizable,
+              },
+              this.editor,
+            ),
+          ]
           : []),
         tableEditing({
           allowTableNodeSelection: this.options.allowTableNodeSelection,
@@ -185,7 +185,7 @@ export const TableExtensions = [
     },
   }).configure({
     resizable: true,
-    cellMinWidth: 32,
+    cellMinWidth: 25,
     renderWrapper: true,
   }),
   TableRow,
