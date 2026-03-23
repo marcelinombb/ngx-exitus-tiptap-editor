@@ -123,7 +123,7 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
           [active]="isActive('blockquote')"
           (onClick)="toggleBlockquote()"
         ></editor-button>
-        <editor-button
+        <!-- <editor-button
           [icon]="'layout-column-2'"
           [title]="'Associação'"
           [active]="isActive('association')"
@@ -134,7 +134,7 @@ import { AnswerBoxConfigComponent } from './answer-box-config.component';
           [title]="'Alternativas'"
           [active]="isActive('alternative')"
           (onClick)="insertAlternative()"
-        ></editor-button>
+        ></editor-button> -->
         <editor-button
           [icon]="'undo'"
           [title]="'Desfazer'"

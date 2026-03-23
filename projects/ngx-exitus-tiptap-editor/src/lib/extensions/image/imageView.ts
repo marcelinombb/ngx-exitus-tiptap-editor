@@ -35,8 +35,6 @@ export class ImageView implements NodeView {
     this.editor = editor;
     this.getPos = getPos;
 
-    console.log(proxyUrl);
-
     // Retrocompatibilidade: string usa o padrão antigo ?imgurl= automaticamente
     if (typeof proxyUrl === 'string') {
       this.proxyUrlBuilder = ImageProxyBuilders.queryParam(proxyUrl);

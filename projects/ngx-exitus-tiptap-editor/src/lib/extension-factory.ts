@@ -47,6 +47,11 @@ export class ExtensionFactory {
                         },
                     ];
                 },
+                onCreate({ editor }) {
+                    const originalGetHTML = editor.getHTML.bind(editor);
+
+                    editor.getHTML = () => originalGetHTML().replaceAll('<p style="margin-left: 0px !important;"></p>', '<p style="margin-left: 0px !important;"><br></p>');
+                },
             }),
             Subscript,
             Superscript,

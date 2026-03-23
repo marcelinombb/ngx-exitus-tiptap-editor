@@ -18,7 +18,7 @@ export class App implements OnInit {
       apiUrl: 'https://spell-checker-function-15207959809.us-east4.run.app/check',
     },
     image: {
-      proxyUrl: ImageProxyBuilders.pathEncoded('http://localhost:9000/proxy/p'),
+      proxyUrl: ImageProxyBuilders.queryParam('http://localhost:8080/api/v1/proxy/images', 'encodedUrl'),
     },
   };
 

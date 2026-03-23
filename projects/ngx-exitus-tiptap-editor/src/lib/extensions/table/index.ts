@@ -7,10 +7,10 @@ import { columnResizing } from './custom-column-resizing';
 import { TableView } from './TableView';
 import { Node as ProsemirrorNode } from '@tiptap/pm/model';
 import { EditorView, NodeView } from '@tiptap/pm/view';
-import { Editor } from '@tiptap/core';
 
 export function fixTableEmptyParagraphs(html: string): string {
   const root = document.createElement('div');
+  
   root.innerHTML = html;
 
   root.querySelectorAll('td p').forEach((p) => {
@@ -38,7 +38,7 @@ export function fixTableEmptyParagraphs(html: string): string {
       p.appendChild(document.createElement('br'));
     }
   });
-
+  
   return root.innerHTML;
 }
 
