@@ -137,7 +137,7 @@ function handleMouseMove(
       else if (right - event.clientX <= handleWidth)
         cell = edgeCell(view, event, 'right', handleWidth);
 
-      console.log('handleMouseMove:', { cell, left, right, clientX: event.clientX });
+
     }
 
     if (cell != pluginState.activeHandle) {
@@ -436,14 +436,22 @@ function updateColumnWidth(
     }
   }
 
-  // Always update the changed column(s)
-  // Always update the changed column(s)
+  // Update all column widths, normalizing to percentages that sum to 100%
   const allWidths: Record<number, number> = {};
   let neighborCol = -1;
   if (neighborCell !== undefined) {
     const $neighbor = view.state.doc.resolve(neighborCell);
     neighborCol = map.colCount($neighbor.pos - start) + $neighbor.nodeAfter!.attrs['colspan'] - 1;
   }
+
+  // Pre-calculate totalRaw once to detect legacy pixel colwidths
+  const firstRow = table.firstChild!;
+  let totalRaw = 0;
+  firstRow.forEach(c => {
+    const cwc = c.attrs['colwidth'];
+    if (cwc) cwc.forEach((v: number) => (totalRaw += v || 0));
+  });
+  const isLegacyPixels = totalRaw > 101;
 
   for (let i = 0; i < map.width; i++) {
     if (i === col) {
@@ -457,18 +465,11 @@ function updateColumnWidth(
       const index = cellNode.attrs['colspan'] === 1 ? 0 : i - map.colCount(cellPos);
       const cw = cellNode.attrs['colwidth'];
 
-      // If cw exists, use it. If not, it might be in pixels or missing.
-      // We should probably normalize existing values if they are pixels.
-      let currentW = cw ? cw[index] : 100 / map.width;
+      // Guard against undefined/NaN: fall back to equal share
+      let currentW = (cw && cw[index] != null) ? cw[index] : 100 / map.width;
 
-      // Check for normalization of existing data
-      const firstRow = table.firstChild!;
-      let totalRaw = 0;
-      firstRow.forEach(c => {
-        const cwc = c.attrs['colwidth'];
-        if (cwc) cwc.forEach((v: number) => totalRaw += v || 0);
-      });
-      if (totalRaw > 101) {
+      // Normalize legacy pixel values to percentages
+      if (isLegacyPixels) {
         currentW = (currentW / totalRaw) * 100;
       }
 
@@ -538,14 +539,7 @@ function displayColumnWidth(
 
   const isLastColumn = col === map.width - 1;
 
-  // Temporarily apply table width percentage if available
-  if (tableWidthPct !== undefined) {
-    const wrapper = (dom as HTMLElement).parentElement;
-    if (wrapper && wrapper.classList.contains('tableWrapper')) {
-      wrapper.style.width = `${tableWidthPct.toFixed(2)}%`;
-    }
-  }
-
+  // First, update <col> elements via updateColumns (this resets wrapper/table styles based on node attrs)
   updateColumns(
     table,
     dom.firstChild as HTMLTableColElement,
@@ -554,6 +548,19 @@ function displayColumnWidth(
     overrides,
     isLastColumn,
   );
+
+  // AFTER updateColumns: override wrapper/table styling for the live drag preview.
+  // This must come after updateColumns because updateColumns resets styles
+  // based on node.attrs['width'] which hasn't been persisted yet during drag.
+  if (tableWidthPct !== undefined) {
+    const wrapper = (dom as HTMLElement).parentElement;
+    if (wrapper && wrapper.classList.contains('tableWrapper')) {
+      wrapper.style.width = `${tableWidthPct.toFixed(2)}%`;
+      wrapper.style.display = 'table';
+    }
+    (dom as HTMLTableElement).style.width = '100%';
+    (dom as HTMLTableElement).style.tableLayout = 'fixed';
+  }
 }
 
 function zeroes(n: number): 0[] {
@@ -588,6 +595,5 @@ export function handleDecorations(state: EditorState, cell: number): DecorationS
       decorations.push(Decoration.widget(pos, dom));
     }
   }
-  console.log('handleDecorations:', { cell, count: decorations.length });
   return DecorationSet.create(state.doc, decorations);
 }

@@ -49,38 +49,25 @@ export function updateColumns(
 
     // Normalize widths: they MUST sum to 100% of the table width.
     const sum = rawWidths.reduce((acc, w) => acc! + (w || 0), 0) || 0;
-    const definedCount = rawWidths.filter(w => w !== undefined).length;
+    const allUndefined = rawWidths.every(w => w == null);
 
     let normalizedWidths: number[];
-    if (definedCount === 0) {
+    if (allUndefined) {
       normalizedWidths = rawWidths.map(() => 100 / colCount);
     } else if (sum > 0) {
-      // Scale everything to 100%
-      // If some are undefined, we treat them as equal shares of the remaining space,
-      // or if no remaining space, as small shares.
-      const assignedSum = rawWidths.reduce((acc, w) => acc! + (w || 0), 0) || 0;
-      const unassignedCount = colCount - definedCount;
-
-      if (assignedSum >= 100 && unassignedCount > 0) {
-        // We are over 100% already. Scale down.
-        normalizedWidths = rawWidths.map(w => {
-          if (w === undefined) return 0.01; // Tiny share
-          return (w / assignedSum) * 100;
-        });
-      } else if (unassignedCount > 0) {
-        // We have space left. Distribute among undefined.
-        const remaining = Math.max(0, 100 - assignedSum);
-        normalizedWidths = rawWidths.map(w => {
-          if (w === undefined) return remaining / unassignedCount;
-          return w;
-        });
-      } else {
-        // All defined. Scale to 100.
-        normalizedWidths = rawWidths.map(w => (w! / assignedSum) * 100);
-      }
+      // Assign equal shares to undefined columns, then scale everything to sum to 100%
+      const equalShare = 100 / colCount;
+      const rawWithDefaults = rawWidths.map(w => w ?? equalShare);
+      const totalWithDefaults = rawWithDefaults.reduce((a, b) => a + b, 0);
+      normalizedWidths = rawWithDefaults.map(w => (w / totalWithDefaults) * 100);
     } else {
       normalizedWidths = rawWidths.map(() => 100 / colCount);
     }
+
+    // Final NaN guard: replace any NaN values with equal shares
+    normalizedWidths = normalizedWidths.map(w =>
+      Number.isFinite(w) ? w : 100 / colCount,
+    );
 
     let col = 0;
     for (let i = 0; i < row.childCount; i += 1) {
@@ -121,10 +108,10 @@ export function updateColumns(
     const widthAttr = node.attrs['width'];
     if (widthAttr) {
       wrapper.style.width = widthAttr;
-      wrapper.style.display = 'table'; // Standard for our wrapper
+      wrapper.style.display = 'table';
     } else {
       wrapper.style.width = '';
-      //wrapper.style.display = 'inline-block'; // Allow it to shrink to table size
+      wrapper.style.display = ''; // Let CSS default (display: table) take over
     }
   }
 
