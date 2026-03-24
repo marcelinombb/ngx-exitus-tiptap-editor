@@ -266,7 +266,20 @@ export const TableExtensions = [
         },
         width: {
           default: null,
-          parseHTML: (element) => element.style.width || null,
+          parseHTML: (element) => {
+            // The table wrapper div holds the actual table width percentage,
+            // not the <table> element itself (which always has width: 100%).
+            const wrapper = element.parentElement;
+            if (wrapper?.classList.contains('tableWrapper') && wrapper.style.width) {
+              return wrapper.style.width;
+            }
+            // Fallback: use table's own width if it's not the generic 100%
+            const tableWidth = element.style.width;
+            if (tableWidth && tableWidth !== '100%') {
+              return tableWidth;
+            }
+            return null;
+          },
           renderHTML: (attributes) => {
             if (!attributes['width']) return {};
             return { style: `width: ${attributes['width']}` };
