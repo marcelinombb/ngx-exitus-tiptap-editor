@@ -3,7 +3,6 @@ import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TextAlign from '@tiptap/extension-text-align';
-import { Paragraph } from '@tiptap/extension-paragraph';
 import { Indent } from './extensions/indent/indent';
 import { Tab } from './extensions/tab/tab';
 import { Katex } from './extensions/katex';
@@ -20,6 +19,7 @@ import { AssociationItem } from './extensions/association/association-item';
 import { Alternative } from './extensions/alternatives/alternative';
 import { AlternativeItem } from './extensions/alternatives/alternative-item';
 import { SpellCheckerExtension } from './extensions/spell-checker';
+import { CustomParagraph } from './extensions/paragraph';
 
 export class ExtensionFactory {
     static createExtensions(injector: Injector, config?: Record<string, any>) {
@@ -33,26 +33,7 @@ export class ExtensionFactory {
                 listKeymap: false,
                 paragraph: false,
             }),
-            Paragraph.extend({
-                parseHTML() {
-                    return [
-                        {
-                            tag: 'p',
-                            getAttrs: (node) => {
-                                if (node instanceof HTMLElement && node.querySelector('img')) {
-                                    return false;
-                                }
-                                return {};
-                            },
-                        },
-                    ];
-                },
-                onCreate({ editor }) {
-                    const originalGetHTML = editor.getHTML.bind(editor);
-
-                    editor.getHTML = () => originalGetHTML().replaceAll('<p style="margin-left: 0px !important;"></p>', '<p style="margin-left: 0px !important;"><br></p>');
-                },
-            }),
+            CustomParagraph,
             Subscript,
             Superscript,
             TextAlign.configure({
