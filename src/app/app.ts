@@ -18,7 +18,10 @@ export class App implements OnInit {
       apiUrl: 'https://spell-checker-function-15207959809.us-east4.run.app/check',
     },
     image: {
-      proxyUrl: ImageProxyBuilders.queryParam('http://localhost:8080/api/v1/proxy/images', 'encodedUrl'),
+      proxyUrl: ImageProxyBuilders.queryParam(
+        'http://localhost:8080/api/v1/proxy/images',
+        'encodedUrl',
+      ),
     },
   };
 
@@ -28,7 +31,7 @@ export class App implements OnInit {
 
   onContentChange($event: string) {
     //console.log($event);
-    //localStorage.setItem('defaultText', $event);
+    localStorage.setItem('defaultText', $event);
     this.htmlContent.set(this.sanitizer.bypassSecurityTrustHtml($event));
   }
 
@@ -38,7 +41,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     if (localStorage.getItem('defaultText')) {
-      //this.defaultText = localStorage.getItem('defaultText')!;
+      this.defaultText = localStorage.getItem('defaultText')!;
     }
   }
 }

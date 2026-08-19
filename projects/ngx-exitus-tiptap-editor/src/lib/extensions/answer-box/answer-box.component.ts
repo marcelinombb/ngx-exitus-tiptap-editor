@@ -19,12 +19,18 @@ import { NodeSelection } from '@tiptap/pm/state';
       ></div>
 
       <!-- Visuals (Box or Lines) -->
-      <div class="ex-answer-box-visuals" contenteditable="false" (mousedown)="selectNodeOnMousedown($event)">
+      <div
+        class="ex-answer-box-visuals"
+        contenteditable="false"
+        (mousedown)="selectNodeOnMousedown($event)"
+      >
         @if (style() === 'lines' || style() === 'numbered-lines') {
           @for (line of linesArray(); track $index) {
             <div class="ex-answer-line">
               @if (style() === 'numbered-lines') {
-                <span class="ex-answer-number">{{ $index + 1 }}.</span>
+                <span class="ex-answer-number" [class.ex-answer-number-bold]="numbersBold()"
+                  >{{ $index + 1 }}.</span
+                >
               }
             </div>
           }
@@ -83,6 +89,7 @@ export class AnswerBoxComponent extends AngularNodeViewComponent {
   boxHeight = computed(() => this.lines() * 30 || 100);
   showHeader = computed(() => this.node().attrs['showHeader'] === true);
   hideBorder = computed(() => this.node().attrs['hideBorder'] === true);
+  numbersBold = computed(() => this.node().attrs['numbersBold'] !== false);
 
   linesArray = computed(() => {
     return Array(this.lines()).fill(0);

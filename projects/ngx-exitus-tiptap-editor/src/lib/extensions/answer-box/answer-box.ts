@@ -16,6 +16,7 @@ declare module '@tiptap/core' {
       setAnswerBoxStyle: (style: 'box' | 'lines' | 'numbered-lines') => ReturnType;
       toggleAnswerBoxHeader: () => ReturnType;
       toggleAnswerBoxBorder: () => ReturnType;
+      toggleAnswerBoxNumbersBold: () => ReturnType;
       setAnswerBoxLines: (lines: number) => ReturnType;
     };
   }
@@ -73,6 +74,15 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
           };
         },
       },
+      numbersBold: {
+        default: true,
+        parseHTML: (element) => element.getAttribute('data-numbers-bold') !== 'false',
+        renderHTML: (attributes) => {
+          return {
+            'data-numbers-bold': attributes['numbersBold'],
+          };
+        },
+      },
     };
   },
 
@@ -87,7 +97,7 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
 
   renderHTML({ HTMLAttributes, node }) {
     // Fallback or serialization render
-    const { style, lines, hideBorder, showHeader } = node.attrs;
+    const { style, lines, hideBorder, showHeader, numbersBold } = node.attrs;
     const classes = ['ex-answer-box'];
     if (hideBorder) {
       classes.push('ex-answer-box-no-border');
@@ -100,7 +110,11 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
       for (let i = 1; i <= count; i++) {
         const lineChildren: any[] = [];
         if (style === 'numbered-lines') {
-          lineChildren.push(['span', { class: 'ex-answer-number' }, `${i}.`]);
+          const numberClasses = ['ex-answer-number'];
+          if (numbersBold) {
+            numberClasses.push('ex-answer-number-bold');
+          }
+          lineChildren.push(['span', { class: numberClasses.join(' ') }, `${i}.`]);
         }
         visuals.push(['div', { class: 'ex-answer-line' }, ...lineChildren]);
       }
@@ -191,6 +205,32 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
           if (dispatch) {
             const hideBorder = !node.attrs['hideBorder'];
             dispatch(state.tr.setNodeAttribute(pos, 'hideBorder', hideBorder));
+          }
+          return true;
+        },
+      toggleAnswerBoxNumbersBold:
+        () =>
+        ({ commands, state, dispatch }) => {
+          const { selection } = state;
+          let pos: number | null = null;
+          let node: any = null;
+
+          if (selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
+            node = selection.node;
+            pos = selection.from;
+          } else {
+            const found = findParentNode((n) => n.type.name === 'answerBox')(selection);
+            if (found) {
+              node = found.node;
+              pos = found.pos;
+            }
+          }
+
+          if (pos === null || !node) return false;
+
+          if (dispatch) {
+            const numbersBold = !node.attrs['numbersBold'];
+            dispatch(state.tr.setNodeAttribute(pos, 'numbersBold', numbersBold));
           }
           return true;
         },
