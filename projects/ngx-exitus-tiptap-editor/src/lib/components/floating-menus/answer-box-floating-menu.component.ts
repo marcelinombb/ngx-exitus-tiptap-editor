@@ -51,6 +51,17 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
           [title]="!boxBorder() ? 'Adicionar Borda' : 'Remover Borda'"
           (onClick)="toggleBorder()"
         ></editor-button>
+
+        @if (boxStyle() === 'numbered-lines') {
+          <editor-button
+            [icon]="'bold'"
+            [active]="boxNumbersBold()"
+            [title]="
+              boxNumbersBold() ? 'Remover Negrito dos Números' : 'Aplicar Negrito aos Números'
+            "
+            (onClick)="toggleNumbersBold()"
+          ></editor-button>
+        }
       </div>
     </div>
   `,
@@ -139,6 +150,7 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
   boxLines = signal<number>(5);
   boxHeader = signal<boolean>(false);
   boxBorder = signal<boolean>(true);
+  boxNumbersBold = signal<boolean>(true);
 
   private floatingMenuService = inject(FloatingMenuService);
 
@@ -163,6 +175,7 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
       this.boxLines.set(attrs['lines'] || 5);
       this.boxHeader.set(!!attrs['showHeader']);
       this.boxBorder.set(!attrs['hideBorder']);
+      this.boxNumbersBold.set(attrs['numbersBold'] !== false);
     }
   }
 
@@ -216,6 +229,10 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
 
   toggleBorder() {
     this.editor().chain().focus().toggleAnswerBoxBorder().run();
+  }
+
+  toggleNumbersBold() {
+    this.editor().chain().focus().toggleAnswerBoxNumbersBold().run();
   }
 
   onStyleChange(event: Event) {
