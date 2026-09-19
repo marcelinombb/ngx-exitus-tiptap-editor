@@ -67,6 +67,11 @@ describe('ExtensionFactory', () => {
     expect(extensions[0].name).toBe('spellChecker');
   });
 
+  it('createSpellCheckerExtensions deve retornar vazio quando apiUrl não é fornecida', () => {
+    expect(createSpellCheckerExtensions().length).toBe(0);
+    expect(createSpellCheckerExtensions({}).length).toBe(0);
+  });
+
   it('ExtensionFactory.createExtensions deve agregar todos os bundles sem exceções', () => {
     const extensions = ExtensionFactory.createExtensions(mockInjector, {
       image: { proxyUrl: 'https://proxy.test' },

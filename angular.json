@@ -27,7 +27,7 @@
               },
               {
                 "glob": "**/*.wasm",
-                "input": "dist/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
                 "output": "assets/mathtype/"
               }
             ],
@@ -91,7 +91,7 @@
               },
               {
                 "glob": "**/*.wasm",
-                "input": "dist/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
                 "output": "assets/mathtype/"
               }
             ],
@@ -130,7 +130,14 @@
             "tsConfig": "projects/ngx-exitus-tiptap-editor/tsconfig.spec.json",
             "loader": {
               ".svg": "file"
-            }
+            },
+            "assets": [
+              {
+                "glob": "**/*.wasm",
+                "input": "node_modules/@wiris/mathtype-html-integration-devkit/telemeter-wasm",
+                "output": "assets/mathtype/"
+              }
+            ]
           }
         },
         "lint": {

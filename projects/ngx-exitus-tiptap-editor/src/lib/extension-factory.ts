@@ -122,7 +122,10 @@ export function createTableExtensions(): AnyExtension[] {
 export function createSpellCheckerExtensions(
   spellCheckerConfig?: Record<string, any>,
 ): AnyExtension[] {
-  return [SpellCheckerExtension.configure(spellCheckerConfig ?? {})];
+  if (!spellCheckerConfig?.['apiUrl']) {
+    return [];
+  }
+  return [SpellCheckerExtension.configure(spellCheckerConfig)];
 }
 
 /**
