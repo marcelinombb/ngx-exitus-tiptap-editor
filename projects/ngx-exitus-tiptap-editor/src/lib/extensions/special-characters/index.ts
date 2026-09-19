@@ -1,1 +1,1 @@
-export { SpecialCharactersPlugin } from './SpecialCharactersPlugin';
+export * from './unicodeSource';

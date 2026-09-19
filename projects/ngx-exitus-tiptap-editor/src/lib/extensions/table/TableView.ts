@@ -1,9 +1,8 @@
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import type { NodeView, ViewMutationRecord, EditorView } from '@tiptap/pm/view';
 import { columnResizingPluginKey } from './custom-column-resizing';
-import { Editor, findParentNode } from '@tiptap/core';
+import { Editor } from '@tiptap/core';
 import { TableMap } from '@tiptap/pm/tables';
-import { findNodePosition } from '../../utils';
 
 export function getColStyleDeclaration(
   minWidth: number,

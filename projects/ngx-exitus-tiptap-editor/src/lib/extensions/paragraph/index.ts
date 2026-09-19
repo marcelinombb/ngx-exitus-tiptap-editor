@@ -1,6 +1,6 @@
 import { Paragraph } from '@tiptap/extension-paragraph';
 
-const normalizeEmptyIndentedParagraphs = (html: string): string =>
+export const normalizeEmptyIndentedParagraphs = (html: string): string =>
   html.replace(/<p([^>]*)>([\s\S]*?)<\/p>/g, (match, attrs: string, content: string) => {
     const hasMarginLeft = /style=(['"])[^'"]*margin-left:\s*0px\s*!important[^'"]*\1/i.test(attrs);
     const hasLineBreak = /<br\s*\/?>/i.test(content);
