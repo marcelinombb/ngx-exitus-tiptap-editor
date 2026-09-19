@@ -81,7 +81,7 @@ Metrics:
       - Figure.ts command handlers
 
   test_coverage:
-    unit: "43 tests passing (Demo + Lib Core)"
+    unit: '67 tests passing (Demo: 2, Lib: 65)'
     target: 80% (Core Extensions) / 60% (UI)
 
   infrastructure_health:
@@ -111,8 +111,14 @@ complex_files_tracker = {
    - Formatação Prettier 100% aplicada e verificável via `npm run format:check`.
 2. **Setup basic Testing Scaffold & Core Specs** ✅
    - Corrigido loader de SVG do Wiris MathType no runner de testes (`angular.json`).
-   - Suíte de testes headless (`npm run test:ci`) executando com 100% de sucesso (43/43 testes passando).
-   - Adicionados testes de regressão para a extensão `Figure` ([figure.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/image/figure.spec.ts)).
+   - Suíte de testes headless (`npm run test:ci`) executando com 100% de sucesso (67/67 testes passando).
+   - Cobertura de testes unitários para as extensões essenciais:
+     - `Figure` ([figure.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/image/figure.spec.ts))
+     - `AnswerBox` ([answer-box.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/answer-box/answer-box.spec.ts))
+     - `ColarQuestao` ([colar-questao.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/colar-questao/colar-questao.spec.ts))
+     - `TableExtensions` ([table.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/table/table.spec.ts))
+     - `Alternative` ([alternative.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/alternatives/alternative.spec.ts))
+     - `Association` ([association.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/association/association.spec.ts))
 
 ### Medium-Term Improvements (Month 1-3)
 
@@ -120,10 +126,6 @@ complex_files_tracker = {
    - Extract the node lookup logic (`selection instanceof NodeSelection...`) from `Figure.ts` into a `utils/node-helpers.ts` shared library.
    - Combine shared SCSS from Image and Table into core editor design tokens.
    - _Effort: 15 hours. ROI: Reduced surface area for bugs._
-2. **Increase Test Coverage Strategy**
-   - Focus unit tests on custom Tiptap extensions (rendering nodes and parsing HTML).
-   - Write tests for custom Commands (e.g., `setImageAlignment`, `cropImage`).
-   - _Effort: 40 hours. ROI: Catch 80% of AST and parsing regressions._
 
 ### Long-Term Initiatives (Quarter 2-4)
 
