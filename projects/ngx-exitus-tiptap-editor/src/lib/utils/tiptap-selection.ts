@@ -1,28 +1,38 @@
 import { findParentNode } from '@tiptap/core';
 import { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { EditorState, NodeSelection } from 'prosemirror-state';
+import { EditorState, NodeSelection, Selection } from '@tiptap/pm/state';
+
+export interface FoundNode {
+  node: ProseMirrorNode;
+  pos: number;
+}
 
 /**
- * Finds the figure node from the current selection.
- * It checks if the selection is a NodeSelection of a figure,
- * or if it's inside a figure node.
+ * Finds a node from the current selection or state.
+ * Checks if the selection is a direct NodeSelection of the node,
+ * or if the selection is inside a parent node of matching name.
  */
-export function findFigureNode(
-  state: EditorState,
-): { node: ProseMirrorNode; pos: number } | undefined {
-  const { selection } = state;
+export function findNodeFromSelection(
+  selectionOrState: Selection | EditorState,
+  nodeName: string,
+): FoundNode | undefined {
+  const selection = 'selection' in selectionOrState ? selectionOrState.selection : selectionOrState;
 
-  // Check if it's a direct node selection
-  if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
+  if (selection instanceof NodeSelection && selection.node.type.name === nodeName) {
     return { node: selection.node, pos: selection.from };
   }
 
-  // Check if we are inside a figure
-  const result = findParentNode((node) => node.type.name === 'figure')(selection);
-
+  const result = findParentNode((node) => node.type.name === nodeName)(selection);
   if (result) {
     return { node: result.node, pos: result.pos };
   }
 
   return undefined;
+}
+
+/**
+ * Backward-compatible helper to find a figure node from EditorState.
+ */
+export function findFigureNode(selectionOrState: Selection | EditorState): FoundNode | undefined {
+  return findNodeFromSelection(selectionOrState, 'figure');
 }

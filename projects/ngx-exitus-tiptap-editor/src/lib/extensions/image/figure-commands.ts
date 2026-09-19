@@ -1,5 +1,5 @@
-import { RawCommands, findParentNode } from '@tiptap/core';
-import { TextSelection, NodeSelection } from 'prosemirror-state';
+import { RawCommands } from '@tiptap/core';
+import { TextSelection } from 'prosemirror-state';
 import { ALIGN, hasFigureAlignment } from './figure-utils';
 import { findFigureNode } from '../../utils/tiptap-selection';
 
@@ -100,20 +100,11 @@ export const createFigureCommands = (): Partial<RawCommands> => {
       };
     },
     cropImage: () => {
-      return ({ editor, view }) => {
-        const { selection } = view.state;
-        let targetPos: number | undefined;
+      return ({ view }) => {
+        const figureNode = findFigureNode(view.state);
+        if (!figureNode) return false;
 
-        if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-          targetPos = selection.from;
-        } else {
-          const figureResult = findParentNode((node) => node.type.name === 'figure')(selection);
-          targetPos = figureResult?.pos;
-        }
-
-        if (targetPos === undefined) return false;
-
-        const dom = view.nodeDOM(targetPos) as any;
+        const dom = view.nodeDOM(figureNode.pos) as any;
         if (dom && typeof dom.toggleCropping === 'function') {
           dom.toggleCropping();
           return true;

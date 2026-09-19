@@ -4,9 +4,7 @@ import { EditorButtonComponent } from '../editor-button.component';
 import { EditorDropdownComponent } from '../editor-dropdown.component';
 import { Editor } from '@tiptap/core';
 import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
-import { findParentNode } from '@tiptap/core';
-import { NodeSelection } from '@tiptap/pm/state';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { findFigureNode } from '../../utils/tiptap-selection';
 
 @Component({
   standalone: true,
@@ -155,13 +153,7 @@ export class ImageFloatingMenuComponent implements OnInit {
       return;
     }
 
-    let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-    if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-      figureNode = { node: selection.node, pos: selection.from };
-    } else {
-      figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-    }
+    const figureNode = findFigureNode(selection);
 
     if (!figureNode) {
       this.activeClasses.set(new Set());
@@ -189,13 +181,7 @@ export class ImageFloatingMenuComponent implements OnInit {
     const { state, view } = this.editor();
     const { selection } = state;
 
-    let figureNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-    if (selection instanceof NodeSelection && selection.node.type.name === 'figure') {
-      figureNode = { node: selection.node, pos: selection.from };
-    } else {
-      figureNode = findParentNode((node) => node.type.name === 'figure')(selection);
-    }
+    const figureNode = findFigureNode(selection);
 
     if (figureNode) {
       const dom = view.nodeDOM(figureNode.pos) as HTMLElement | null;

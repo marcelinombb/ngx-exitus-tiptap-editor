@@ -4,8 +4,7 @@ import { Editor } from '@tiptap/core';
 import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
 import { EditorButtonComponent } from '../editor-button.component';
 import { NodeSelection } from '@tiptap/pm/state';
-import { findParentNode } from '@tiptap/core';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { findNodeFromSelection } from '../../utils/tiptap-selection';
 
 @Component({
   selector: 'answer-box-floating-menu',
@@ -190,13 +189,7 @@ export class AnswerBoxFloatingMenuComponent implements OnInit, OnDestroy {
     const { state, view } = this.editor();
     const { selection } = state;
 
-    let answerBoxNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-    if (selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
-      answerBoxNode = { node: selection.node, pos: selection.from };
-    } else {
-      answerBoxNode = findParentNode((node) => node.type.name === 'answerBox')(selection);
-    }
+    const answerBoxNode = findNodeFromSelection(selection, 'answerBox');
 
     if (answerBoxNode) {
       const dom = view.nodeDOM(answerBoxNode.pos) as HTMLElement | null;

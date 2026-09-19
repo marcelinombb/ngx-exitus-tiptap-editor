@@ -1,9 +1,8 @@
 import { Component, input, OnDestroy, OnInit, signal, inject } from '@angular/core';
 import { EditorButtonComponent } from '../editor-button.component';
-import { Editor, findParentNode } from '@tiptap/core';
+import { Editor } from '@tiptap/core';
 import { TiptapBubbleMenuDirective } from '../../directives/tiptap-bubble-menu.directive';
-import { NodeSelection } from '@tiptap/pm/state';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { findNodeFromSelection } from '../../utils/tiptap-selection';
 import { EditorDropdownComponent } from '../editor-dropdown.component';
 import { FloatingMenuService } from '../../services/floating-menu.service';
 
@@ -232,22 +231,9 @@ export class TableFloatingMenuComponent implements OnInit, OnDestroy {
     const { state, dispatch } = this.editor().view;
     const { selection } = state;
 
-    let tablePos: number | null = null;
-    let tableNode: ProseMirrorNode | null = null;
-
-    if (selection instanceof NodeSelection && selection.node.type.name === 'table') {
-      tablePos = selection.from;
-      tableNode = selection.node;
-    } else {
-      const predicate = (node: ProseMirrorNode) => node.type.name === 'table';
-      const parent = findParentNode(predicate)(selection);
-      if (parent) {
-        tablePos = parent.pos;
-        tableNode = parent.node;
-      }
-    }
-
-    if (tablePos !== null && tableNode !== null && dispatch) {
+    const tableResult = findNodeFromSelection(selection, 'table');
+    if (tableResult && dispatch) {
+      const { node: tableNode, pos: tablePos } = tableResult;
       const currentState = tableNode.attrs[attribute];
       dispatch(
         state.tr.setNodeMarkup(tablePos, undefined, {
@@ -278,13 +264,7 @@ export class TableFloatingMenuComponent implements OnInit, OnDestroy {
     const { state, view } = this.editor();
     const { selection } = state;
 
-    let tableNode: { node: ProseMirrorNode; pos: number } | undefined;
-
-    if (selection instanceof NodeSelection && selection.node.type.name === 'table') {
-      tableNode = { node: selection.node, pos: selection.from };
-    } else {
-      tableNode = findParentNode((node) => node.type.name === 'table')(selection);
-    }
+    const tableNode = findNodeFromSelection(selection, 'table');
 
     if (tableNode) {
       const dom = view.nodeDOM(tableNode.pos) as HTMLElement | null;

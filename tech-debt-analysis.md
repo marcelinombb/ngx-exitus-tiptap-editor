@@ -122,10 +122,12 @@ complex_files_tracker = {
 
 ### Medium-Term Improvements (Month 1-3)
 
-1. **Refactor duplicated Logic in Extensions**
-   - Extract the node lookup logic (`selection instanceof NodeSelection...`) from `Figure.ts` into a `utils/node-helpers.ts` shared library.
-   - Combine shared SCSS from Image and Table into core editor design tokens.
-   - _Effort: 15 hours. ROI: Reduced surface area for bugs._
+1. **Refactor duplicated Logic in Extensions** ✅
+   - Extracted node lookup logic into `utils/tiptap-selection.ts` (`findNodeFromSelection`, `findFigureNode`).
+   - Covered `tiptap-selection.ts` with unit tests (`tiptap-selection.spec.ts`).
+   - Replaced duplicate selection lookup in `figure-commands.ts`, `answer-box.ts`, `image-floating-menu.component.ts`, `answer-box-floating-menu.component.ts`, and `table-floating-menu.component.ts`.
+   - Extracted duplicate button styles into shared partial `styles/_insert-paragraph-btn.scss` for `image`, `table`, and `answer-box`.
+   - Suíte de testes atualizada: 70/70 testes passando com 0 erros de linting.
 
 ### Long-Term Initiatives (Quarter 2-4)
 

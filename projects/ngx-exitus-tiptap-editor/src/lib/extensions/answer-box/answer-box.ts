@@ -1,8 +1,8 @@
-import { Node, mergeAttributes, findParentNode } from '@tiptap/core';
-import { NodeSelection } from '@tiptap/pm/state';
+import { Node, mergeAttributes } from '@tiptap/core';
 import { AngularNodeViewRenderer } from 'ngx-tiptap';
 import { AnswerBoxComponent } from './answer-box.component';
 import { Injector } from '@angular/core';
+import { findNodeFromSelection } from '../../utils/tiptap-selection';
 
 export interface AnswerBoxOptions {
   HTMLAttributes: Record<string, any>;
@@ -155,42 +155,21 @@ export const AnswerBox = Node.create<AnswerBoxOptions>({
       toggleAnswerBoxHeader:
         () =>
         ({ commands, state }) => {
-          const { selection } = state;
-          const found =
-            findParentNode((n) => n.type.name === 'answerBox')(selection) ||
-            (selection instanceof NodeSelection && selection.node.type.name === 'answerBox'
-              ? { node: selection.node, pos: selection.from }
-              : null);
-
+          const found = findNodeFromSelection(state.selection, this.name);
           if (!found) return false;
 
           const showHeader = !found.node.attrs['showHeader'];
-
           return commands.updateAttributes(this.name, { showHeader });
         },
       toggleAnswerBoxBorder:
         () =>
-        ({ commands, state, dispatch }) => {
-          const { selection } = state;
-          let pos: number | null = null;
-          let node: any = null;
-
-          if (selection instanceof NodeSelection && selection.node.type.name === 'answerBox') {
-            node = selection.node;
-            pos = selection.from;
-          } else {
-            const found = findParentNode((n) => n.type.name === 'answerBox')(selection);
-            if (found) {
-              node = found.node;
-              pos = found.pos;
-            }
-          }
-
-          if (pos === null || !node) return false;
+        ({ state, dispatch }) => {
+          const found = findNodeFromSelection(state.selection, this.name);
+          if (!found) return false;
 
           if (dispatch) {
-            const hideBorder = !node.attrs['hideBorder'];
-            dispatch(state.tr.setNodeAttribute(pos, 'hideBorder', hideBorder));
+            const hideBorder = !found.node.attrs['hideBorder'];
+            dispatch(state.tr.setNodeAttribute(found.pos, 'hideBorder', hideBorder));
           }
           return true;
         },
