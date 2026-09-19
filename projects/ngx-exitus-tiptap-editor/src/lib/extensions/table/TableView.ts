@@ -2,6 +2,7 @@ import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import type { NodeView, ViewMutationRecord, EditorView } from '@tiptap/pm/view';
 import { columnResizingPluginKey } from './custom-column-resizing';
 import { Editor, findParentNode } from '@tiptap/core';
+import { TableMap } from '@tiptap/pm/tables';
 import { findNodePosition } from '../../utils';
 
 export function getColStyleDeclaration(
@@ -9,11 +10,12 @@ export function getColStyleDeclaration(
   width: number | undefined,
 ): [string, string] {
   if (width) {
-    // apply the stored width unless it is below the configured minimum cell width
-    return ['width', `${Math.max(width, minWidth)}px`];
+    // apply the stored width (percentage)
+    return ['width', `${width}%`];
   }
 
-  // set the minimum with on the column if it has no stored width
+  // Fallback to min-width in pixels if no stored width is available
+  // though for percentage tables, we might want a percentage fallback too.
   return ['min-width', `${minWidth}px`];
 }
 
@@ -21,47 +23,73 @@ export function updateColumns(
   node: ProseMirrorNode,
   colgroup: HTMLTableColElement, // <colgroup> has the same prototype as <col>
   table: HTMLTableElement,
-  cellMinWidth: number,
+  _cellMinWidth: number, // Marked as unused as it's not directly used in this function's logic
   overrides?: Record<number, number>,
-  isLastColumn?: boolean,
+  _isLastColumn?: boolean, // Marked as unused as it's not directly used in this function's logic
 ) {
-  let totalWidth = 0;
-  let fixedWidth = true;
   let nextDOM = colgroup.firstChild;
   const row = node.firstChild;
 
   if (row !== null) {
+    const tableMap = TableMap.get(node);
+    const colCount = tableMap.width;
+
+    // Collect all widths to normalize if necessary
+    const rawWidths: (number | undefined)[] = [];
     for (let i = 0, col = 0; i < row.childCount; i += 1) {
       const { colspan, colwidth } = row.child(i).attrs;
-
       for (let j = 0; j < colspan; j += 1, col += 1) {
-        const hasWidth =
+        rawWidths.push(
           overrides && overrides[col] !== undefined
             ? overrides[col]
-            : ((colwidth && colwidth[j]) as number | undefined);
-        const cssWidth = hasWidth ? `${hasWidth}px` : '';
+            : ((colwidth && colwidth[j]) as number | undefined),
+        );
+      }
+    }
 
-        totalWidth += hasWidth || cellMinWidth;
+    // Normalize widths: they MUST sum to 100% of the table width.
+    const sum = rawWidths.reduce((acc, w) => acc! + (w || 0), 0) || 0;
+    const allUndefined = rawWidths.every(w => w == null);
 
-        if (!hasWidth) {
-          fixedWidth = false;
-        }
+    let normalizedWidths: number[];
+    if (allUndefined) {
+      normalizedWidths = rawWidths.map(() => 100 / colCount);
+    } else if (sum > 0) {
+      // Assign equal shares to undefined columns, then scale everything to sum to 100%
+      const equalShare = 100 / colCount;
+      const rawWithDefaults = rawWidths.map(w => w ?? equalShare);
+      const totalWithDefaults = rawWithDefaults.reduce((a, b) => a + b, 0);
+      normalizedWidths = rawWithDefaults.map(w => (w / totalWithDefaults) * 100);
+    } else {
+      normalizedWidths = rawWidths.map(() => 100 / colCount);
+    }
+
+    // Final NaN guard: replace any NaN values with equal shares
+    normalizedWidths = normalizedWidths.map(w =>
+      Number.isFinite(w) ? w : 100 / colCount,
+    );
+
+    let col = 0;
+    for (let i = 0; i < row.childCount; i += 1) {
+      const { colspan } = row.child(i).attrs;
+
+      for (let j = 0; j < colspan; j += 1, col += 1) {
+        const hasWidth = normalizedWidths[col];
+        const cssWidth = hasWidth ? `${hasWidth}%` : '';
 
         if (!nextDOM) {
           const colElement = document.createElement('col');
-
-          const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth);
-
-          colElement.style.setProperty(propertyKey, propertyValue);
-
+          colElement.style.width = cssWidth;
+          colElement.style.minWidth = `${_cellMinWidth}px`;
           colgroup.appendChild(colElement);
         } else {
-          if ((nextDOM as HTMLTableColElement).style.width !== cssWidth) {
-            const [propertyKey, propertyValue] = getColStyleDeclaration(cellMinWidth, hasWidth);
-
-            (nextDOM as HTMLTableColElement).style.setProperty(propertyKey, propertyValue);
+          const colElement = nextDOM as HTMLTableColElement;
+          if (colElement.style.width !== cssWidth) {
+            colElement.style.width = cssWidth;
           }
-
+          if (colElement.style.minWidth !== `${_cellMinWidth}px`) {
+            colElement.style.minWidth = `${_cellMinWidth}px`;
+          }
           nextDOM = nextDOM.nextSibling;
         }
       }
@@ -70,37 +98,28 @@ export function updateColumns(
 
   while (nextDOM) {
     const after = nextDOM.nextSibling;
-
     nextDOM.parentNode?.removeChild(nextDOM);
     nextDOM = after;
   }
 
-  // Check if user has set a width style on the table node
-  const hasUserWidth =
-    (node.attrs['style'] &&
-      typeof node.attrs['style'] === 'string' &&
-      /\bwidth\s*:/i.test(node.attrs['style'])) ||
-    node.attrs['width'];
-
-  if (isLastColumn) {
-    if (fixedWidth && !hasUserWidth) {
-      table.style.width = `${totalWidth}px`;
-      table.style.minWidth = '';
+  // Apply table width to the wrapper (parent of the table)
+  const wrapper = table.parentElement;
+  if (wrapper && wrapper.classList.contains('tableWrapper')) {
+    const widthAttr = node.attrs['width'];
+    if (widthAttr) {
+      wrapper.style.width = widthAttr;
+      wrapper.style.display = 'table';
     } else {
-      table.style.width = '';
-      table.style.minWidth = `${totalWidth}px`;
-    }
-  } else if (overrides === undefined) {
-    // On initial load or normal update, if we have a saved width, use it.
-    if (node.attrs['width']) {
-      table.style.width = node.attrs['width'];
-      table.style.minWidth = '';
-    } else if (fixedWidth && !hasUserWidth) {
-      // Default behavior for fixed width tables if no explicit width is saved
-      table.style.width = `${totalWidth}px`;
-      table.style.minWidth = '';
+      wrapper.style.width = '';
+      wrapper.style.display = ''; // Let CSS default (display: table) take over
     }
   }
+
+  // The table itself should be 100% if we have a wrapper width, or auto if not.
+  const hasWidth = !!node.attrs['width'];
+  table.style.width = hasWidth ? '100%' : 'auto';
+  table.style.tableLayout = hasWidth ? 'fixed' : 'auto';
+  table.style.minWidth = '';
 }
 
 export class TableView implements NodeView {

@@ -1,0 +1,15 @@
+{
+  "packageFiles": [
+    {
+      "filename": "projects/ngx-exitus-tiptap-editor/package.json",
+      "type": "json"
+    }
+  ],
+  "bumpFiles": [
+    {
+      "filename": "projects/ngx-exitus-tiptap-editor/package.json",
+      "type": "json"
+    }
+  ],
+  "infile": "projects/ngx-exitus-tiptap-editor/docs/CHANGELOG.md"
+}

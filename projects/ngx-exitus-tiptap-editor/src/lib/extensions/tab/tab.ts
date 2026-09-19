@@ -1,17 +1,19 @@
-//@ts-nocheck
-import { type Editor, Node } from '@tiptap/core';
-import { mergeAttributes } from '@tiptap/core';
+import { type Editor, Node, mergeAttributes } from '@tiptap/core';
 
-function addTab(editor: Editor) {
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    teclatab: {
+      tabIndent: () => ReturnType;
+      tabOutdent: () => ReturnType;
+    };
+  }
+}
+
+function addTab(editor: Editor): boolean {
   return editor.commands.insertContentAt(
     editor.view.state.selection.$anchor.pos,
-    `<span class="ex-tab"></span>`,
-    {
-      updateSelection: true,
-      parseOptions: {
-        preserveWhitespace: 'full',
-      },
-    },
+    { type: 'teclatab' },
+    { updateSelection: true },
   );
 }
 
@@ -22,27 +24,20 @@ export const Tab = Node.create({
 
   inline: true,
 
-  content: 'text*',
-
+  // `atom: true` with no `content` makes this a leaf node (nodeSize = 1).
+  // Combining `content: 'text*'` with `atom: true` caused unpredictable nodeSize
+  // values (2 + text length) which broke the Shift-Tab deletion range and made
+  // the rendered width depend on how many characters were stored inside.
   atom: true,
+
+  selectable: false,
 
   addCommands() {
     return {
       tabIndent:
         () =>
-        ({ tr, state, dispatch, editor }) => {
-          const { selection } = state;
-          tr = tr.setSelection(selection);
-          tr = addTab(editor);
-
-          if (tr.docChanged) {
-            dispatch && dispatch(tr);
-            return true;
-          }
-
-          editor.chain().focus().run();
-
-          return false;
+        ({ editor }: { editor: Editor }) => {
+          return addTab(editor);
         },
       tabOutdent: () => () => {
         return true;
@@ -53,30 +48,25 @@ export const Tab = Node.create({
   parseHTML() {
     return [
       {
-        tag: 'span',
-        getAttrs: (node) => {
-          return (node as HTMLElement).className === 'ex-tab' && null;
-        },
-        priority: 9999,
-      },
-      {
-        tag: 'span',
-        getAttrs: (node) => {
-          return (node as HTMLElement).className === 'tabIndent' && null;
-        },
+        // Match both legacy `tabIndent` class and current `ex-tab` class so
+        // documents saved before this refactor continue to load correctly.
+        tag: 'span.ex-tab, span.tabIndent',
         priority: 9999,
       },
     ];
   },
+
   renderHTML({ HTMLAttributes }) {
-    return ['span', mergeAttributes(HTMLAttributes, { class: 'ex-tab' }), '\u00A0'.repeat(8)];
-  },
-  addAttributes() {
-    return {
-      class: {
-        default: '',
-      },
-    };
+    // Width is controlled entirely by inline styles on the span.
+    // No text content is stored inside the span — this eliminates the
+    // font-dependent width variance caused by repeating \u00A0 characters.
+    return [
+      'span',
+      mergeAttributes(HTMLAttributes, {
+        class: 'ex-tab',
+        style: 'display: inline-block; width: 4ch; min-width: 4ch; vertical-align: baseline; user-select: none; pointer-events: none;',
+      }),
+    ];
   },
 
   addKeyboardShortcuts() {
@@ -89,17 +79,18 @@ export const Tab = Node.create({
       },
       'Shift-Tab': () => {
         if (!(this.editor.isActive('bulletList') || this.editor.isActive('orderedList'))) {
-          const selection = this.editor.view.state.selection;
-          if (selection && selection.$anchor) {
-            const position = selection.$anchor;
+          const { selection } = this.editor.view.state;
+          const position = selection.$anchor;
 
-            if (position.nodeBefore && position.nodeBefore.type.name === 'teclatab') {
-              const from = position.pos - position.nodeBefore.nodeSize;
-              const to = position.pos - 1;
+          if (position.nodeBefore?.type.name === 'teclatab') {
+            // Leaf atom node: nodeSize = 1.
+            // Range [pos - 1, pos] covers exactly the node.
+            const nodeSize = position.nodeBefore.nodeSize; // 1
+            const from = position.pos - nodeSize;
+            const to = position.pos;
 
-              this.editor.commands.deleteRange({ from, to });
-              return true;
-            }
+            this.editor.commands.deleteRange({ from, to });
+            return true;
           }
         }
         return false;

@@ -4,7 +4,6 @@ import StarterKit from '@tiptap/starter-kit';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import TextAlign from '@tiptap/extension-text-align';
-import { Paragraph } from '@tiptap/extension-paragraph';
 import { Indent } from './extensions/indent/indent';
 import { Tab } from './extensions/tab/tab';
 import { Katex } from './extensions/katex';
@@ -21,6 +20,7 @@ import { AssociationItem } from './extensions/association/association-item';
 import { Alternative } from './extensions/alternatives/alternative';
 import { AlternativeItem } from './extensions/alternatives/alternative-item';
 import { SpellCheckerExtension } from './extensions/spell-checker';
+import { CustomParagraph } from './extensions/paragraph';
 
 export interface ExtensionFactoryConfig {
   image?: Record<string, any>;
@@ -42,21 +42,7 @@ export function createCoreExtensions(): AnyExtension[] {
       listKeymap: false,
       paragraph: false,
     }),
-    Paragraph.extend({
-      parseHTML() {
-        return [
-          {
-            tag: 'p',
-            getAttrs: (node) => {
-              if (node instanceof HTMLElement && node.querySelector('img')) {
-                return false;
-              }
-              return {};
-            },
-          },
-        ];
-      },
-    }),
+    CustomParagraph,
     Subscript,
     Superscript,
     TextAlign.configure({

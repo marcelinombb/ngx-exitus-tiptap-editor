@@ -19,7 +19,22 @@
     "test:ci": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "format": "prettier --write \"**/*.{ts,html,scss,json,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,html,scss,json,md}\""
+    "format:check": "prettier --check \"**/*.{ts,html,scss,json,md}\"",
+    "prepare": "husky",
+    "commit": "cz",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "release:dry-run": "standard-version --dry-run"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,html,scss,json,md}": "prettier --write"
   },
   "prettier": {
     "printWidth": 100,
@@ -63,19 +78,26 @@
     "@angular/build": "^20.3.8",
     "@angular/cli": "^20.3.8",
     "@angular/compiler-cli": "^20.3.0",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "@types/jasmine": "~5.1.0",
     "angular-eslint": "21.0.1",
+    "commitizen": "^4.3.2",
     "concurrently": "^9.2.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.39.1",
+    "husky": "^9.1.7",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "lint-staged": "^16.4.0",
     "ng-packagr": "^20.3.0",
     "prettier": "^3.8.1",
     "sass": "^1.97.3",
+    "standard-version": "^9.5.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "8.46.4",
     "wait-on": "^8.0.3"

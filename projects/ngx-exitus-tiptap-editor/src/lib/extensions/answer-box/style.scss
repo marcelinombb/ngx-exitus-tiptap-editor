@@ -1,7 +1,7 @@
 @use '../../styles/insert-paragraph-btn' as *;
 
 .ex-answer-box {
-  border: 1px solid #ccc;
+  border: 1px solid #000;
   /* padding: 10px; */
   margin: 10px 0;
   /* border-radius: 4px; */
@@ -40,7 +40,7 @@
   }
 
   .ex-answer-line {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #000;
     height: 30px; // Line height
     width: 100%;
     position: relative;
@@ -52,11 +52,20 @@
       color: #666;
       font-size: 0.9em;
       user-select: none;
+
+      &.ex-answer-number-bold {
+        color: black;
+        font-weight: bold;
+      }
     }
   }
 
   &:not(.ex-answer-box-no-border) .ex-answer-line:last-child {
     border-bottom: none;
+  }
+
+  &.ex-answer-box-no-border .ex-answer-line:first-child {
+    border-top: 1px solid #000;
   }
 
   &[data-style='box'] {

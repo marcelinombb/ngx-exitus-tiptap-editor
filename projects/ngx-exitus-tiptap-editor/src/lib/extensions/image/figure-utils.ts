@@ -1,7 +1,7 @@
 import { EditorState } from 'prosemirror-state';
 import { findFigureNode } from '../../utils/tiptap-selection';
 
-export const MIN_WIDTH = 300;
+export const MIN_WIDTH = 50;
 export const MAX_WIDTH = 700;
 
 export const parseWidth = (value?: string | null): number | null => {
