@@ -45,14 +45,14 @@ describe('Figure Extension', () => {
   });
 
   it('deve encontrar o nó figure através de findFigureNode quando selecionado', () => {
-    editor.commands.setTextSelection(1);
+    editor.commands.setNodeSelection(0);
     const figureInfo = findFigureNode(editor.state);
     expect(figureInfo).toBeDefined();
     expect(figureInfo?.node.type.name).toBe('figure');
   });
 
   it('deve aplicar largura ao nó figure com setImageWidth', () => {
-    editor.commands.setTextSelection(1);
+    editor.commands.setNodeSelection(0);
     editor.commands.setImageWidth(350);
 
     const figureInfo = findFigureNode(editor.state);
@@ -60,7 +60,7 @@ describe('Figure Extension', () => {
   });
 
   it('deve alterar e verificar o alinhamento com setImageAlignment e hasAlignment', () => {
-    editor.commands.setTextSelection(1);
+    editor.commands.setNodeSelection(0);
 
     expect(editor.commands.hasAlignment('middle')).toBeTrue();
 
