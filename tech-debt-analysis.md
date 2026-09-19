@@ -81,7 +81,7 @@ Metrics:
       - Figure.ts command handlers
 
   test_coverage:
-    unit: '93 tests passing (Demo: 2, Lib: 91)'
+    unit: '131 tests passing (Demo: 2, Lib: 129)'
     target: 80% (Core Extensions) / 60% (UI)
     status: 100% pass rate
 
