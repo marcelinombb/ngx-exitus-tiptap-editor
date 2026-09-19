@@ -19,7 +19,11 @@ import { NodeSelection } from '@tiptap/pm/state';
       ></div>
 
       <!-- Visuals (Box or Lines) -->
-      <div class="ex-answer-box-visuals" contenteditable="false" (mousedown)="selectNodeOnMousedown($event)">
+      <div
+        class="ex-answer-box-visuals"
+        contenteditable="false"
+        (mousedown)="selectNodeOnMousedown($event)"
+      >
         @if (style() === 'lines' || style() === 'numbered-lines') {
           @for (line of linesArray(); track $index) {
             <div class="ex-answer-line">

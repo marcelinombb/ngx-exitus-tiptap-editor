@@ -88,7 +88,9 @@ export class ExitusEditorIntegration extends IntegrationModel {
       if (this.editorParameters && this.editorParameters.language) {
         return this.editorParameters.language;
       }
-    } catch (e) {}
+    } catch {
+      // ignore
+    }
 
     return super.getLanguage();
   }
@@ -266,8 +268,9 @@ export class ExitusEditorIntegration extends IntegrationModel {
     };
 
     Object.keys(payload).forEach((key) => {
-      if (key === 'mathml_origin' || key === 'editor_origin')
-        !payload[key] ? delete payload[key] : {};
+      if ((key === 'mathml_origin' || key === 'editor_origin') && !payload[key]) {
+        delete payload[key];
+      }
     });
 
     try {

@@ -41,7 +41,6 @@ export class ImageView implements NodeView {
     if (typeof proxyUrl === 'string') {
       this.proxyUrlBuilder = ImageProxyBuilders.queryParam(proxyUrl);
     } else if (typeof proxyUrl === 'function') {
-
       this.proxyUrlBuilder = proxyUrl;
     }
 
@@ -151,7 +150,8 @@ export class ImageView implements NodeView {
         if (typeof result === 'string') resolve(result);
         else reject(new Error('[ImageView] FileReader retornou resultado inválido'));
       };
-      reader.onerror = () => reject(reader.error ?? new Error('[ImageView] FileReader falhou sem detalhes'));
+      reader.onerror = () =>
+        reject(reader.error ?? new Error('[ImageView] FileReader falhou sem detalhes'));
       reader.readAsDataURL(blob);
     });
   }

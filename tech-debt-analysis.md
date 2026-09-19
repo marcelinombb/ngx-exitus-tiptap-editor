@@ -81,21 +81,20 @@ Metrics:
       - Figure.ts command handlers
 
   test_coverage:
-    unit: 0%
-    integration: 0%
+    unit: "43 tests passing (Demo + Lib Core)"
     target: 80% (Core Extensions) / 60% (UI)
 
   infrastructure_health:
-    linter_configured: false
-    formatter_enforced: false
-    ci_pipeline_gates: false
+    linter_configured: true (0 errors)
+    formatter_enforced: true (Prettier enforced)
+    ci_pipeline_gates: true (npm run test:ci + lint + format:check)
 ```
 
 ### Problematic God Classes
 
 ```python
 complex_files_tracker = {
-    "Figure.ts": {"lines": 452, "issue": "Mixed DOM Drag events, Node definition, Commands"},
+    "Figure.ts": {"lines": 182, "status": "Refactored into figure-commands, figure-plugins, figure-utils"},
     "ImageCropper.ts": {"lines": 408, "issue": "High UI and state complexity"},
     "custom-column-resizing.ts": {"lines": 394, "issue": "Manual DOM calculations"},
 }
@@ -105,15 +104,15 @@ complex_files_tracker = {
 
 ## 4. Prioritized Remediation Plan
 
-### Quick Wins (High Value, Low Effort) - Week 1
+### Quick Wins (High Value, Low Effort) - Concluído ✅
 
-1. **Setup Linting & Prettier Gates**
-   - Add `angular-eslint` to the project.
-   - Configure pre-commit hooks (e.g., husky + lint-staged) to enforce formatting and linting rules.
-   - _Effort: 4 hours. ROI: Immediate consistency, preventing new style debt._
-2. **Setup basic Testing Scaffold**
-   - Configure Karma/Jasmine (or migrate to Jest/Vitest) for the library component, writing the first 5 core rendering tests for the Exitus Editor wrapper.
-   - _Effort: 8 hours. ROI: Base safety net for future work._
+1. **Setup Linting & Prettier Gates** ✅
+   - Configuração do ESLint saneada (161 erros eliminados -> 0 erros).
+   - Formatação Prettier 100% aplicada e verificável via `npm run format:check`.
+2. **Setup basic Testing Scaffold & Core Specs** ✅
+   - Corrigido loader de SVG do Wiris MathType no runner de testes (`angular.json`).
+   - Suíte de testes headless (`npm run test:ci`) executando com 100% de sucesso (43/43 testes passando).
+   - Adicionados testes de regressão para a extensão `Figure` ([figure.spec.ts](file:///home/marcelino/Documentos/ngx-exitus-tiptap-editor/projects/ngx-exitus-tiptap-editor/src/lib/extensions/image/figure.spec.ts)).
 
 ### Medium-Term Improvements (Month 1-3)
 

@@ -144,12 +144,12 @@ extensionsConfig = {
 
 **Three built-in URL patterns:**
 
-| Helper | Server receives | Best for |
-|---|---|---|
-| `ImageProxyBuilders.queryParam(base)` | `GET /proxy?imgurl=<encoded>` | Proxy simples |
-| `ImageProxyBuilders.queryParam(base, 'url')` | `GET /proxy?url=<encoded>` | Nome de param customizado |
-| `ImageProxyBuilders.pathEncoded(base)` | `GET /proxy/<encoded>` | REST paths |
-| `ImageProxyBuilders.postBody(base)` | `POST /proxy` `{ "url": "..." }` | APIs JSON |
+| Helper                                       | Server receives                  | Best for                  |
+| -------------------------------------------- | -------------------------------- | ------------------------- |
+| `ImageProxyBuilders.queryParam(base)`        | `GET /proxy?imgurl=<encoded>`    | Proxy simples             |
+| `ImageProxyBuilders.queryParam(base, 'url')` | `GET /proxy?url=<encoded>`       | Nome de param customizado |
+| `ImageProxyBuilders.pathEncoded(base)`       | `GET /proxy/<encoded>`           | REST paths                |
+| `ImageProxyBuilders.postBody(base)`          | `POST /proxy` `{ "url": "..." }` | APIs JSON                 |
 
 **Custom function (avançado):**
 
@@ -167,7 +167,7 @@ extensionsConfig = {
 // legado — ainda suportado
 extensionsConfig = {
   image: {
-    proxyUrl: 'https://myserver.com/proxy',  // → GET /proxy?imgurl=<encoded>
+    proxyUrl: 'https://myserver.com/proxy', // → GET /proxy?imgurl=<encoded>
   },
 };
 ```
@@ -175,7 +175,6 @@ extensionsConfig = {
 > [!TIP]
 > Um servidor de teste mínimo está disponível em `tools/proxy_server.py`.
 > Basta `python3 tools/proxy_server.py` (porta 8765) para testar localmente.
-
 
 - **Indent/Outdent**: Standard shortcut and toolbar support.
 - **Tab Handling**: Consistent tab behavior within the editor.

@@ -13,14 +13,14 @@ export interface ColumnResizingOptions {
   defaultCellMinWidth?: number;
   lastColumnResizable?: boolean;
   View?:
-  | (new (
-    node: ProsemirrorNode,
-    cellMinWidth: number,
-    view: EditorView,
-    getPos: () => number | undefined,
-    editor: Editor,
-  ) => NodeView)
-  | null;
+    | (new (
+        node: ProsemirrorNode,
+        cellMinWidth: number,
+        view: EditorView,
+        getPos: () => number | undefined,
+        editor: Editor,
+      ) => NodeView)
+    | null;
 }
 
 export interface Dragging {
@@ -95,7 +95,7 @@ export class ResizeState {
     public activeHandle: number,
     public dragging: Dragging | false,
     public lastResizeWasLastColumn = false,
-  ) { }
+  ) {}
 
   apply(tr: Transaction): ResizeState {
     const action = tr.getMeta(columnResizingPluginKey);

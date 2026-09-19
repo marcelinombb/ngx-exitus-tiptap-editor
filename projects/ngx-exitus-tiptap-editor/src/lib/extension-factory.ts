@@ -22,74 +22,74 @@ import { AlternativeItem } from './extensions/alternatives/alternative-item';
 import { SpellCheckerExtension } from './extensions/spell-checker';
 
 export class ExtensionFactory {
-    static createExtensions(injector: Injector, config?: Record<string, any>) {
-        return [
-            StarterKit.configure({
-                link: false,
-                trailingNode: false,
-                heading: false,
-                codeBlock: false,
-                code: false,
-                listKeymap: false,
-                paragraph: false,
-            }),
-            Paragraph.extend({
-                parseHTML() {
-                    return [
-                        {
-                            tag: 'p',
-                            getAttrs: (node) => {
-                                if (node instanceof HTMLElement && node.querySelector('img')) {
-                                    return false;
-                                }
-                                return {};
-                            },
-                        },
-                    ];
-                },
-            }),
-            Subscript,
-            Superscript,
-            TextAlign.configure({
-                types: ['heading', 'paragraph'],
-            }),
-            Indent,
-            Tab,
-            Katex,
-            Image.configure({
-                inline: false,
-                allowBase64: true,
-                ...(config!['image'] ?? {}),
-            }),
-            Figcaption,
-            Figure.configure({
-                injector,
-            }),
-            ColarQuestao.configure({
-                injector,
-            }),
-            MathType,
-            MathTypePlugin,
-            AnswerBox.configure({
-                injector,
-            }),
-            Association.configure({
-                injector,
-            }),
-            AssociationColumn.configure({
-                injector,
-            }),
-            AssociationItem.configure({
-                injector,
-            }),
-            Alternative.configure({
-                injector,
-            }),
-            AlternativeItem.configure({
-                injector,
-            }),
-            ...TableExtensions,
-            SpellCheckerExtension.configure(config!['spellChecker'] ?? {}),
-        ];
-    }
+  static createExtensions(injector: Injector, config: Record<string, any> = {}) {
+    return [
+      StarterKit.configure({
+        link: false,
+        trailingNode: false,
+        heading: false,
+        codeBlock: false,
+        code: false,
+        listKeymap: false,
+        paragraph: false,
+      }),
+      Paragraph.extend({
+        parseHTML() {
+          return [
+            {
+              tag: 'p',
+              getAttrs: (node) => {
+                if (node instanceof HTMLElement && node.querySelector('img')) {
+                  return false;
+                }
+                return {};
+              },
+            },
+          ];
+        },
+      }),
+      Subscript,
+      Superscript,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      Indent,
+      Tab,
+      Katex,
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        ...(config['image'] ?? {}),
+      }),
+      Figcaption,
+      Figure.configure({
+        injector,
+      }),
+      ColarQuestao.configure({
+        injector,
+      }),
+      MathType,
+      MathTypePlugin,
+      AnswerBox.configure({
+        injector,
+      }),
+      Association.configure({
+        injector,
+      }),
+      AssociationColumn.configure({
+        injector,
+      }),
+      AssociationItem.configure({
+        injector,
+      }),
+      Alternative.configure({
+        injector,
+      }),
+      AlternativeItem.configure({
+        injector,
+      }),
+      ...TableExtensions,
+      SpellCheckerExtension.configure(config['spellChecker'] ?? {}),
+    ];
+  }
 }

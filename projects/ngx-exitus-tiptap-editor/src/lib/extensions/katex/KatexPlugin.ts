@@ -6,9 +6,7 @@ import './style.css';
 import { Katex, KatexBalloon } from '.';
 
 export class KatexPlugin extends Plugin {
-  static get pluginName() {
-    return 'katex';
-  }
+  static readonly pluginName = 'katex';
 
   static get requires() {
     return [Katex];
@@ -73,7 +71,9 @@ export class KatexPlugin extends Plugin {
       editor.off('focus', focus);
       try {
         editor.editorMainDiv.removeChild(balloon.getBalloon());
-      } catch (e) {}
+      } catch {
+        // ignore removal error
+      }
     };
 
     editor.on('focus', focus);

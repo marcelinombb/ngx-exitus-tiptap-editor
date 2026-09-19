@@ -177,14 +177,16 @@ export class KatexFloatingMenuComponent implements OnInit {
     this.currentFormula.set(latexFormula);
     try {
       updateLatexDisplay(latexFormula, this.preview().nativeElement);
-    } catch (e) {}
+    } catch {
+      // ignore preview errors
+    }
   };
 
   onFormulaChange(value: string) {
     this.formula.set(value);
     try {
       updateLatexDisplay(value, this.preview().nativeElement);
-    } catch (e) {
+    } catch {
       // ignore preview errors
     }
   }

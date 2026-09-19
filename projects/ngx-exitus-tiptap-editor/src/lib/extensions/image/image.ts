@@ -41,8 +41,8 @@ export const ImageProxyBuilders = {
    */
   queryParam:
     (base: string, param = 'imgurl'): ImageProxyUrlBuilder =>
-      (src) =>
-        `${base}?${param}=${encodeURIComponent(src)}`,
+    (src) =>
+      `${base}?${param}=${encodeURIComponent(src)}`,
 
   /**
    * **Path encoded** — a URL da imagem é embutida no path.
@@ -57,8 +57,8 @@ export const ImageProxyBuilders = {
    */
   pathEncoded:
     (base: string): ImageProxyUrlBuilder =>
-      (src) =>
-        `${base}/${encodeURIComponent(src)}`,
+    (src) =>
+      `${base}/${encodeURIComponent(src)}`,
 
   /**
    * **POST body** — a URL da imagem é enviada no corpo da requisição.
@@ -76,8 +76,8 @@ export const ImageProxyBuilders = {
    */
   postBody:
     (base: string): ImageProxyUrlBuilder =>
-      (_src) =>
-        `__POST__${base}`,
+    (_src) =>
+      `__POST__${base}`,
 } as const;
 
 /** @internal Token que identifica um builder do tipo POST */
@@ -206,12 +206,12 @@ export const Image = Node.create<ImageOptions>({
     return {
       setImage:
         (options) =>
-          ({ commands }) => {
-            return commands.insertContent({
-              type: this.name,
-              attrs: options,
-            });
-          },
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options,
+          });
+        },
     };
   },
 
@@ -235,15 +235,13 @@ export const Image = Node.create<ImageOptions>({
   },
 
   addProseMirrorPlugins() {
-    const self = this;
     return [
       new Plugin({
         key: new PluginKey('imageEventHandler'),
         props: {
           handleDOMEvents: {
             drop: (_view, event) => {
-              const hasFiles =
-                event.dataTransfer?.files?.length;
+              const hasFiles = event.dataTransfer?.files?.length;
 
               if (hasFiles) {
                 const images = Array.from(event.dataTransfer?.files ?? []).filter((file) =>
@@ -252,7 +250,7 @@ export const Image = Node.create<ImageOptions>({
 
                 if (images.length === 0) return false;
 
-                images.forEach((image) => parseImagesToBase64(image, self.editor));
+                images.forEach((image) => parseImagesToBase64(image, this.editor));
                 event.preventDefault();
                 return true;
               }

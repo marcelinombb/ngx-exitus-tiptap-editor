@@ -118,7 +118,6 @@ describe('ImageView', () => {
 
       const _view = new ImageView(node, editor, () => 5 /* sem proxyUrl */);
 
-
       expect(fetchSpy).not.toHaveBeenCalled();
     });
 
@@ -127,7 +126,6 @@ describe('ImageView', () => {
       const { editor } = makeEditor();
 
       const _view = new ImageView(node, editor, () => 5, 'https://proxy.example.com');
-
 
       expect(fetchSpy).not.toHaveBeenCalled();
     });
@@ -227,7 +225,9 @@ describe('ImageView', () => {
       expect(url).toBe(base); // POST_BODY_TOKEN removido
       expect(url).not.toContain(POST_BODY_TOKEN);
       expect(init.method).toBe('POST');
-      expect(init.headers).toEqual(jasmine.objectContaining({ 'Content-Type': 'application/json' }));
+      expect(init.headers).toEqual(
+        jasmine.objectContaining({ 'Content-Type': 'application/json' }),
+      );
       expect(init.body).toBe(JSON.stringify({ url: src }));
     });
   });
@@ -304,7 +304,6 @@ describe('ImageView', () => {
 
       expect(() => {
         const _v = new ImageView(node, editor, () => 5, 'https://proxy.example.com');
-
       }).not.toThrow();
 
       await new Promise((r) => setTimeout(r, 0));
@@ -325,7 +324,6 @@ describe('ImageView', () => {
 
       expect(() => {
         const _v = new ImageView(node, editor, () => 5, 'https://proxy.example.com');
-
       }).not.toThrow();
 
       await new Promise((r) => setTimeout(r, 0));
@@ -345,7 +343,9 @@ describe('ImageView', () => {
       let abortSignal: AbortSignal | null | undefined;
       fetchSpy.and.callFake((_url: string, init: RequestInit) => {
         abortSignal = init.signal;
-        return new Promise(() => { /* never resolves */ });
+        return new Promise(() => {
+          /* never resolves */
+        });
       });
 
       const view = new ImageView(node, editor, () => 5, 'https://proxy.example.com');

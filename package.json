@@ -16,6 +16,7 @@
     "watch": "ng build --watch --configuration development",
     "publish": "npm run build:lib && cd dist/ngx-exitus-tiptap-editor && npm publish",
     "test": "ng test",
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "format": "prettier --write \"**/*.{ts,html,scss,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,html,scss,json,md}\""

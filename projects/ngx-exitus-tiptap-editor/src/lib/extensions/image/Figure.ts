@@ -1,17 +1,8 @@
-import {
-  findParentNodeClosestToPos,
-  mergeAttributes,
-  Node as TiptapNode,
-} from '@tiptap/core';
+import { findParentNodeClosestToPos, mergeAttributes, Node as TiptapNode } from '@tiptap/core';
 import { Injector } from '@angular/core';
 import { AngularNodeViewRenderer } from 'ngx-tiptap';
 import { FigureComponent } from './figure.component';
-import {
-  defaultClasses,
-  allowedClasses,
-  alignClasses,
-  parseWidth,
-} from './figure-utils';
+import { defaultClasses, allowedClasses, alignClasses, parseWidth } from './figure-utils';
 import { createFigureCommands } from './figure-commands';
 import { createFigurePlugins } from './figure-plugins';
 

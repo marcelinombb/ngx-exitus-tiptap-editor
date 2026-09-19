@@ -31,9 +31,7 @@
                 "output": "assets/mathtype/"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ]
+            "styles": ["src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -63,9 +61,7 @@
           "builder": "@angular/build:dev-server",
           "options": {
             "prebundle": {
-              "exclude": [
-                "ngx-exitus-tiptap-editor"
-              ]
+              "exclude": ["ngx-exitus-tiptap-editor"]
             }
           },
           "configurations": {
@@ -85,6 +81,9 @@
           "builder": "@angular/build:karma",
           "options": {
             "tsConfig": "tsconfig.spec.json",
+            "loader": {
+              ".svg": "file"
+            },
             "assets": [
               {
                 "glob": "**/*",
@@ -96,18 +95,13 @@
                 "output": "assets/mathtype/"
               }
             ],
-            "styles": [
-              "src/styles.css"
-            ]
+            "styles": ["src/styles.css"]
           }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         }
       }

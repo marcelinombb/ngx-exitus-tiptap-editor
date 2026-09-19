@@ -13,9 +13,7 @@ export class SpecialCharactersPlugin extends Plugin {
   private currentCategory: string = unicodeCategories[0]?.name || 'Letras Gregas';
   private previewChar!: HTMLElement;
 
-  static get pluginName() {
-    return 'specialCharacters';
-  }
+  static readonly pluginName = 'specialCharacters';
 
   static get requires() {
     return [];
