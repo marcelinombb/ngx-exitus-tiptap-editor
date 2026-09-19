@@ -137,8 +137,16 @@ complex_files_tracker = {
    - `custom-column-resizing.ts` decoupled: extracted table column resizing math into `table-resizing-math.ts`, eliminated loose `any` casts.
    - Criados testes unitários para a lógica de redimensionamento (`image-cropper-math.spec.ts` e `table-resizing-math.spec.ts`).
    - Suíte de testes expandida para 86/86 testes passando com 0 erros de linting e build limpo.
-2. **Decouple Angular from Tiptap Core**
-   - Review patterns for `AngularNodeViewRenderer` to avoid manually passing the `Injector` across all extension `.configure()` calls, utilizing context injection or Angular 16+ runInContext where appropriate.
+2. **Decouple Angular from Tiptap Core & Modularize Extension Factory** ✅
+   - Modularized `extension-factory.ts` into individual feature bundle factories:
+     - `createCoreExtensions()`
+     - `createMathExtensions()`
+     - `createImageExtensions(injector, imageConfig)`
+     - `createQuestionExtensions(injector)`
+     - `createTableExtensions()`
+     - `createSpellCheckerExtensions(spellCheckerConfig)`
+   - Created comprehensive unit tests in `extension-factory.spec.ts`.
+   - Test suite updated: 93/93 tests passing with 0 ESLint errors and clean library build.
 
 ---
 
