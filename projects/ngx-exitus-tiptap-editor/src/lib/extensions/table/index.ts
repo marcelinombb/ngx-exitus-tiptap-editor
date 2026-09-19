@@ -13,9 +13,10 @@ import { EditorView, NodeView } from '@tiptap/pm/view';
  * Creates a colgroup with percentage-based widths for HTML export.
  * This replaces the upstream createColGroup which uses pixel widths.
  */
-function createPercentageColGroup(
-  node: ProsemirrorNode,
-): { colgroup: DOMOutputSpec; tableWidth: string } {
+function createPercentageColGroup(node: ProsemirrorNode): {
+  colgroup: DOMOutputSpec;
+  tableWidth: string;
+} {
   const cols: DOMOutputSpec[] = [];
   const row = node.firstChild;
 
@@ -37,7 +38,7 @@ function createPercentageColGroup(
 
   // Normalize widths to percentages that sum to 100%
   const sum = rawWidths.reduce((acc, w) => acc! + (w || 0), 0) || 0;
-  const allUndefined = rawWidths.every(w => w == null);
+  const allUndefined = rawWidths.every((w) => w == null);
 
   let normalizedWidths: number[];
   if (allUndefined) {
@@ -46,17 +47,15 @@ function createPercentageColGroup(
     // Assign equal shares to undefined columns, then scale everything to sum to 100%.
     // Works for both legacy pixel values and percentage values.
     const equalShare = 100 / colCount;
-    const rawWithDefaults = rawWidths.map(w => w ?? equalShare);
+    const rawWithDefaults = rawWidths.map((w) => w ?? equalShare);
     const totalWithDefaults = rawWithDefaults.reduce((a, b) => a + b, 0);
-    normalizedWidths = rawWithDefaults.map(w => (w / totalWithDefaults) * 100);
+    normalizedWidths = rawWithDefaults.map((w) => (w / totalWithDefaults) * 100);
   } else {
     normalizedWidths = rawWidths.map(() => 100 / colCount);
   }
 
   // NaN guard
-  normalizedWidths = normalizedWidths.map(w =>
-    Number.isFinite(w) ? w : 100 / colCount,
-  );
+  normalizedWidths = normalizedWidths.map((w) => (Number.isFinite(w) ? w : 100 / colCount));
 
   for (const w of normalizedWidths) {
     cols.push(['col', { style: `width: ${w.toFixed(2)}%` }]);
@@ -77,8 +76,8 @@ function createPercentageColGroup(
 function parseColwidth(element: HTMLElement): number[] | null {
   const colwidth = element.getAttribute('colwidth');
   if (colwidth) {
-    const value = colwidth.split(',').map(w => parseFloat(w));
-    if (value.every(v => Number.isFinite(v))) {
+    const value = colwidth.split(',').map((w) => parseFloat(w));
+    if (value.every((v) => Number.isFinite(v))) {
       return value;
     }
   }
@@ -198,13 +197,13 @@ export interface TableOptions {
    * @default TableView
    */
   View:
-  | (new (
-    node: ProsemirrorNode,
-    cellMinWidth: number,
-    view: EditorView,
-    getPos: () => number | undefined,
-  ) => NodeView)
-  | null;
+    | (new (
+        node: ProsemirrorNode,
+        cellMinWidth: number,
+        view: EditorView,
+        getPos: () => number | undefined,
+      ) => NodeView)
+    | null;
 
   /**
    * Enables the resizing of the last column.
@@ -293,17 +292,17 @@ export const TableExtensions = [
       return [
         ...(isResizable
           ? [
-            columnResizing(
-              {
-                handleWidth: this.options.handleWidth,
-                cellMinWidth: this.options.cellMinWidth,
-                defaultCellMinWidth: this.options.cellMinWidth,
-                View: this.options.View,
-                lastColumnResizable: this.options.lastColumnResizable,
-              },
-              this.editor,
-            ),
-          ]
+              columnResizing(
+                {
+                  handleWidth: this.options.handleWidth,
+                  cellMinWidth: this.options.cellMinWidth,
+                  defaultCellMinWidth: this.options.cellMinWidth,
+                  View: this.options.View,
+                  lastColumnResizable: this.options.lastColumnResizable,
+                },
+                this.editor,
+              ),
+            ]
           : []),
         tableEditing({
           allowTableNodeSelection: this.options.allowTableNodeSelection,
@@ -319,27 +318,30 @@ export const TableExtensions = [
 
       function getTableStyle() {
         let style = '';
-        
+
         if (userStyles) {
           // Remove width from userStyles
-          style = userStyles.replace(/width:\s*[^;]*;?/gi, tableWidth ? ` width: 100%;` : '').trim();
-          style += ` table-layout: ${tableWidth ? 'fixed' : 'auto'};`; 
+          style = userStyles
+            .replace(/width:\s*[^;]*;?/gi, tableWidth ? ` width: 100%;` : '')
+            .trim();
+          style += ` table-layout: ${tableWidth ? 'fixed' : 'auto'};`;
         }
 
         return style;
       }
-      
+
       const table: DOMOutputSpec = [
         'table',
         mergeAttributes(options.HTMLAttributes, HTMLAttributes, {
           style: getTableStyle(),
-        }
-      ),
+        }),
         colgroup,
         ['tbody', 0],
       ];
 
-      return options.renderWrapper ? ['div', { class: 'tableWrapper', style: tableWidth ? `width: ${tableWidth}` : '' }, table] : table;
+      return options.renderWrapper
+        ? ['div', { class: 'tableWrapper', style: tableWidth ? `width: ${tableWidth}` : '' }, table]
+        : table;
     },
   }).configure({
     resizable: true,

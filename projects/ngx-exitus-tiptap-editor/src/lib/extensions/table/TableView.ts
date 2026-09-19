@@ -49,7 +49,7 @@ export function updateColumns(
 
     // Normalize widths: they MUST sum to 100% of the table width.
     const sum = rawWidths.reduce((acc, w) => acc! + (w || 0), 0) || 0;
-    const allUndefined = rawWidths.every(w => w == null);
+    const allUndefined = rawWidths.every((w) => w == null);
 
     let normalizedWidths: number[];
     if (allUndefined) {
@@ -57,17 +57,15 @@ export function updateColumns(
     } else if (sum > 0) {
       // Assign equal shares to undefined columns, then scale everything to sum to 100%
       const equalShare = 100 / colCount;
-      const rawWithDefaults = rawWidths.map(w => w ?? equalShare);
+      const rawWithDefaults = rawWidths.map((w) => w ?? equalShare);
       const totalWithDefaults = rawWithDefaults.reduce((a, b) => a + b, 0);
-      normalizedWidths = rawWithDefaults.map(w => (w / totalWithDefaults) * 100);
+      normalizedWidths = rawWithDefaults.map((w) => (w / totalWithDefaults) * 100);
     } else {
       normalizedWidths = rawWidths.map(() => 100 / colCount);
     }
 
     // Final NaN guard: replace any NaN values with equal shares
-    normalizedWidths = normalizedWidths.map(w =>
-      Number.isFinite(w) ? w : 100 / colCount,
-    );
+    normalizedWidths = normalizedWidths.map((w) => (Number.isFinite(w) ? w : 100 / colCount));
 
     let col = 0;
     for (let i = 0; i < row.childCount; i += 1) {

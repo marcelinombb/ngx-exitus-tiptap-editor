@@ -64,7 +64,8 @@ export const Tab = Node.create({
       'span',
       mergeAttributes(HTMLAttributes, {
         class: 'ex-tab',
-        style: 'display: inline-block; width: 4ch; min-width: 4ch; vertical-align: baseline; user-select: none; pointer-events: none;',
+        style:
+          'display: inline-block; width: 4ch; min-width: 4ch; vertical-align: baseline; user-select: none; pointer-events: none;',
       }),
     ];
   },

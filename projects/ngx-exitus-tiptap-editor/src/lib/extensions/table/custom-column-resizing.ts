@@ -70,14 +70,14 @@ export interface ColumnResizingOptions {
   lastColumnResizable?: boolean;
   /** Custom NodeView class for rendering tables. Receives an extra `editor` param. */
   View?:
-  | (new (
-    node: ProsemirrorNode,
-    cellMinWidth: number,
-    view: EditorView,
-    getPos: () => number | undefined,
-    editor: Editor,
-  ) => NodeView)
-  | null;
+    | (new (
+        node: ProsemirrorNode,
+        cellMinWidth: number,
+        view: EditorView,
+        getPos: () => number | undefined,
+        editor: Editor,
+      ) => NodeView)
+    | null;
 }
 
 /**
@@ -178,7 +178,7 @@ export class ResizeState {
     public activeHandle: number,
     public dragging: Dragging | false,
     public lastResizeWasLastColumn = false,
-  ) { }
+  ) {}
 
   /** Reduce function: applies metadata actions from transactions to produce new state. */
   apply(tr: Transaction): ResizeState {
@@ -228,8 +228,6 @@ function handleMouseMove(
       if (event.clientX - left <= handleWidth) cell = edgeCell(view, event, 'left', handleWidth);
       else if (right - event.clientX <= handleWidth)
         cell = edgeCell(view, event, 'right', handleWidth);
-
-
     }
 
     if (cell != pluginState.activeHandle) {
@@ -489,7 +487,12 @@ function draggedWidthWithLimit(
   dragging: Dragging,
   event: MouseEvent,
   resizeMinWidth: number,
-): { width: number; widthNeighbor?: number; tableWidthPct?: number; startTablePixelWidth?: number } {
+): {
+  width: number;
+  widthNeighbor?: number;
+  tableWidthPct?: number;
+  startTablePixelWidth?: number;
+} {
   const offset = event.clientX - dragging.startX;
 
   const tablePixelWidth = dragging.startTableTableWidth || 1;
@@ -629,7 +632,7 @@ function updateColumnWidth(
   // Legacy detection: if the sum of raw colwidth values > 101, they're pixels.
   const firstRow = table.firstChild!;
   let totalRaw = 0;
-  firstRow.forEach(c => {
+  firstRow.forEach((c) => {
     const cwc = c.attrs['colwidth'];
     if (cwc) cwc.forEach((v: number) => (totalRaw += v || 0));
   });
@@ -644,7 +647,7 @@ function updateColumnWidth(
     const cellNode = table.nodeAt(cellPos)!;
     const index = cellNode.attrs['colspan'] === 1 ? 0 : colIdx - map.colCount(cellPos);
     const cw = cellNode.attrs['colwidth'];
-    let currentW = (cw && cw[index] != null) ? cw[index] : 100 / map.width;
+    let currentW = cw && cw[index] != null ? cw[index] : 100 / map.width;
     if (isLegacyPixels) {
       currentW = (currentW / totalRaw) * 100;
     }
@@ -661,7 +664,9 @@ function updateColumnWidth(
     while (dom2 && dom2.nodeName != 'TABLE') dom2 = dom2.parentNode;
     const tableElement2 = dom2 as HTMLElement;
     const container2 = tableElement2?.closest('.editor-main') || tableElement2?.parentElement;
-    const containerWidth2 = container2 ? container2.getBoundingClientRect().width : startTablePixelWidth;
+    const containerWidth2 = container2
+      ? container2.getBoundingClientRect().width
+      : startTablePixelWidth;
     const newTablePixelWidth = (finalTableWidthPct / 100) * containerWidth2;
     const scaleRatio = startTablePixelWidth / newTablePixelWidth;
 
@@ -779,9 +784,12 @@ function displayColumnWidth(
     // ── Last column mode (preview) ──
     // Same logic as updateColumnWidth: scale non-last columns by pixel ratio,
     // give the last column the remainder.
-    const container = (dom as HTMLElement).closest('.editor-main')
-      || (dom as HTMLElement).parentElement?.parentElement;
-    const containerWidth = container ? container.getBoundingClientRect().width : startTablePixelWidth;
+    const container =
+      (dom as HTMLElement).closest('.editor-main') ||
+      (dom as HTMLElement).parentElement?.parentElement;
+    const containerWidth = container
+      ? container.getBoundingClientRect().width
+      : startTablePixelWidth;
     const newTablePixelWidth = (tableWidthPct / 100) * containerWidth;
     const scaleRatio = startTablePixelWidth / newTablePixelWidth;
 
@@ -793,7 +801,7 @@ function displayColumnWidth(
       const cellNode = table.nodeAt(cellPos)!;
       const colIndex = cellNode.attrs['colspan'] === 1 ? 0 : i - map.colCount(cellPos);
       const cw = cellNode.attrs['colwidth'];
-      const currentPct = (cw && cw[colIndex] != null) ? cw[colIndex] : 100 / map.width;
+      const currentPct = cw && cw[colIndex] != null ? cw[colIndex] : 100 / map.width;
       const newPct = currentPct * scaleRatio;
       overrides[i] = newPct;
       sumOthers += newPct;
