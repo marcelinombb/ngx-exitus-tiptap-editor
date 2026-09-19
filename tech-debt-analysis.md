@@ -81,22 +81,23 @@ Metrics:
       - Figure.ts command handlers
 
   test_coverage:
-    unit: '67 tests passing (Demo: 2, Lib: 65)'
+    unit: '93 tests passing (Demo: 2, Lib: 91)'
     target: 80% (Core Extensions) / 60% (UI)
+    status: 100% pass rate
 
   infrastructure_health:
     linter_configured: true (0 errors)
-    formatter_enforced: true (Prettier enforced)
-    ci_pipeline_gates: true (npm run test:ci + lint + format:check)
+    formatter_enforced: true (Prettier 100% compliant)
+    ci_pipeline_gates: true (.github/workflows/ci.yml: test:ci + lint + format:check + build:lib)
 ```
 
 ### Problematic God Classes
 
 ```python
 complex_files_tracker = {
-    "Figure.ts": {"lines": 182, "status": "Refactored into figure-commands, figure-plugins, figure-utils"},
-    "ImageCropper.ts": {"lines": 408, "issue": "High UI and state complexity"},
-    "custom-column-resizing.ts": {"lines": 394, "issue": "Manual DOM calculations"},
+    "Figure.ts": {"status": "Refactored into figure-commands, figure-plugins, figure-utils", "lines": 173},
+    "ImageCropper.ts": {"status": "Decoupled into image-cropper-math and image-cropper-canvas", "lines": 333},
+    "custom-column-resizing.ts": {"status": "Decoupled into table-resizing-math with typed properties", "lines": 391},
 }
 ```
 

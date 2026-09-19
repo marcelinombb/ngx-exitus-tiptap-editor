@@ -90,15 +90,23 @@ export class MyAppComponent {
 
 ### Inputs
 
-| Input     | Type     | Default | Description                             |
-| :-------- | :------- | :------ | :-------------------------------------- |
-| `content` | `string` | `""`    | The initial HTML content of the editor. |
+| Input              | Type                     | Default | Description                                              |
+| :----------------- | :----------------------- | :------ | :------------------------------------------------------- |
+| `content`          | `string`                 | `""`    | O conteúdo HTML inicial do editor.                       |
+| `editable`         | `boolean`                | `true`  | Define se o editor permite digitação/interação.          |
+| `extensionsConfig` | `EditorExtensionsConfig` | `null`  | Configurações para extensões (e.g. `image`, `proxyUrl`). |
 
 ### Outputs
 
-| Output            | Type                   | Description                                            |
-| :---------------- | :--------------------- | :----------------------------------------------------- |
-| `onContentChange` | `EventEmitter<string>` | Emits the HTML content whenever the editor is updated. |
+| Output            | Type             | Description                                              |
+| :---------------- | :--------------- | :------------------------------------------------------- |
+| `onContentChange` | `output<string>` | Emite o HTML atualizado a cada alteração no documento.   |
+| `onEditorReady`   | `output<Editor>` | Emite a instância do Tiptap `Editor` após inicialização. |
+
+### Component Methods & Properties
+
+- `setContent(newContent: string)`: Define programaticamente um novo conteúdo HTML no editor.
+- `editorInstance`: Getter que retorna a instância atual do `Editor | null`.
 
 ---
 
@@ -106,17 +114,34 @@ export class MyAppComponent {
 
 ### 📐 Math & Science
 
-- **KaTeX**: Write LaTeX formulas directly. Includes a floating menu for quick editing.
-- **MathType**: Advanced formula editor integration via Wiris.
+- **KaTeX**: Escreva fórmulas LaTeX com suporte a menu flutuante interativo e preview dinâmico.
+- **MathType**: Integração com o editor visual da Wiris (fórmulas matemáticas e químicas via WebAssembly).
+
+### 🎓 Educational Tools
+
+- **AnswerBox (`answerBox`)**: Caixas de resposta configuráveis para exercícios e provas:
+  - Modos: `Caixa`, `Linhas`, `Linhas numeradas`.
+  - Número dinâmico de linhas (1 a 20).
+  - Toggles de cabeçalho personalizável e bordas.
+- **Colar Questão (`colarQuestao`)**: Encapsula questões com estrutura padronizada, título imutável em edição de texto e preservação de metadados.
+- **Alternative (`alternative`, `alternativeItem`)**: Estrutura para questões de múltipla escolha (A, B, C, D...) com botões de adicionar e remover itens.
+- **Association (`association`, `associationColumn`, `associationItem`)**: Tabelas de associação em duas colunas com controle de numeração e alinhamento.
+
+### 📊 Tables
+
+- **Table Extensions**: Tabelas enriquecidas com:
+  - Menu flutuante para inserção/remoção de linhas e colunas, mesclagem e divisão de células.
+  - Toggles para remoção de bordas externas e verticais.
+  - Redimensionamento proporcional e responsivo de largura de colunas.
 
 ### 🖼️ Image Management
 
-The editor uses a custom `Figure` extension that wraps images in a `<figure>` tag with support for:
+O editor utiliza a extensão customizada `Figure` que encapsula imagens na tag `<figure>` com suporte a:
 
-- `<figcaption>` for image descriptions.
-- Resizing handles (300px to 700px).
-- Alignment options (left, center, right).
-- Fullscreen/Wide modes.
+- `<figcaption>` com toggle no menu flutuante.
+- Menu de alinhamento (`left`, `middle`, `right`, `inlineLeft`, `inlineRight`).
+- Redimensionamento rápido de largura (300px a 700px).
+- Recorte interativo de imagens (`ImageCropper`) com 8 manipuladores de redimensionamento e exportação automática via Canvas.
 
 #### Image Proxy
 

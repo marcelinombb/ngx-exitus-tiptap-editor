@@ -1,64 +1,228 @@
-# NgxExitusTiptapEditor
+# ngx-exitus-tiptap-editor
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.0.
+> A powerful, feature-rich Tiptap-based Rich Text Editor for Angular 18+, specifically designed for educational and technical content.
 
-## Code scaffolding
+[![NPM Version](https://img.shields.io/npm/v/ngx-exitus-tiptap-editor?style=flat-square)](https://www.npmjs.com/package/ngx-exitus-tiptap-editor)
+[![Angular Version](https://img.shields.io/badge/angular-%23DD0031.svg?style=flat-square&logo=angular&logoColor=white)](https://angular.dev/)
+[![Tiptap Version](https://img.shields.io/badge/tiptap-%2324292e.svg?style=flat-square&logo=tiptap&logoColor=white)](https://tiptap.dev/)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## ✨ Features
 
-```bash
-ng generate component component-name
-```
+- 📐 **Scientific Formula Support**: Full [KaTeX](https://katex.org/) and [MathType](https://www.wiris.com/mathtype/) integration.
+- 🖼️ **Advanced Image Handling**: Responsive images with figures, captions, alignment, and resizing handles.
+- 🛠️ **Custom Extensions**:
+  - **Indent**: Control line indentation.
+  - **Tab**: Custom tab key behavior.
+  - **ColarQuestao**: Specialized tool for pasting educational questions.
+- 🎨 **Modern UI**: Clean toolbar and floating menus for formula and image editing.
+- ⚡ **Angular 18+ Ready**: Built with the latest Angular features (signals, inputs/outputs).
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🚀 Installation
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the library, run:
-
-```bash
-ng build ngx-exitus-tiptap-editor
-```
-
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
-
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/ngx-exitus-tiptap-editor
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+To install the library, run:
 
 ```bash
-ng test
+npm install ngx-exitus-tiptap-editor
 ```
 
-## Running end-to-end tests
+### Peer Dependencies
 
-For end-to-end (e2e) testing, run:
+This library depends on several Tiptap packages and KaTeX. Ensure you have them installed in your project:
 
 ```bash
-ng e2e
+npm install @tiptap/core @tiptap/pm @tiptap/starter-kit @tiptap/extension-subscript @tiptap/extension-superscript @tiptap/extension-text-align @tiptap/extension-bubble-menu katex
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## ⚙️ Configuration
 
-## Additional Resources
+### WASM Assets Setup (Required)
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+To use the **MathType** features properly, you **must** configure your Angular application to serve the WebAssembly files. Update your `angular.json` by adding the following to the `assets` array (in both `build` and `test` targets):
+
+```json
+"assets": [
+  "src/favicon.ico",
+  "src/assets",
+  {
+    "glob": "**/*.wasm",
+    "input": "node_modules/ngx-exitus-tiptap-editor/assets/telemeter-wasm",
+    "output": "assets/mathtype/"
+  }
+]
+```
+
+> [!IMPORTANT]
+> If this configuration is missing, you will encounter `404 (Not Found)` errors for the WebAssembly files when using formulas.
+
+## 📦 Usage
+
+### 1. Import the Component
+
+In your component file:
+
+```typescript
+import { ExitusTiptapEditor } from 'ngx-exitus-tiptap-editor';
+
+@Component({
+  standalone: true,
+  imports: [ExitusTiptapEditor],
+  // ...
+})
+export class MyAppComponent {
+  editorContent = '<p>Initial content with <b>formatting</b></p>';
+
+  handleContentChange(html: string) {
+    console.log('New content:', html);
+  }
+}
+```
+
+### 2. Use in Template
+
+```html
+<exitus-tiptap-editor [content]="editorContent" (onContentChange)="handleContentChange($event)">
+</exitus-tiptap-editor>
+```
+
+---
+
+## 🛠️ API Reference
+
+### Inputs
+
+| Input              | Type                     | Default | Description                                              |
+| :----------------- | :----------------------- | :------ | :------------------------------------------------------- |
+| `content`          | `string`                 | `""`    | O conteúdo HTML inicial do editor.                       |
+| `editable`         | `boolean`                | `true`  | Define se o editor permite digitação/interação.          |
+| `extensionsConfig` | `EditorExtensionsConfig` | `null`  | Configurações para extensões (e.g. `image`, `proxyUrl`). |
+
+### Outputs
+
+| Output            | Type             | Description                                              |
+| :---------------- | :--------------- | :------------------------------------------------------- |
+| `onContentChange` | `output<string>` | Emite o HTML atualizado a cada alteração no documento.   |
+| `onEditorReady`   | `output<Editor>` | Emite a instância do Tiptap `Editor` após inicialização. |
+
+### Component Methods & Properties
+
+- `setContent(newContent: string)`: Define programaticamente um novo conteúdo HTML no editor.
+- `editorInstance`: Getter que retorna a instância atual do `Editor | null`.
+
+---
+
+## 🧪 Extensions Detail
+
+### 📐 Math & Science
+
+- **KaTeX**: Escreva fórmulas LaTeX com suporte a menu flutuante interativo e preview dinâmico.
+- **MathType**: Integração com o editor visual da Wiris (fórmulas matemáticas e químicas via WebAssembly).
+
+### 🎓 Educational Tools
+
+- **AnswerBox (`answerBox`)**: Caixas de resposta configuráveis para exercícios e provas:
+  - Modos: `Caixa`, `Linhas`, `Linhas numeradas`.
+  - Número dinâmico de linhas (1 a 20).
+  - Toggles de cabeçalho personalizável e bordas.
+- **Colar Questão (`colarQuestao`)**: Encapsula questões com estrutura padronizada, título imutável em edição de texto e preservação de metadados.
+- **Alternative (`alternative`, `alternativeItem`)**: Estrutura para questões de múltipla escolha (A, B, C, D...) com botões de adicionar e remover itens.
+- **Association (`association`, `associationColumn`, `associationItem`)**: Tabelas de associação em duas colunas com controle de numeração e alinhamento.
+
+### 📊 Tables
+
+- **Table Extensions**: Tabelas enriquecidas com:
+  - Menu flutuante para inserção/remoção de linhas e colunas, mesclagem e divisão de células.
+  - Toggles para remoção de bordas externas e verticais.
+  - Redimensionamento proporcional e responsivo de largura de colunas.
+
+### 🖼️ Image Management
+
+O editor utiliza a extensão customizada `Figure` que encapsula imagens na tag `<figure>` com suporte a:
+
+- `<figcaption>` com toggle no menu flutuante.
+- Menu de alinhamento (`left`, `middle`, `right`, `inlineLeft`, `inlineRight`).
+- Redimensionamento rápido de largura (300px a 700px).
+- Recorte interativo de imagens (`ImageCropper`) com 8 manipuladores de redimensionamento e exportação automática via Canvas.
+
+#### Image Proxy
+
+When the browser cannot load images directly from external URLs (CORS, mixed-content, etc.), configure a server-side proxy via `extensionsConfig.image.proxyUrl`.
+
+**Import the helper:**
+
+```typescript
+import { ExitusTiptapEditor, ImageProxyBuilders } from 'ngx-exitus-tiptap-editor';
+```
+
+**Configure in your component:**
+
+```typescript
+extensionsConfig = {
+  image: {
+    proxyUrl: ImageProxyBuilders.queryParam('https://myserver.com/proxy'),
+  },
+};
+```
+
+```html
+<exitus-tiptap-editor [extensionsConfig]="extensionsConfig" />
+```
+
+**Three built-in URL patterns:**
+
+| Helper                                       | Server receives                  | Best for                  |
+| -------------------------------------------- | -------------------------------- | ------------------------- |
+| `ImageProxyBuilders.queryParam(base)`        | `GET /proxy?imgurl=<encoded>`    | Proxy simples             |
+| `ImageProxyBuilders.queryParam(base, 'url')` | `GET /proxy?url=<encoded>`       | Nome de param customizado |
+| `ImageProxyBuilders.pathEncoded(base)`       | `GET /proxy/<encoded>`           | REST paths                |
+| `ImageProxyBuilders.postBody(base)`          | `POST /proxy` `{ "url": "..." }` | APIs JSON                 |
+
+**Custom function (avançado):**
+
+```typescript
+extensionsConfig = {
+  image: {
+    proxyUrl: (src: string) => `https://myserver.com/img/${btoa(src)}`,
+  },
+};
+```
+
+**Retrocompatibilidade:** uma `string` simples continua funcionando (usa `queryParam` internamente):
+
+```typescript
+// legado — ainda suportado
+extensionsConfig = {
+  image: {
+    proxyUrl: 'https://myserver.com/proxy', // → GET /proxy?imgurl=<encoded>
+  },
+};
+```
+
+> [!TIP]
+> Um servidor de teste mínimo está disponível em `tools/proxy_server.py`.
+> Basta `python3 tools/proxy_server.py` (porta 8765) para testar localmente.
+
+- **Indent/Outdent**: Standard shortcut and toolbar support.
+- **Tab Handling**: Consistent tab behavior within the editor.
+- **Colar Questão**: specialized logic for pasting data into educational templates.
+
+---
+
+## 🛠 Development
+
+### Setup
+
+Run `npm install` to install dependencies.
+
+### Development Server
+
+Run `npm run dev` to start a development server for both the library and the test application. This command uses `concurrently` to watch for library changes and serve the app.
+
+### Building
+
+Run `npm run build:lib` to build the library. The build artifacts will be stored in the `dist/ngx-exitus-tiptap-editor` directory.
+
+---
+
+## 📜 License
+
+MIT
