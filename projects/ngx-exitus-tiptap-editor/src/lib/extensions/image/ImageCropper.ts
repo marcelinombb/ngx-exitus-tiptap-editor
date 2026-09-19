@@ -5,23 +5,13 @@ export interface CropperButton {
   off: () => void;
 }
 
-type CropHandleDirection =
-  | 'move'
-  | 'top'
-  | 'bottom'
-  | 'left'
-  | 'right'
-  | 'topLeft'
-  | 'topRight'
-  | 'bottomLeft'
-  | 'bottomRight';
-
-interface CropRect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import {
+  CropHandleDirection,
+  CropRect,
+  DEFAULT_MIN_CROP_SIZE,
+  computeDragCropRect,
+} from './image-cropper-math';
+import { cropImageToDataUrl } from './image-cropper-canvas';
 
 interface CropTarget {
   image: HTMLImageElement;
@@ -31,7 +21,7 @@ interface CropTarget {
   updateAttributes: (attrs: Record<string, any>) => void;
 }
 
-const MIN_CROP_SIZE = 40;
+const MIN_CROP_SIZE = DEFAULT_MIN_CROP_SIZE;
 
 export default class ImageCropper {
   private readonly target: CropTarget;
@@ -210,88 +200,18 @@ export default class ImageCropper {
     const dx = event.clientX - this.startPointer.x;
     const dy = event.clientY - this.startPointer.y;
 
-    let { x, y, width, height } = this.startRect;
-
-    switch (this.dragMode) {
-      case 'move':
-        x = this.startRect.x + dx;
-        y = this.startRect.y + dy;
-        break;
-      case 'left':
-        x = this.startRect.x + dx;
-        width = this.startRect.width - dx;
-        break;
-      case 'right':
-        width = this.startRect.width + dx;
-        break;
-      case 'top':
-        y = this.startRect.y + dy;
-        height = this.startRect.height - dy;
-        break;
-      case 'bottom':
-        height = this.startRect.height + dy;
-        break;
-      case 'topLeft':
-        x = this.startRect.x + dx;
-        y = this.startRect.y + dy;
-        width = this.startRect.width - dx;
-        height = this.startRect.height - dy;
-        break;
-      case 'topRight':
-        y = this.startRect.y + dy;
-        width = this.startRect.width + dx;
-        height = this.startRect.height - dy;
-        break;
-      case 'bottomLeft':
-        x = this.startRect.x + dx;
-        width = this.startRect.width - dx;
-        height = this.startRect.height + dy;
-        break;
-      case 'bottomRight':
-        width = this.startRect.width + dx;
-        height = this.startRect.height + dy;
-        break;
-    }
-
     const containerWidth = this.overlay.clientWidth || this.target.image.clientWidth;
     const containerHeight = this.overlay.clientHeight || this.target.image.clientHeight;
 
-    const affectsLeft = ['left', 'topLeft', 'bottomLeft'].includes(this.dragMode);
-    const affectsTop = ['top', 'topLeft', 'topRight'].includes(this.dragMode);
-
-    if (width < MIN_CROP_SIZE) {
-      if (affectsLeft) {
-        x = this.startRect.x + (this.startRect.width - MIN_CROP_SIZE);
-      }
-      width = MIN_CROP_SIZE;
-    }
-
-    if (height < MIN_CROP_SIZE) {
-      if (affectsTop) {
-        y = this.startRect.y + (this.startRect.height - MIN_CROP_SIZE);
-      }
-      height = MIN_CROP_SIZE;
-    }
-
-    if (x < 0) {
-      width += x;
-      x = 0;
-    }
-
-    if (y < 0) {
-      height += y;
-      y = 0;
-    }
-
-    if (containerWidth != null && x + width > containerWidth) {
-      width = containerWidth - x;
-    }
-
-    if (containerHeight != null && y + height > containerHeight) {
-      height = containerHeight - y;
-    }
-
-    this.cropRect = { x, y, width, height };
+    this.cropRect = computeDragCropRect(
+      this.startRect,
+      this.dragMode,
+      dx,
+      dy,
+      containerWidth,
+      containerHeight,
+      MIN_CROP_SIZE,
+    );
     this.renderCropArea();
   }
 
@@ -369,46 +289,15 @@ export default class ImageCropper {
         });
       }
 
-      const naturalWidth = this.target.image.naturalWidth;
-      const naturalHeight = this.target.image.naturalHeight;
+      const displayWidth = this.target.image.clientWidth || this.target.image.naturalWidth;
+      const displayHeight = this.target.image.clientHeight || this.target.image.naturalHeight;
 
-      if (!naturalWidth || !naturalHeight) {
-        throw new Error('Dimensões inválidas para recorte da imagem.');
-      }
-
-      const displayWidth = this.target.image.clientWidth || naturalWidth;
-      const displayHeight = this.target.image.clientHeight || naturalHeight;
-
-      const scaleX = naturalWidth / displayWidth;
-      const scaleY = naturalHeight / displayHeight;
-
-      const cropX = Math.max(0, Math.round(this.cropRect.x * scaleX));
-      const cropY = Math.max(0, Math.round(this.cropRect.y * scaleY));
-      const cropWidth = Math.max(1, Math.round(this.cropRect.width * scaleX));
-      const cropHeight = Math.max(1, Math.round(this.cropRect.height * scaleY));
-
-      const canvas = document.createElement('canvas');
-      canvas.width = cropWidth;
-      canvas.height = cropHeight;
-
-      const context = canvas.getContext('2d');
-      if (!context) {
-        throw new Error('Contexto 2D indisponível para recorte da imagem.');
-      }
-
-      context.drawImage(
+      const dataUrl = cropImageToDataUrl(
         this.target.image,
-        cropX,
-        cropY,
-        cropWidth,
-        cropHeight,
-        0,
-        0,
-        cropWidth,
-        cropHeight,
+        this.cropRect,
+        displayWidth,
+        displayHeight,
       );
-
-      const dataUrl = canvas.toDataURL('image/png');
 
       const newWidth = Math.round(this.cropRect.width);
 

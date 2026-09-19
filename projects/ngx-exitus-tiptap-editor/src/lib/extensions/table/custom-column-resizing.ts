@@ -4,6 +4,7 @@ import { EditorView, NodeView, Decoration, DecorationSet } from '@tiptap/pm/view
 import { TableMap, TableView, cellAround, pointsAtCell, tableNodeTypes } from '@tiptap/pm/tables';
 import { updateColumns } from './TableView';
 import { Editor } from '@tiptap/core';
+import { calculateColumnResize } from './table-resizing-math';
 
 export const columnResizingPluginKey = new PluginKey<ResizeState>('tableColumnResizing');
 
@@ -231,7 +232,7 @@ function handleMouseDown(
         view,
         pluginState.activeHandle,
         width,
-        (pluginState.dragging as any).nextCellPos,
+        pluginState.dragging.nextCellPos,
         widthNeighbor,
       );
       view.dispatch(view.state.tr.setMeta(columnResizingPluginKey, { setDragging: null }));
@@ -255,7 +256,7 @@ function handleMouseDown(
         pluginState.activeHandle,
         width,
         defaultCellMinWidth,
-        (pluginState.dragging as any).nextCellPos,
+        pluginState.dragging.nextCellPos,
         widthNeighbor,
       );
     }
@@ -323,9 +324,6 @@ function draggedWidthWithLimit(
   event: MouseEvent,
   resizeMinWidth: number,
 ): { width: number; widthNeighbor?: number } {
-  let offset = event.clientX - dragging.startX;
-
-  // Limit width based on container and other columns
   const $cell = view.state.doc.resolve(cellPos);
   const table = $cell.node(-1);
   const map = TableMap.get(table);
@@ -337,31 +335,23 @@ function draggedWidthWithLimit(
   while (dom && dom.nodeName != 'TABLE') dom = dom.parentNode;
   const container = (dom as HTMLElement)?.closest('.editor-main');
 
+  let maxContainerWidth: number | undefined;
   if (dom && container) {
     const containerRect = container.getBoundingClientRect();
     const padding = 38 * 2;
-    const maxWidth = containerRect.width - padding;
-
-    if (isLastColumn) {
-      const otherColumnsWidth = dragging.startTableWidth - dragging.startWidth;
-      const maxAllowedColumnWidth = maxWidth - otherColumnsWidth;
-      const minAllowedOffset = resizeMinWidth - dragging.startWidth;
-      const maxAllowedOffset = maxAllowedColumnWidth - dragging.startWidth;
-      offset = Math.max(minAllowedOffset, Math.min(maxAllowedOffset, offset));
-      return { width: dragging.startWidth + offset };
-    } else if (dragging.startWidthNeighbor !== undefined) {
-      // For inner columns, it's zero-sum.
-      const minAllowedOffset = resizeMinWidth - dragging.startWidth;
-      const maxAllowedOffset = dragging.startWidthNeighbor - resizeMinWidth;
-      offset = Math.max(minAllowedOffset, Math.min(maxAllowedOffset, offset));
-      return {
-        width: dragging.startWidth + offset,
-        widthNeighbor: dragging.startWidthNeighbor - offset,
-      };
-    }
+    maxContainerWidth = containerRect.width - padding;
   }
 
-  return { width: Math.max(resizeMinWidth, dragging.startWidth + offset) };
+  return calculateColumnResize({
+    startX: dragging.startX,
+    startWidth: dragging.startWidth,
+    currentX: event.clientX,
+    resizeMinWidth,
+    isLastColumn,
+    startTableWidth: dragging.startTableWidth,
+    maxContainerWidth,
+    startWidthNeighbor: dragging.startWidthNeighbor,
+  });
 }
 
 function updateHandle(view: EditorView, value: number): void {

@@ -131,9 +131,12 @@ complex_files_tracker = {
 
 ### Long-Term Initiatives (Quarter 2-4)
 
-1. **Refactor God Classes**
-   - Split `Figure.ts` into smaller modules: `figure-node.ts`, `figure-commands.ts`, `figure-plugins.ts` (drag-drop behavior).
-   - Componentize `exitus-tiptap-editor.ts` plugin initializations into cleaner builder functions/factories.
+1. **Refactor God Classes** ✅
+   - `Figure.ts` modularized into `Figure.ts`, `figure-commands.ts`, `figure-plugins.ts`, and `figure-utils.ts`.
+   - `ImageCropper.ts` decoupled: extracted pure geometry calculation into `image-cropper-math.ts` and offscreen canvas operations into `image-cropper-canvas.ts`.
+   - `custom-column-resizing.ts` decoupled: extracted table column resizing math into `table-resizing-math.ts`, eliminated loose `any` casts.
+   - Criados testes unitários para a lógica de redimensionamento (`image-cropper-math.spec.ts` e `table-resizing-math.spec.ts`).
+   - Suíte de testes expandida para 86/86 testes passando com 0 erros de linting e build limpo.
 2. **Decouple Angular from Tiptap Core**
    - Review patterns for `AngularNodeViewRenderer` to avoid manually passing the `Injector` across all extension `.configure()` calls, utilizing context injection or Angular 16+ runInContext where appropriate.
 
