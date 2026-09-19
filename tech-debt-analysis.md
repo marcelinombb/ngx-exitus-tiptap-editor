@@ -148,6 +148,17 @@ complex_files_tracker = {
      - `createSpellCheckerExtensions(spellCheckerConfig)`
    - Created comprehensive unit tests in `extension-factory.spec.ts`.
    - Test suite updated: 93/93 tests passing with 0 ESLint errors and clean library build.
+3. **Core Extension Testing, Sass Modernization & Dead Code Purge** ✅
+   - Expanded unit test coverage across core extensions:
+     - `CustomParagraph` & `normalizeEmptyIndentedParagraphs` (`paragraph.spec.ts`)
+     - `Tab` atom node & keyboard shortcuts (`tab.spec.ts`)
+     - `Indent` command calculations & list guards (`indent.spec.ts`)
+     - `SpecialCharactersComponent` UI, search and insertion (`special-characters.component.spec.ts`)
+   - Test suite reached **121 of 121 tests passing (100% success)**.
+   - Refactored `tab.ts` command to eliminate ProseMirror transaction collision (`RangeError`).
+   - Modernized Sass import rules (`@use './editor.scss' as *;`) removing Dart Sass 3.0 deprecation warnings.
+   - Purged dead legacy CKEditor code (`SpecialCharactersPlugin.ts` and orphaned styles).
+   - Enriched `public-api.ts` to export modular bundle factories, extensions, and helper utilities.
 
 ---
 
