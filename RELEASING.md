@@ -1,7 +1,7 @@
 # Commits e Releases
 
 Este projeto usa [Conventional Commits](https://www.conventionalcommits.org/), validados
-automaticamente via Husky + commitlint, e [standard-version](https://github.com/conventional-changelog/standard-version)
+automaticamente via Husky + commitlint, e [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version)
 para gerar changelog, bump de versão e tag de release.
 
 ## Fluxo de uso
